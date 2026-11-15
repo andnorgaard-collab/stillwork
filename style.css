@@ -96,3 +96,25 @@ h2 {
   border-top: 1px solid var(--rule);
   margin-top: 72px;
 }
+
+/* Nav hint: a hand-drawn line that quietly draws and erases itself now and then */
+.site-nav .ul { position: absolute; left: 0; bottom: -5px; width: 100%; height: 6px; overflow: visible; pointer-events: none; }
+.site-nav .ul path {
+  fill: none; stroke: var(--ember); stroke-width: 1.6; stroke-linecap: round;
+  vector-effect: non-scaling-stroke; stroke-dasharray: 1 1; stroke-dashoffset: 1;
+  animation: nav-hint 9s cubic-bezier(.6, 0, .3, 1) 1.2s infinite;
+}
+.site-nav a + a .ul path { animation-delay: 1.6s; }
+@keyframes nav-hint {
+  0% { stroke-dashoffset: 1; }
+  8% { stroke-dashoffset: 0; }
+  16% { stroke-dashoffset: 0; }
+  24% { stroke-dashoffset: -1; }
+  100% { stroke-dashoffset: -1; }
+}
+.site-nav a:hover .ul path, .site-nav a:focus-visible .ul path {
+  animation: none; stroke-dashoffset: 0; transition: stroke-dashoffset .35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-nav .ul path { animation: none; }
+}
