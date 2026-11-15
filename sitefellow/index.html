@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sitefellow · beta</title>
 <meta name="description" content="Sitefellow is a beta tool for people who build together: one timeline for phases, tasks, decisions, rooms and conversations.">
+<meta name="theme-color" content="#f4f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161614" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f4f1ea'/%3E%3Cpath d='M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16' fill='none' stroke='%231c1b19' stroke-width='3.2' stroke-linecap='round'/%3E%3Ccircle cx='33' cy='33' r='8' fill='%23b04f33'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +18,7 @@
     --serif: "Instrument Serif", Georgia, serif;
     --sans: "Instrument Sans", system-ui, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, monospace;
+    color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -24,6 +27,7 @@
     }
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
   html { -webkit-text-size-adjust: 100%; }
   body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 25px; }
   button, input, select, textarea { font: inherit; color: inherit; }
@@ -41,7 +45,8 @@
   .project { padding: 24px 0 8px; }
   .project h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1; letter-spacing: -.01em; cursor: text; outline: none; }
   .project h1 em { color: var(--graphite); }
-  .project .sub { margin-top: 12px; color: var(--graphite); }
+  .project .sub { margin-top: 12px; color: var(--graphite); cursor: text; outline: none; }
+  .project h1:focus-visible, .project .sub:focus-visible { box-shadow: 0 2px 0 var(--ember); }
 
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin: 32px 0 0; }
   .stat { padding: 16px 16px 16px 0; }
@@ -71,13 +76,13 @@
   .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
   .btn.ghost:hover { border-color: var(--ink); }
   .btn.danger { background: transparent; color: var(--ember); border-color: var(--ember); }
-  .btn:focus-visible, nav.tabs button:focus-visible, .bar:focus-visible, .row-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .btn:focus-visible, nav.tabs button:focus-visible, .bar:focus-visible, .row-btn:focus-visible, .room:focus-visible, button.tl-phase:focus-visible, footer button:focus-visible, .toast button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
 
   /* Timeline */
   .tl { overflow-x: auto; border-top: 1px solid var(--rule); -webkit-overflow-scrolling: touch; }
   .tl-inner { position: relative; min-width: 100%; }
   .tl-scale { display: flex; position: sticky; top: 0; height: 32px; border-bottom: 1px solid var(--rule); }
-  .tl-week { flex: none; font-family: var(--mono); font-size: 11px; color: var(--graphite); padding: 8px 0 0 6px; border-left: 1px solid var(--rule); }
+  .tl-week { flex: none; font-family: var(--mono); font-size: 11px; color: var(--graphite); padding: 8px 0 0 6px; border-left: 1px solid var(--rule); overflow: hidden; white-space: nowrap; }
   .tl-phase { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--graphite); padding: 20px 0 8px; position: sticky; left: 0; width: max-content; }
   .tl-row { position: relative; height: 44px; }
   .bar { position: absolute; top: 6px; height: 32px; border-radius: 0; border: 1px solid var(--ink); background: var(--paper-deep); color: var(--ink); display: flex; align-items: center; padding: 0 10px; font-size: 14px; white-space: nowrap; cursor: pointer; text-align: left; overflow: visible; }
@@ -90,6 +95,14 @@
   .bar .outside { position: absolute; left: calc(100% + 8px); color: var(--graphite); font-size: 13px; }
   .today { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.5px solid var(--ember); pointer-events: none; }
   .today span { position: absolute; top: 7px; left: 0; background: var(--paper); padding: 1px 6px 1px 4px; z-index: 2; white-space: nowrap; font-family: var(--mono); font-size: 11px; color: var(--ember); }
+  button.tl-phase { display: block; background: none; border: 0; cursor: pointer; }
+  button.tl-phase:hover { color: var(--ink); }
+  .bar { user-select: none; -webkit-user-select: none; }
+  @media (hover: hover) and (pointer: fine) { .bar { cursor: grab; } .bar.dragging { cursor: grabbing; opacity: .8; z-index: 3; } }
+  .drag-hint { display: none; }
+  @media (hover: hover) and (pointer: fine) { .drag-hint { display: inline; margin-left: auto; } }
+  .notice { display: flex; gap: 8px 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; border: 1px solid var(--ember); padding: 10px 12px; margin-bottom: 16px; font-size: 15px; }
+  .notice .btn { padding: 4px 12px; font-size: 14px; }
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px; font-size: 13px; color: var(--graphite); }
   .legend i { display: inline-block; width: 14px; height: 10px; border: 1px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
 
@@ -105,6 +118,13 @@
   .chip.warn { color: var(--ember); }
   .chip.warn::before { background: var(--ember); }
   .chip.ink::before { background: var(--ink); }
+  .doc-row { display: flex; align-items: center; gap: 16px; }
+  .doc-row .row-btn { flex: 1; min-width: 0; }
+  .doc-open { font-size: 14px; white-space: nowrap; color: var(--graphite); }
+  .room .prog { height: 2px; background: var(--rule); margin-top: auto; }
+  .room .prog i { display: block; height: 100%; background: var(--moss); }
+  .toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 10; display: flex; gap: 16px; align-items: center; background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 4px; font-size: 15px; max-width: calc(100vw - 32px); }
+  .toast button { background: none; border: 0; color: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; white-space: nowrap; }
   .empty { color: var(--graphite); padding: 24px 0; font-family: var(--serif); font-style: italic; font-size: 22px; }
 
   /* Rooms */
@@ -123,7 +143,7 @@
   @media (max-width: 560px) { .composer { grid-template-columns: 1fr; } }
 
   /* Forms */
-  input[type=text], input[type=date], input[type=url], select, textarea {
+  input[type=text], input[type=date], select, textarea {
     width: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; line-height: 22px;
   }
   input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); }
@@ -165,14 +185,14 @@
   <section class="project">
     <div class="label" data-t="project">Project</div>
     <h1 id="projectName" contenteditable="true" spellcheck="false"></h1>
-    <p class="sub" id="projectSub"></p>
+    <p class="sub" id="projectSub" contenteditable="true" spellcheck="false"></p>
   </section>
 
   <section class="stats" id="stats"></section>
 
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
-  <main class="panel" id="panel"></main>
+  <main class="panel" id="panel" role="tabpanel"></main>
 
   <footer>
     <span><span data-t="saved">Saved in this browser only.</span> Sitefellow beta · <a href="/">stillwork</a></span>
@@ -186,6 +206,7 @@
 </div>
 
 <dialog id="dlg"><form method="dialog" id="dlgForm"></form></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><span></span><button type="button" id="undoBtn"></button></div>
 
 <script>
 (() => {
@@ -198,7 +219,14 @@
   const iso = (d) => new Date(d - new Date(d).getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
   const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
-  const plus = (n) => iso(new Date(today().getTime() + n * DAY));
+  // Calendar-day arithmetic (setDate), so nothing drifts across daylight-saving changes.
+  const addDays = (d, n) => { const r = new Date(d); r.setDate(r.getDate() + n); return r; };
+  const shift = (s, n) => iso(addDays(parse(s), n));
+  const diff = (a, b) => Math.round((parse(b) - parse(a)) / DAY);
+  const plus = (n) => iso(addDays(today(), n));
+  const isDate = (s) => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(parse(s));
+  const safeUrl = (u) => /^https?:\/\//i.test(u || '') ? u : '';
+  const STATUSES = ['planned', 'active', 'blocked', 'done'];
 
   const I18N = {
     en: {
@@ -219,6 +247,9 @@
       newRoom: 'New room', name: 'Name', notes: 'Notes',
       newDoc: 'New document', document: 'Document', title: 'Title', type: 'Type', link: 'Link', openDoc: 'Open document', linkHint: 'Paste a link to a file in Drive, Dropbox or similar.',
       kinds: { Drawing: 'Drawing', Quote: 'Quote', Contract: 'Contract', Report: 'Report', Photo: 'Photo', Other: 'Other' },
+      late: 'Late', noPhase: 'No phase', renamePhase: 'Rename phase', moveAfter: 'Move after it', dragHint: 'Drag a bar to move it',
+      clashNote: (n) => n === 1 ? '1 task starts before the one it waits for is finished.' : `${n} tasks start before the one they wait for is finished.`, pushLater: 'Push later',
+      undo: 'Undo', undone: 'Undone.', deleted: 'Deleted.', moved: 'Moved.', pushed: 'Plan pushed.', imported: 'Imported.', resetDone: 'Demo restored.', badLink: 'The link must start with http:// or https://.',
       badFile: 'That file does not look like a Sitefellow export.', confirmReset: 'Replace everything with the demo project?', untitled: 'Untitled project'
     },
     da: {
@@ -239,6 +270,9 @@
       newRoom: 'Nyt rum', name: 'Navn', notes: 'Noter',
       newDoc: 'Nyt dokument', document: 'Dokument', title: 'Titel', type: 'Type', link: 'Link', openDoc: 'Åbn dokument', linkHint: 'Indsæt et link til en fil i Drive, Dropbox eller lignende.',
       kinds: { Drawing: 'Tegning', Quote: 'Tilbud', Contract: 'Kontrakt', Report: 'Rapport', Photo: 'Foto', Other: 'Andet' },
+      late: 'Forsinket', noPhase: 'Ingen fase', renamePhase: 'Omdøb fase', moveAfter: 'Flyt til efter', dragHint: 'Træk i en bjælke for at flytte den',
+      clashNote: (n) => n === 1 ? '1 opgave starter, før den opgave, den venter på, er færdig.' : `${n} opgaver starter, før den opgave, de venter på, er færdig.`, pushLater: 'Skub frem',
+      undo: 'Fortryd', undone: 'Fortrudt.', deleted: 'Slettet.', moved: 'Flyttet.', pushed: 'Planen er skubbet.', imported: 'Importeret.', resetDone: 'Demoen er gendannet.', badLink: 'Linket skal starte med http:// eller https://.',
       badFile: 'Filen ligner ikke en Sitefellow-eksport.', confirmReset: 'Vil du erstatte alt med demoprojektet?', untitled: 'Unavngivet projekt'
     }
   };
@@ -296,27 +330,89 @@
     };
   }
 
+  // Repairs anything loaded from storage or a file, so a half-broken export cannot crash the page.
+  function normalize(d) {
+    if (!d || typeof d !== 'object' || !d.project || !Array.isArray(d.tasks)) return null;
+    const str = (v) => v == null ? '' : String(v);
+    const list = (k) => (Array.isArray(d[k]) ? d[k] : []).filter(x => x && typeof x === 'object').map(x => ({ ...x, id: str(x.id) || uid() }));
+    const out = { project: { name: str(d.project.name), sub: str(d.project.sub) }, demo: d.demo === 'en' || d.demo === 'da' ? d.demo : '' };
+    out.phases = list('phases').map(x => ({ id: x.id, name: str(x.name) }));
+    out.rooms = list('rooms').map(x => ({ id: x.id, name: str(x.name), notes: str(x.notes) }));
+    out.tasks = list('tasks').map(x => {
+      const start = isDate(x.start) ? x.start : plus(0);
+      return { id: x.id, name: str(x.name), phase: str(x.phase), trade: str(x.trade), room: str(x.room), start, end: isDate(x.end) && x.end >= start ? x.end : start,
+        status: STATUSES.includes(x.status) ? x.status : 'planned', dep: str(x.dep), blocker: str(x.blocker) };
+    });
+    out.tasks.forEach(t => { if (!out.tasks.some(x => x.id === t.dep && x.id !== t.id)) t.dep = ''; if (!out.rooms.some(r => r.id === t.room)) t.room = ''; });
+    out.decisions = list('decisions').map(x => ({ id: x.id, title: str(x.title), detail: str(x.detail), decision: str(x.decision), owner: str(x.owner), due: isDate(x.due) ? x.due : '', status: x.status === 'decided' ? 'decided' : 'open' }));
+    out.messages = list('messages').map(x => ({ id: x.id, author: str(x.author), role: x.role === 'client' ? 'client' : 'contractor', text: str(x.text), at: isDate(x.at) ? x.at : plus(0) }));
+    out.docs = list('docs').map(x => ({ id: x.id, title: str(x.title), kind: str(x.kind) || 'Other', url: safeUrl(str(x.url)) }));
+    return out;
+  }
+
   let S;
-  try { S = JSON.parse(localStorage.getItem(KEY)) || demo(lang); } catch (e) { S = demo(lang); }
+  try { S = normalize(JSON.parse(localStorage.getItem(KEY))) || demo(lang); } catch (e) { S = demo(lang); }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
-  let tab = 'timeline';
-  let touched = false;
+  const TABS = ['timeline', 'decisions', 'rooms', 'dialogue', 'documents'];
+  let tab = TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'timeline';
+  let lastTab = null, PX = 13, role = 'client';
+
+  // Every change goes through commit(), which keeps a snapshot so it can be undone.
+  const history_ = [];
+  let toastTimer;
+  function toast(msg, canUndo) {
+    const el = $('#toast');
+    el.firstElementChild.textContent = msg;
+    $('#undoBtn').textContent = T().undo; $('#undoBtn').hidden = !canUndo;
+    el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, 7000);
+  }
+  function snapshot() { history_.push(JSON.stringify(S)); if (history_.length > 40) history_.shift(); }
+  function commit(fn, msg) {
+    const snap = JSON.stringify(S);
+    if (fn() === false) return false;
+    history_.push(snap); if (history_.length > 40) history_.shift();
+    S.demo = ''; save(); render();
+    if (msg) toast(msg, true);
+    return true;
+  }
+  function undo() {
+    const snap = history_.pop(); if (!snap) return;
+    S = JSON.parse(snap); save(); render(); toast(T().undone, false);
+  }
 
   const byId = (arr, id) => arr.find(x => x.id === id);
   const statusLabel = () => ({ planned: T().planned, active: T().active, blocked: T().blocked, done: T().done });
 
   function conflict(t) {
-    if (!t.dep) return null;
+    if (!t.dep || t.status === 'done') return null;
     const d = byId(S.tasks, t.dep);
-    if (!d) return null;
-    return parse(t.start) <= parse(d.end) ? d : null;
+    if (!d || d.id === t.id) return null;
+    return t.start <= d.end ? d : null;
+  }
+  // True if following "starts after" links from task a leads to the task with this id.
+  function reaches(a, id) {
+    const seen = new Set();
+    while (a && !seen.has(a.id)) { if (a.id === id) return true; seen.add(a.id); a = a.dep ? byId(S.tasks, a.dep) : null; }
+    return false;
+  }
+  // Pushes every clashing task to the day after the one it waits for, keeping its length, and ripples down the chain.
+  function pushClashes() {
+    let again = true, guard = S.tasks.length + 1;
+    while (again && guard-- > 0) {
+      again = false;
+      S.tasks.forEach(t => {
+        const d = conflict(t); if (!d) return;
+        const len = diff(t.start, t.end);
+        t.start = shift(d.end, 1); t.end = shift(t.start, len); again = true;
+      });
+    }
   }
 
   function setLang(l) {
     lang = l;
     try { localStorage.setItem(LKEY, l); } catch (e) {}
     // An untouched demo follows the language; real projects keep their own text.
-    if (S.demo && S.demo !== l && !touched) { S = demo(l); save(); }
+    if (S.demo && S.demo !== l) { S = demo(l); history_.length = 0; save(); }
     render();
   }
 
@@ -330,30 +426,42 @@
   function renderHead() {
     const n = $('#projectName');
     if (document.activeElement !== n) n.textContent = S.project.name;
-    $('#projectSub').textContent = S.project.sub;
+    const sub = $('#projectSub');
+    if (document.activeElement !== sub) sub.textContent = S.project.sub;
     const total = S.tasks.length || 1;
     const done = S.tasks.filter(t => t.status === 'done').length;
     const blocked = S.tasks.filter(t => t.status === 'blocked' || conflict(t)).length;
-    const open = S.decisions.filter(d => d.status === 'open').length;
+    const openD = S.decisions.filter(d => d.status === 'open');
+    const open = openD.length, overdue = openD.some(d => d.due && d.due < plus(0));
     const next = S.tasks.filter(t => t.status === 'planned').sort((a, b) => a.start.localeCompare(b.start))[0];
     $('#stats').innerHTML = `
       <div class="stat"><div class="v">${Math.round(done / total * 100)}%</div><div class="k label">${T().complete}</div></div>
       <div class="stat"><div class="v ${blocked ? 'warn' : ''}">${blocked}</div><div class="k label">${T().blocked}</div></div>
-      <div class="stat"><div class="v">${open}</div><div class="k label">${T().openDec}</div></div>
+      <div class="stat"><div class="v ${overdue ? 'warn' : ''}">${open}</div><div class="k label">${T().openDec}</div></div>
       <div class="stat"><div class="v">${next ? fmt(next.start) : '·'}</div><div class="k label">${next ? T().next + ': ' + esc(next.trade || next.name) : T().nextStart}</div></div>`;
     const tabs = [['timeline', S.tasks.length], ['decisions', open], ['rooms', S.rooms.length], ['dialogue', S.messages.length], ['documents', S.docs.length]];
-    $('#tabs').innerHTML = tabs.map(([k, c]) => `<button role="tab" aria-selected="${tab === k}" data-tab="${k}">${T().tabs[k]}<span class="count">${c}</span></button>`).join('');
+    $('#tabs').innerHTML = tabs.map(([k, c]) => `<button role="tab" aria-selected="${tab === k}" aria-controls="panel" tabindex="${tab === k ? 0 : -1}" data-tab="${k}">${T().tabs[k]}<span class="count">${c}</span></button>`).join('');
   }
 
-  function render() {
+  function render(recenter) {
     renderStatic();
     renderHead();
+    const old = $('.tl');
+    const keep = !recenter && old && lastTab === 'timeline' ? old.scrollLeft : null;
     const p = $('#panel');
     p.innerHTML = ({ timeline, decisions, rooms, dialogue, documents })[tab]();
+    p.setAttribute('aria-label', T().tabs[tab]);
     if (tab === 'timeline') {
       const tl = $('.tl'), t = $('.today');
-      if (tl && t) tl.scrollLeft = Math.max(0, parseFloat(t.style.left) - tl.clientWidth * 0.45);
+      if (tl && t) tl.scrollLeft = keep ?? Math.max(0, parseFloat(t.style.left) - tl.clientWidth * 0.45);
     }
+    lastTab = tab;
+  }
+  function setTab(k, focus) {
+    tab = k;
+    try { history.replaceState(null, '', k === 'timeline' ? location.pathname : '#' + k); } catch (e) {}
+    render();
+    if (focus) $(`[data-tab="${k}"]`)?.focus();
   }
 
   function timeline() {
@@ -361,42 +469,45 @@
     if (!S.tasks.length) return head + `<p class="empty">${T().noTasks}</p>`;
     const starts = S.tasks.map(t => parse(t.start)), ends = S.tasks.map(t => parse(t.end));
     let min = new Date(Math.min(...starts, today())), max = new Date(Math.max(...ends, today()));
-    min = new Date(min.getTime() - ((min.getDay() + 6) % 7) * DAY - 7 * DAY);
-    max = new Date(max.getTime() + 21 * DAY);
-    const px = window.innerWidth < 600 ? 9 : 13;
+    min = addDays(min, -((min.getDay() + 6) % 7) - 7);
+    max = addDays(max, 21);
+    const px = PX = window.innerWidth < 600 ? 9 : 13;
     const days = Math.round((max - min) / DAY);
     const W = days * px;
     const x = (d) => Math.round((parse(d) - min) / DAY) * px;
     let weeks = '';
-    for (let i = 0; i < days; i += 7) {
-      const d = new Date(min.getTime() + i * DAY);
-      weeks += `<div class="tl-week" style="width:${7 * px}px">${fmt(iso(d))}</div>`;
-    }
-    let rows = '';
-    S.phases.forEach(ph => {
-      const ts = S.tasks.filter(t => t.phase === ph.id).sort((a, b) => a.start.localeCompare(b.start));
+    for (let i = 0; i < days; i += 7) weeks += `<div class="tl-week" style="width:${7 * px}px">${fmt(iso(addDays(min, i)))}</div>`;
+    const now = plus(0);
+    let rows = '', clashes = 0;
+    const group = (label, ts, phaseId) => {
       if (!ts.length) return;
-      rows += `<div class="tl-phase">${esc(ph.name)}</div>`;
+      ts.sort((a, b) => a.start.localeCompare(b.start));
+      rows += phaseId ? `<button class="tl-phase" data-act="edit-phase" data-id="${esc(phaseId)}" title="${T().renamePhase}">${esc(label)}</button>` : `<div class="tl-phase">${esc(label)}</div>`;
       ts.forEach(t => {
-        const c = conflict(t);
+        const c = conflict(t); if (c) clashes++;
         const w = Math.max(px, x(t.end) - x(t.start) + px);
-        const flag = t.status === 'blocked' ? T().blocked : c ? T().clash : '';
-        rows += `<div class="tl-row"><button class="bar ${t.status} ${flag ? 'blocked' : ''}" data-act="edit-task" data-id="${t.id}" style="left:${x(t.start)}px;width:${w}px" title="${esc(t.name)}">
-          <span class="outside"><span style="color:var(--ink)">${esc(t.name)}</span>${t.trade ? ' · ' + esc(t.trade) : ''}${flag ? ` <span class="flag">${flag}</span>` : ''}</span></button></div>`;
+        const late = t.status !== 'done' && t.end < now;
+        const flag = t.status === 'blocked' ? T().blocked + (t.blocker ? ': ' + t.blocker : '') : c ? T().clash : late ? T().late : '';
+        const tip = `${t.name} · ${fmt(t.start)} – ${fmt(t.end)}${flag ? ' · ' + flag : ''}`;
+        rows += `<div class="tl-row"><button class="bar ${t.status} ${t.status === 'blocked' || c ? 'blocked' : ''}" data-act="edit-task" data-id="${esc(t.id)}" style="left:${x(t.start)}px;width:${w}px" title="${esc(tip)}">
+          <span class="outside"><span style="color:var(--ink)">${esc(t.name)}</span>${t.trade ? ' · ' + esc(t.trade) : ''}${flag ? ` <span class="flag">${esc(flag)}</span>` : ''}</span></button></div>`;
       });
-    });
+    };
+    S.phases.forEach(ph => group(ph.name, S.tasks.filter(t => t.phase === ph.id), ph.id));
+    group(T().noPhase, S.tasks.filter(t => !byId(S.phases, t.phase)));
     const tx = Math.round((today() - min) / DAY) * px;
-    return head + `<div class="tl"><div class="tl-inner" style="width:${W + 260}px">
+    const notice = clashes ? `<p class="notice" role="status"><span>${T().clashNote(clashes)}</span><button class="btn ghost" data-act="push">${T().pushLater}</button></p>` : '';
+    return head + notice + `<div class="tl"><div class="tl-inner" style="width:${W + 320}px;background:repeating-linear-gradient(to right, var(--rule) 0 1px, transparent 1px ${7 * px}px) 0 32px / 100% 100% no-repeat">
       <div class="tl-scale">${weeks}</div>${rows}
       <div class="today" style="left:${tx}px"><span>${T().today}</span></div></div></div>
-      <div class="legend"><span><i></i>${T().planned}</span><span><i style="background:var(--ink)"></i>${T().active}</span><span><i style="background:var(--moss);border-color:var(--moss)"></i>${T().done}</span><span><i style="border:2px solid var(--ember)"></i>${T().blockedClash}</span></div>`;
+      <div class="legend"><span><i></i>${T().planned}</span><span><i style="background:var(--ink)"></i>${T().active}</span><span><i style="background:var(--moss);border-color:var(--moss)"></i>${T().done}</span><span><i style="border:2px solid var(--ember)"></i>${T().blockedClash}</span><span class="drag-hint">${T().dragHint}</span></div>`;
   }
 
   function decisions() {
     const list = [...S.decisions].sort((a, b) => (a.status === b.status ? (a.due || '').localeCompare(b.due || '') : a.status === 'open' ? -1 : 1));
     return `<div class="panel-head"><h2>${T().decHead}</h2><button class="btn" data-act="add-decision">${T().addDec}</button></div>` +
       (list.length ? `<ul class="list">${list.map(d => {
-        const late = d.status === 'open' && d.due && parse(d.due) < today();
+        const late = d.status === 'open' && d.due && d.due < plus(0);
         return `<li><button class="row-btn" data-act="edit-decision" data-id="${d.id}">
           <strong>${esc(d.title)}</strong>
           <span class="chip ${d.status === 'decided' ? 'ok' : late ? 'warn' : 'ink'}">${d.status === 'decided' ? T().decided : late ? T().overdue : T().open + (d.due ? ' · ' + fmt(d.due) : '')}</span>
@@ -413,6 +524,7 @@
           <span class="label">${ts.length ? `${done} ${T().of} ${ts.length} ${T().doneLow}` : T().noTaskRoom}</span>
           <h3>${esc(r.name)}</h3>
           <span class="meta">${esc(r.notes)}</span>
+          ${ts.length ? `<span class="prog" aria-hidden="true"><i style="width:${Math.round(done / ts.length * 100)}%"></i></span>` : ''}
           <ul>${ts.map(t => `<li><span class="chip ${t.status === 'done' ? 'ok' : t.status === 'blocked' ? 'warn' : t.status === 'active' ? 'ink' : ''}">${esc(t.name)}</span></li>`).join('')}</ul>
         </button>`; }).join('')}</div>` : `<p class="empty">${T().noRooms}</p>`);
   }
@@ -424,7 +536,7 @@
         <div>${esc(m.text)}</div></li>`).join('') || `<li class="empty">${T().noMsg}</li>`}</ul>
       <form class="composer" id="composer">
         <div class="field"><label class="label" for="role">${T().writingAs}</label>
-          <select id="role"><option value="client">${T().client}</option><option value="contractor">${T().contractor}</option></select></div>
+          <select id="role"><option value="client" ${role === 'client' ? 'selected' : ''}>${T().client}</option><option value="contractor" ${role === 'contractor' ? 'selected' : ''}>${T().contractor}</option></select></div>
         <div class="field"><label class="label" for="msgText">${T().message}</label><input type="text" id="msgText" placeholder="${T().msgPh}" required></div>
         <button class="btn" type="submit">${T().send}</button>
       </form>`;
@@ -432,37 +544,49 @@
 
   function documents() {
     return `<div class="panel-head"><h2>${T().docHead}</h2><button class="btn" data-act="add-doc">${T().addDoc}</button></div>` +
-      (S.docs.length ? `<ul class="list">${S.docs.map(d => `<li><button class="row-btn" data-act="edit-doc" data-id="${d.id}">
+      (S.docs.length ? `<ul class="list">${S.docs.map(d => `<li class="doc-row"><button class="row-btn" data-act="edit-doc" data-id="${d.id}">
         <strong>${esc(d.title)}</strong><span class="chip">${esc(T().kinds[d.kind] || d.kind)}</span>
-        <span class="meta">${d.url ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 60)) : T().noLink}</span></button></li>`).join('')}</ul>` : `<p class="empty">${T().noDocs}</p>`);
+        <span class="meta">${d.url ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 60)) : T().noLink}</span></button>${safeUrl(d.url) ? `<a class="doc-open" href="${esc(d.url)}" target="_blank" rel="noopener noreferrer">${T().openDoc} ↗</a>` : ''}</li>`).join('')}</ul>` : `<p class="empty">${T().noDocs}</p>`);
   }
 
   // Dialogs
   const dlg = $('#dlg'), form = $('#dlgForm');
   const opts = (arr, sel, blank) => (blank ? `<option value="">${blank}</option>` : '') + arr.map(o => `<option value="${o.id}" ${o.id === sel ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
+  const fail = (msg) => { const el = $('#dlgErr'); el.textContent = msg; el.hidden = false; return false; };
   function open(html, onSave, onDelete) {
-    form.innerHTML = html + `<div class="actions">${onDelete ? `<button type="button" class="btn danger" data-dlg="delete">${T().del}</button>` : ''}
+    form.innerHTML = html + `<p class="warn-text" id="dlgErr" role="alert" hidden></p><div class="actions">${onDelete ? `<button type="button" class="btn danger" data-dlg="delete">${T().del}</button>` : ''}
       <span class="right"><button type="button" class="btn ghost" data-dlg="cancel">${T().cancel}</button><button type="submit" class="btn">${T().save}</button></span></div>`;
-    form.onsubmit = (e) => { e.preventDefault(); const ok = onSave(new FormData(form)); if (ok !== false) { touched = true; S.demo = ''; dlg.close(); save(); render(); } };
+    form.oninput = null;
+    form.onsubmit = (e) => { e.preventDefault(); $('#dlgErr').hidden = true; if (commit(() => onSave(new FormData(form)))) dlg.close(); };
     form.onclick = (e) => {
       const a = e.target.closest('[data-dlg]'); if (!a) return;
       if (a.dataset.dlg === 'cancel') dlg.close();
-      if (a.dataset.dlg === 'delete' && confirm(T().confirmDel)) { onDelete(); S.demo = ''; dlg.close(); save(); render(); }
+      // No "are you sure": a delete can be undone from the toast or with Ctrl/Cmd+Z.
+      if (a.dataset.dlg === 'delete') { dlg.close(); commit(onDelete, T().deleted); }
     };
     dlg.showModal();
     const first = form.querySelector('input,textarea,select'); if (first) first.focus();
   }
+  // Click on the backdrop closes, but not when a text selection merely ends out there.
+  let downOnBackdrop = false;
+  dlg.addEventListener('pointerdown', (e) => { downOnBackdrop = e.target === dlg; });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg && downOnBackdrop) dlg.close(); });
 
   function taskDialog(t) {
     const isNew = !t;
-    t = t || { id: uid(), name: '', phase: S.phases[0]?.id || '', trade: '', room: '', start: plus(0), end: plus(7), status: 'planned', dep: '', blocker: '' };
-    const c = conflict(t);
+    if (isNew) {
+      // A new task starts where the plan currently ends, in the phase that is being worked on.
+      const cur = S.tasks.find(x => x.status === 'active') || S.tasks[S.tasks.length - 1];
+      t = { id: uid(), name: '', phase: cur?.phase || S.phases[0]?.id || '__new', trade: '', room: '', start: plus(0), end: plus(6), status: 'planned', dep: '', blocker: '' };
+    }
     open(`<h3>${isNew ? T().newTask : T().editTask}</h3>
       <div class="field"><label class="label" for="f-name">${T().task}</label><input type="text" id="f-name" name="name" value="${esc(t.name)}" required></div>
       <div class="grid2">
-        <div class="field"><label class="label" for="f-phase">${T().phase}</label><select id="f-phase" name="phase">${opts(S.phases, t.phase)}<option value="__new">${T().newPhase}</option></select></div>
-        <div class="field"><label class="label" for="f-trade">${T().trade}</label><input type="text" id="f-trade" name="trade" value="${esc(t.trade)}"></div>
+        <div class="field"><label class="label" for="f-phase">${T().phase}</label><select id="f-phase" name="phase">${opts(S.phases, t.phase)}<option value="__new" ${t.phase === '__new' ? 'selected' : ''}>${T().newPhase}</option></select></div>
+        <div class="field"><label class="label" for="f-trade">${T().trade}</label><input type="text" id="f-trade" name="trade" value="${esc(t.trade)}" list="trades" autocomplete="off">
+          <datalist id="trades">${[...new Set(S.tasks.map(x => x.trade).filter(Boolean))].map(v => `<option value="${esc(v)}">`).join('')}</datalist></div>
       </div>
+      <div class="field" id="f-newphase-wrap" hidden><label class="label" for="f-newphase">${T().phaseName}</label><input type="text" id="f-newphase" name="phaseName"></div>
       <div class="grid2">
         <div class="field"><label class="label" for="f-start">${T().start}</label><input type="date" id="f-start" name="start" value="${t.start}" required></div>
         <div class="field"><label class="label" for="f-end">${T().end}</label><input type="date" id="f-end" name="end" value="${t.end}" required></div>
@@ -471,21 +595,53 @@
         <div class="field"><label class="label" for="f-status">${T().statusL}</label><select id="f-status" name="status">${Object.entries(statusLabel()).map(([k, v]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
         <div class="field"><label class="label" for="f-room">${T().room}</label><select id="f-room" name="room">${opts(S.rooms, t.room, T().noRoom)}</select></div>
       </div>
-      <div class="field"><label class="label" for="f-dep">${T().after}</label><select id="f-dep" name="dep">${opts(S.tasks.filter(x => x.id !== t.id), t.dep, T().noDep)}</select>
-        ${c ? `<span class="warn-text">${esc(T().startsBefore(c.name, fmt(c.end)))}</span>` : ''}</div>
+      <div class="field"><label class="label" for="f-dep">${T().after}</label><select id="f-dep" name="dep">${opts(S.tasks.filter(x => x.id !== t.id && !reaches(x, t.id)), t.dep, T().noDep)}</select>
+        <span class="warn-text" id="f-depwarn" hidden><span></span> <button type="button" class="btn ghost" data-dlg="fixdep" style="padding:2px 10px;font-size:13px">${T().moveAfter}</button></span></div>
       <div class="field"><label class="label" for="f-blocker">${T().blocking}</label><input type="text" id="f-blocker" name="blocker" value="${esc(t.blocker)}" placeholder="${T().blockPh}"></div>`,
       (f) => {
         const v = Object.fromEntries(f.entries());
-        if (parse(v.end) < parse(v.start)) { alert(T().endErr); return false; }
+        const phaseName = (v.phaseName || '').trim(); delete v.phaseName;
+        if (!isDate(v.start) || !isDate(v.end) || v.end < v.start) return fail(T().endErr);
         if (v.phase === '__new') {
-          const name = prompt(T().phaseName); if (!name) return false;
-          const ph = { id: uid(), name }; S.phases.push(ph); v.phase = ph.id;
+          if (!phaseName) { $('#f-newphase').focus(); return fail(T().phaseName); }
+          const ph = { id: uid(), name: phaseName }; S.phases.push(ph); v.phase = ph.id;
         }
+        v.name = v.name.trim(); v.trade = v.trade.trim(); v.blocker = v.blocker.trim();
         if (v.blocker && v.status !== 'done') v.status = 'blocked';
         Object.assign(t, v);
         if (isNew) S.tasks.push(t);
       },
       isNew ? null : () => { S.tasks = S.tasks.filter(x => x.id !== t.id); S.tasks.forEach(x => { if (x.dep === t.id) x.dep = ''; }); });
+
+    // Live behaviour: the end date follows the start date, and a clash is flagged while editing.
+    const el = form.elements;
+    let prevStart = el.start.value;
+    const live = (e) => {
+      if (e && e.target === el.start && isDate(el.start.value)) {
+        if (isDate(prevStart) && isDate(el.end.value)) el.end.value = shift(el.end.value, diff(prevStart, el.start.value));
+        prevStart = el.start.value;
+      }
+      $('#f-newphase-wrap').hidden = el.phase.value !== '__new';
+      const d = byId(S.tasks, el.dep.value), w = $('#f-depwarn');
+      const clash = d && el.status.value !== 'done' && isDate(el.start.value) && el.start.value <= d.end;
+      w.hidden = !clash;
+      if (clash) w.firstElementChild.textContent = T().startsBefore(d.name, fmt(d.end));
+    };
+    form.oninput = live; live();
+    const base = form.onclick;
+    form.onclick = (e) => {
+      if (!e.target.closest('[data-dlg="fixdep"]')) return base(e);
+      const d = byId(S.tasks, el.dep.value); if (!d) return;
+      const len = isDate(el.start.value) && isDate(el.end.value) ? Math.max(0, diff(el.start.value, el.end.value)) : 6;
+      el.start.value = prevStart = shift(d.end, 1); el.end.value = shift(el.start.value, len); live();
+    };
+  }
+
+  function phaseDialog(ph) {
+    if (!ph) return;
+    open(`<h3>${T().renamePhase}</h3>
+      <div class="field"><label class="label" for="p-name">${T().name}</label><input type="text" id="p-name" name="name" value="${esc(ph.name)}" required></div>`,
+      (f) => { ph.name = String(f.get('name')).trim() || ph.name; });
   }
 
   function decisionDialog(d) {
@@ -521,23 +677,33 @@
       <div class="field"><label class="label" for="o-title">${T().title}</label><input type="text" id="o-title" name="title" value="${esc(d.title)}" required></div>
       <div class="grid2">
         <div class="field"><label class="label" for="o-kind">${T().type}</label><select id="o-kind" name="kind">${Object.keys(T().kinds).map(k => `<option value="${k}" ${k === d.kind ? 'selected' : ''}>${T().kinds[k]}</option>`).join('')}</select></div>
-        <div class="field"><label class="label" for="o-url">${T().link}</label><input type="url" id="o-url" name="url" value="${esc(d.url)}" placeholder="https://"></div>
+        <div class="field"><label class="label" for="o-url">${T().link}</label><input type="text" inputmode="url" autocapitalize="off" spellcheck="false" id="o-url" name="url" value="${esc(d.url)}" placeholder="https://"></div>
       </div>
-      ${d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">${T().openDoc}</a>` : `<p class="hint">${T().linkHint}</p>`}`,
-      (f) => { Object.assign(d, Object.fromEntries(f.entries())); if (isNew) S.docs.push(d); },
+      ${safeUrl(d.url) ? `<a href="${esc(d.url)}" target="_blank" rel="noopener noreferrer">${T().openDoc} ↗</a>` : `<p class="hint">${T().linkHint}</p>`}`,
+      (f) => {
+        const v = Object.fromEntries(f.entries());
+        v.url = v.url.trim();
+        if (v.url && !/^[a-z][a-z0-9+.-]*:/i.test(v.url)) v.url = 'https://' + v.url;
+        if (v.url && !safeUrl(v.url)) return fail(T().badLink);
+        Object.assign(d, v); if (isNew) S.docs.push(d);
+      },
       isNew ? null : () => { S.docs = S.docs.filter(x => x.id !== d.id); });
   }
 
   // Events
+  let drag = null, suppressClick = false;
   document.addEventListener('click', (e) => {
+    if (suppressClick) { suppressClick = false; return; }
     const lb = e.target.closest('[data-lang]');
     if (lb) { setLang(lb.dataset.lang); return; }
     const tb = e.target.closest('[data-tab]');
-    if (tb) { tab = tb.dataset.tab; render(); return; }
+    if (tb) { setTab(tb.dataset.tab); return; }
     const a = e.target.closest('[data-act]'); if (!a) return;
     const id = a.dataset.id;
     ({
       'add-task': () => taskDialog(), 'edit-task': () => taskDialog(byId(S.tasks, id)),
+      'edit-phase': () => phaseDialog(byId(S.phases, id)),
+      'push': () => commit(pushClashes, T().pushed),
       'add-decision': () => decisionDialog(), 'edit-decision': () => decisionDialog(byId(S.decisions, id)),
       'add-room': () => roomDialog(), 'edit-room': () => roomDialog(byId(S.rooms, id)),
       'add-doc': () => docDialog(), 'edit-doc': () => docDialog(byId(S.docs, id))
@@ -547,40 +713,90 @@
     if (e.target.id !== 'composer') return;
     e.preventDefault();
     const text = $('#msgText').value.trim(); if (!text) return;
-    const role = $('#role').value;
-    S.messages.push({ id: uid(), author: role === 'client' ? T().you : T().contractor, role, text, at: plus(0) });
-    S.demo = ''; save(); render(); $('#role').value = role; $('#msgText').focus();
+    role = $('#role').value;
+    commit(() => { S.messages.push({ id: uid(), author: role === 'client' ? T().you : T().contractor, role, text, at: plus(0) }); });
+    $('#msgText').focus();
   });
-  const pn = $('#projectName');
-  pn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pn.blur(); } });
-  pn.addEventListener('blur', () => {
-    const v = pn.textContent.trim() || T().untitled;
-    if (v !== S.project.name) { S.project.name = v; S.demo = ''; save(); }
-    render();
+  document.addEventListener('change', (e) => { if (e.target.id === 'role') role = e.target.value; });
+
+  // Tabs follow the usual keyboard pattern: arrows, Home and End.
+  $('#tabs').addEventListener('keydown', (e) => {
+    const i = TABS.indexOf(tab);
+    const n = { ArrowRight: (i + 1) % TABS.length, ArrowLeft: (i + TABS.length - 1) % TABS.length, Home: 0, End: TABS.length - 1 }[e.key];
+    if (n === undefined) return;
+    e.preventDefault(); setTab(TABS[n], true);
+  });
+
+  // Drag a bar sideways with the mouse to move a task, snapping to whole days. Touch keeps scrolling.
+  document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    const bar = e.target.closest('.bar'); if (bar) drag = { bar, x: e.clientX, d: 0, on: false };
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.on && Math.abs(dx) < 5) return;
+    drag.on = true; drag.d = Math.round(dx / PX);
+    drag.bar.classList.add('dragging'); drag.bar.style.transform = `translateX(${drag.d * PX}px)`;
+  });
+  const endDrag = (apply) => {
+    if (!drag) return;
+    const { bar, d, on } = drag; drag = null;
+    if (!on) return;
+    suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
+    const t = byId(S.tasks, bar.dataset.id);
+    if (apply && t && d) commit(() => { t.start = shift(t.start, d); t.end = shift(t.end, d); }, T().moved);
+    else { bar.classList.remove('dragging'); bar.style.transform = ''; }
+  };
+  document.addEventListener('pointerup', () => endDrag(true));
+  document.addEventListener('pointercancel', () => endDrag(false));
+
+  $('#undoBtn').onclick = undo;
+  document.addEventListener('keydown', (e) => {
+    if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.key.toLowerCase() !== 'z' || dlg.open) return;
+    if (e.target.closest('input, textarea, select, [contenteditable]')) return;
+    if (history_.length) { e.preventDefault(); undo(); }
+  });
+
+  // Project name and subtitle are edited in place.
+  [['#projectName', 'name', () => T().untitled], ['#projectSub', 'sub', () => '']].forEach(([sel, key, fallback]) => {
+    const el = $(sel);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } if (e.key === 'Escape') { el.textContent = S.project[key]; el.blur(); } });
+    el.addEventListener('paste', (e) => { e.preventDefault(); document.execCommand('insertText', false, (e.clipboardData.getData('text/plain') || '').replace(/\s+/g, ' ')); });
+    el.addEventListener('blur', () => {
+      const v = el.textContent.replace(/\s+/g, ' ').trim() || fallback();
+      if (v !== S.project[key]) commit(() => { S.project[key] = v; }); else render();
+    });
   });
 
   $('#exportBtn').onclick = () => {
     const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = (S.project.name || 'sitefellow').toLowerCase().replace(/[^a-z0-9æøå]+/g, '-') + '.json'; a.click();
+    a.download = ((S.project.name || 'sitefellow').toLowerCase().replace(/[^a-z0-9æøå]+/g, '-').replace(/^-|-$/g, '') || 'sitefellow') + '-' + plus(0) + '.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('#importBtn').onclick = () => $('#importFile').click();
   $('#importFile').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
     try {
-      const d = JSON.parse(await f.text());
-      if (!d.project || !Array.isArray(d.tasks)) throw new Error();
-      ['phases', 'rooms', 'decisions', 'messages', 'docs'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
-      d.demo = ''; S = d; save(); render();
+      const d = normalize(JSON.parse(await f.text()));
+      if (!d) throw new Error();
+      snapshot(); d.demo = ''; S = d; save(); render(true); toast(T().imported, true);
     } catch (err) { alert(T().badFile); }
     e.target.value = '';
   };
-  $('#resetBtn').onclick = () => { if (confirm(T().confirmReset)) { S = demo(lang); save(); tab = 'timeline'; render(); } };
+  $('#resetBtn').onclick = () => { if (S.demo || confirm(T().confirmReset)) { snapshot(); S = demo(lang); save(); setTab('timeline'); toast(T().resetDone, true); } };
+
+  // Keep two open tabs of the same browser in step.
+  window.addEventListener('storage', (e) => {
+    if (e.key !== KEY || !e.newValue || dlg.open) return;
+    try { const d = normalize(JSON.parse(e.newValue)); if (d) { S = d; render(); } } catch (err) {}
+  });
 
   if (S.demo && S.demo !== lang) { S = demo(lang); save(); }
 
-  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (tab === 'timeline') render(); }, 200); });
+  // Only a change of day width needs a redraw; mobile browsers fire resize on every scroll.
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (tab === 'timeline' && (window.innerWidth < 600 ? 9 : 13) !== PX) render(true); }, 200); });
   render();
 })();
 </script>
