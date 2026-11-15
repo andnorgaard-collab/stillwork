@@ -46,53 +46,10 @@
 <main class="wrap">
   <section class="intro">
     <div class="label">Contact</div>
-    <h1>Got an idea?<br><em>Let&#39;s build it.</em></h1>
-    <p class="lead">If there&#39;s a tool you wish existed, a process that drives you mad, or one of my projects you&#39;d like to use or build on, send me a message on LinkedIn. If it&#39;s useful and I can help, I&#39;ll build a first version with you.</p>
+    <h1>Let&#39;s make<br><em>something together.</em></h1>
+    <p class="lead">If you have an idea you&#39;d like to try, a problem worth solving or want to work with me on one of my projects, reach out. I&#39;m always up for a good conversation.</p>
+    <a class="mail" href="https://www.linkedin.com/in/anders-norgaard-carlsen" target="_blank" rel="noopener"><span class="hand">Say hi on LinkedIn<svg viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15C40 9 90 8 140 11C180 13 210 12 236 8"/></svg></span> →</a>
   </section>
-  <section class="ask">
-    <div class="label">What&#39;s it about?</div>
-    <div class="chips" role="group" aria-label="Topic">
-      <button type="button" data-topic="idea" aria-pressed="true">An idea to build</button>
-      <button type="button" data-topic="collab">Working together</button>
-      <button type="button" data-topic="sitefellow">Sitefellow</button>
-      <button type="button" data-topic="coffee">CoffeeBuddies</button>
-      <button type="button" data-topic="other">Something else</button>
-    </div>
-    <label class="label" for="msg" style="display:block;margin-top:32px">Your message</label>
-    <textarea id="msg" rows="4" maxlength="280"></textarea>
-    <div class="send">
-      <button type="button" class="go" id="go"><span class="hand">Copy &amp; open LinkedIn<svg viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15C40 9 90 8 140 11C180 13 210 12 236 8"/></svg></span> →</button>
-      <span class="copied" id="copied" role="status" aria-live="polite"></span>
-    </div>
-    <p class="mail-note">The message is copied for you. On my LinkedIn profile, tap <b>Message</b> and paste it. If we&#39;re not connected yet, tap <b>Connect</b> and paste it as a note.</p>
-  </section><script>
-(() => {
-  const URL = 'https://www.linkedin.com/in/anders-norgaard-carlsen';
-  const T = {
-    idea: "Hi Anders, I found stillwork.dk and have an idea for a small tool I'd love to try out with you: ",
-    collab: "Hi Anders, I came across stillwork.dk and would like to talk about working together on ",
-    sitefellow: "Hi Anders, I saw Sitefellow on stillwork.dk and I'm interested in ",
-    coffee: "Hi Anders, I tried CoffeeBuddies on stillwork.dk and ",
-    other: "Hi Anders, I found stillwork.dk and wanted to reach out about "
-  };
-  const msg = document.getElementById('msg');
-  let topic = 'idea', edited = false;
-  const set = (t) => {
-    topic = t;
-    document.querySelectorAll('[data-topic]').forEach(b => b.setAttribute('aria-pressed', b.dataset.topic === t));
-    if (!edited || !msg.value.trim()) { msg.value = T[t]; edited = false; }
-  };
-  msg.addEventListener('input', () => { edited = true; });
-  document.querySelectorAll('[data-topic]').forEach(b => b.addEventListener('click', () => { edited = false; set(b.dataset.topic); msg.focus(); msg.setSelectionRange(msg.value.length, msg.value.length); }));
-  document.getElementById('go').addEventListener('click', async () => {
-    const out = document.getElementById('copied');
-    try { await navigator.clipboard.writeText(msg.value.trim()); out.textContent = 'Copied. Paste it in your message.'; }
-    catch (e) { msg.select(); out.textContent = 'Select and copy the text, then paste it on LinkedIn.'; }
-    window.open(URL, '_blank', 'noopener');
-  });
-  set('idea');
-})();
-</script>
 </main>
 <div class="wrap">
   <footer class="site-foot">
