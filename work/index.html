@@ -89,29 +89,34 @@ a.card:hover .card-head b { font-style: italic; }
 <script>
 (() => {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const links = [...document.querySelectorAll('.site-nav a:not([aria-current])')];
-  const dots = links.map((a, i) => {
-    const d = document.createElement('span'); d.className = 'orbit'; a.appendChild(d);
-    return { a, d, th: Math.random() * 6.28, p1: Math.random() * 6.28, p2: Math.random() * 6.28, dir: i % 2 ? -1 : 1, hover: 0 };
+  const nav = document.querySelector('.site-nav'); if (!nav) return;
+  const dot = document.createElement('span'); dot.className = 'orbit'; nav.appendChild(dot);
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  let th = rnd(0, 6.28), om = 0, omT = rnd(0.5, 1.4) * (Math.random() < .5 ? -1 : 1);
+  let rs = 1.1, rsT = 1.1, next = 0, hoverEl = null, hx = 0, last = performance.now(), t = 0;
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('mouseenter', () => hoverEl = a);
+    a.addEventListener('mouseleave', () => hoverEl = null);
   });
-  dots.forEach(o => {
-    o.a.addEventListener('mouseenter', () => o.hover = 1);
-    o.a.addEventListener('mouseleave', () => o.hover = 0);
-  });
-  let last = performance.now(), t = 0;
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
-    dots.forEach(o => {
-      const w = o.a.offsetWidth, h = o.a.offsetHeight;
-      const v = o.dir * (0.9 + 0.7 * Math.sin(t * 0.43 + o.p1) + 0.4 * Math.sin(t * 1.17 + o.p2));
-      o.th += v * dt;
-      const wob = 1 + 0.12 * Math.sin(t * 1.9 + o.p2) + 0.08 * Math.sin(t * 3.1 + o.p1);
-      let x = w / 2 + Math.cos(o.th) * (w / 2 + 9) * wob;
-      let y = h / 2 + Math.sin(o.th) * (h / 2 + 7) * wob;
-      o.hx = (o.hx ?? 0) + ((o.hover ? 1 : 0) - (o.hx ?? 0)) * Math.min(1, dt * 8);
-      x = x + (w / 2 - x) * o.hx; y = y + (h + 6 - y) * o.hx;
-      o.d.style.transform = `translate(${x - 2.5}px, ${y - 2.5}px)`;
-    });
+    if (t > next) {
+      next = t + rnd(1.2, 4.5);
+      const r = Math.random();
+      omT = r < .15 ? rnd(-0.15, 0.15) : rnd(0.4, 2.2) * (Math.random() < .3 ? -Math.sign(omT || 1) : Math.sign(omT || 1));
+      rsT = rnd(0.95, 1.4);
+    }
+    om += (omT - om) * Math.min(1, dt * 1.5);
+    rs += (rsT - rs) * Math.min(1, dt * 1.2);
+    th += om * dt;
+    const W = nav.offsetWidth, H = nav.offsetHeight;
+    const wob = 1 + 0.06 * Math.sin(t * 2.3) + 0.04 * Math.sin(t * 3.7 + 1);
+    let x = W / 2 + Math.cos(th) * (W / 2 + 10) * rs * wob;
+    let y = H / 2 + Math.sin(th) * (H / 2 + 8) * rs * wob;
+    hx += ((hoverEl ? 1 : 0) - hx) * Math.min(1, dt * 7);
+    if (hoverEl) { dot._tx = hoverEl.offsetLeft + hoverEl.offsetWidth / 2; dot._ty = hoverEl.offsetTop + hoverEl.offsetHeight + 6; }
+    if (dot._tx != null) { x += (dot._tx - x) * hx; y += (dot._ty - y) * hx; }
+    dot.style.transform = `translate(${x - 2.5}px, ${y - 2.5}px)`;
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

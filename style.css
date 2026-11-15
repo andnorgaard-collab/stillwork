@@ -46,10 +46,9 @@ a:focus-visible { outline: 2px solid var(--ember); outline-offset: 3px; }
 .site-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 32px 0; }
 .wordmark { width: 132px; height: auto; color: var(--ink); display: block; }
 .wordmark .dot { fill: var(--ember); }
-.site-nav { display: flex; gap: 24px; font-size: 15px; }
+.site-nav { display: flex; gap: 24px; font-size: 15px; position: relative; }
 .site-nav a { text-decoration: none; color: var(--graphite); position: relative; padding: 4px 0; }
 .site-nav a:hover, .site-nav a[aria-current="page"] { color: var(--ink); }
-.site-nav a[aria-current="page"]::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 999px; background: var(--ember); }
 
 main { flex: 1; }
 
