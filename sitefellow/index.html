@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sitefellow · beta</title>
+<meta name="description" content="Sitefellow is a beta tool for people who build together: one timeline for phases, tasks, decisions, rooms and conversations.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f4f1ea'/%3E%3Cpath d='M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16' fill='none' stroke='%231c1b19' stroke-width='3.2' stroke-linecap='round'/%3E%3Ccircle cx='33' cy='33' r='8' fill='%23b04f33'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Instrument+Sans:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f4f1ea; --paper-deep: #e9e3d6; --ink: #1c1b19; --graphite: #6b675f;
+    --rule: #dcd7cc; --pencil: #a8a196; --ember: #b04f33; --moss: #4f5d45;
+    --serif: "Instrument Serif", Georgia, serif;
+    --sans: "Instrument Sans", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #161614; --paper-deep: #22211e; --ink: #ece8df; --graphite: #9a958b;
+      --rule: #2e2d2a; --pencil: #5c5850; --ember: #e07a5c; --moss: #a3b394;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 16px; line-height: 25px; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; text-underline-offset: 4px; text-decoration-color: var(--rule); }
+  a:hover { text-decoration-color: var(--ember); }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 24px 0 16px; }
+  .brand { display: flex; align-items: baseline; gap: 12px; text-decoration: none; }
+  .brand b { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1; }
+  .label { font-family: var(--mono); font-size: 12px; line-height: 16px; letter-spacing: .12em; text-transform: uppercase; color: var(--graphite); }
+  .back { font-size: 14px; color: var(--graphite); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .back svg { width: 18px; height: 18px; }
+
+  .project { padding: 24px 0 8px; }
+  .project h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1; letter-spacing: -.01em; cursor: text; outline: none; }
+  .project h1 em { color: var(--graphite); }
+  .project .sub { margin-top: 12px; color: var(--graphite); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); margin: 32px 0 0; }
+  .stat { padding: 16px 16px 16px 0; }
+  .stat + .stat { padding-left: 16px; border-left: 1px solid var(--rule); }
+  .stat .v { font-family: var(--serif); font-style: italic; font-size: 40px; line-height: 1; }
+  .stat .v.warn { color: var(--ember); }
+  .stat .k { margin-top: 8px; }
+  @media (max-width: 560px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat:nth-child(3) { padding-left: 0; border-left: 0; }
+    .stat:nth-child(n+3) { border-top: 1px solid var(--rule); }
+  }
+
+  nav.tabs { display: flex; gap: 24px; overflow-x: auto; margin-top: 32px; border-bottom: 1px solid var(--rule); scrollbar-width: none; }
+  nav.tabs::-webkit-scrollbar { display: none; }
+  nav.tabs button { background: none; border: 0; padding: 12px 0; cursor: pointer; color: var(--graphite); white-space: nowrap; position: relative; }
+  nav.tabs button[aria-selected="true"] { color: var(--ink); font-weight: 500; }
+  nav.tabs button[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--ink); }
+  nav.tabs .count { font-family: var(--mono); font-size: 12px; color: var(--graphite); margin-left: 4px; }
+
+  .panel { padding: 32px 0 72px; }
+  .panel-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .panel-head h2 { font-family: var(--serif); font-weight: 400; font-size: 36px; line-height: 1.12; }
+  .panel-head h2 em { color: var(--graphite); }
+
+  .btn { background: var(--ink); color: var(--paper); border: 1px solid var(--ink); border-radius: 4px; padding: 8px 16px; cursor: pointer; font-size: 15px; line-height: 22px; }
+  .btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+  .btn.ghost:hover { border-color: var(--ink); }
+  .btn.danger { background: transparent; color: var(--ember); border-color: var(--ember); }
+  .btn:focus-visible, nav.tabs button:focus-visible, .bar:focus-visible, .row-btn:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  /* Timeline */
+  .tl { overflow-x: auto; border-top: 1px solid var(--rule); -webkit-overflow-scrolling: touch; }
+  .tl-inner { position: relative; min-width: 100%; }
+  .tl-scale { display: flex; position: sticky; top: 0; height: 32px; border-bottom: 1px solid var(--rule); }
+  .tl-week { flex: none; font-family: var(--mono); font-size: 11px; color: var(--graphite); padding: 8px 0 0 6px; border-left: 1px solid var(--rule); }
+  .tl-phase { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--graphite); padding: 20px 0 8px; position: sticky; left: 0; width: max-content; }
+  .tl-row { position: relative; height: 44px; }
+  .bar { position: absolute; top: 6px; height: 32px; border-radius: 0; border: 1px solid var(--ink); background: var(--paper-deep); color: var(--ink); display: flex; align-items: center; padding: 0 10px; font-size: 14px; white-space: nowrap; cursor: pointer; text-align: left; overflow: visible; }
+  .bar.active { background: var(--ink); color: var(--paper); }
+  .bar.done { background: var(--moss); border-color: var(--moss); color: var(--paper); }
+  .bar.blocked { border-color: var(--ember); border-width: 2px; }
+  .bar .name { overflow: visible; }
+  .bar .flag { font-family: var(--mono); font-size: 11px; color: var(--ember); margin-left: 8px; }
+  .bar.active .flag, .bar.done .flag { color: inherit; }
+  .bar .outside { position: absolute; left: calc(100% + 8px); color: var(--graphite); font-size: 13px; }
+  .today { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.5px solid var(--ember); pointer-events: none; }
+  .today span { position: absolute; top: 7px; left: 0; background: var(--paper); padding: 1px 6px 1px 4px; z-index: 2; font-family: var(--mono); font-size: 11px; color: var(--ember); }
+  .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px; font-size: 13px; color: var(--graphite); }
+  .legend i { display: inline-block; width: 14px; height: 10px; border: 1px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
+
+  /* Lists */
+  .list { list-style: none; border-top: 1px solid var(--rule); }
+  .list > li { border-bottom: 1px solid var(--rule); }
+  .row-btn { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; width: 100%; padding: 16px 0; background: none; border: 0; text-align: left; cursor: pointer; }
+  .row-btn strong { font-weight: 500; }
+  .row-btn .meta { grid-column: 1 / -1; color: var(--graphite); font-size: 15px; }
+  .chip { font-family: var(--mono); font-size: 12px; color: var(--graphite); display: inline-flex; align-items: center; gap: 8px; align-self: start; padding-top: 2px; white-space: nowrap; }
+  .chip::before { content: ""; width: 7px; height: 7px; border-radius: 999px; background: var(--pencil); }
+  .chip.ok::before { background: var(--moss); }
+  .chip.warn { color: var(--ember); }
+  .chip.warn::before { background: var(--ember); }
+  .chip.ink::before { background: var(--ink); }
+  .empty { color: var(--graphite); padding: 24px 0; font-family: var(--serif); font-style: italic; font-size: 22px; }
+
+  /* Rooms */
+  .rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+  .room { border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 16px; background: none; text-align: left; cursor: pointer; min-height: 140px; display: flex; flex-direction: column; gap: 8px; }
+  .room h3 { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; }
+  .room .meta { color: var(--graphite); font-size: 14px; }
+  .room ul { list-style: none; font-size: 14px; }
+
+  /* Dialogue */
+  .thread { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+  .msg { max-width: 560px; padding: 12px 16px; background: var(--paper-deep); }
+  .msg.client { margin-left: auto; background: transparent; border: 1px solid var(--rule); }
+  .msg .who { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 4px; }
+  .composer { display: grid; grid-template-columns: 140px 1fr auto; gap: 8px; align-items: end; border-top: 1px solid var(--rule); padding-top: 16px; }
+  @media (max-width: 560px) { .composer { grid-template-columns: 1fr; } }
+
+  /* Forms */
+  input[type=text], input[type=date], input[type=url], select, textarea {
+    width: 100%; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; padding: 8px 10px; line-height: 22px;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--ink); }
+  textarea { min-height: 80px; resize: vertical; }
+  dialog { border: 1px solid var(--rule); background: var(--paper); color: var(--ink); padding: 0; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 32px); margin: auto; }
+  dialog::backdrop { background: rgba(20, 19, 17, .45); }
+  dialog form { padding: 24px; display: grid; gap: 16px; }
+  dialog h3 { font-family: var(--serif); font-weight: 400; font-size: 30px; line-height: 1.1; }
+  .field { display: grid; gap: 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid2 > *, .field > * { min-width: 0; }
+  .actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; padding-top: 8px; }
+  .actions .right { display: flex; gap: 8px; margin-left: auto; }
+  .hint { font-size: 13px; color: var(--graphite); }
+  .warn-text { font-size: 14px; color: var(--ember); }
+
+  footer { border-top: 1px solid var(--rule); padding: 24px 0 48px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--graphite); }
+  footer .tools { display: flex; gap: 16px; flex-wrap: wrap; }
+  footer button { background: none; border: 0; color: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 4px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="/sitefellow/"><b>Sitefellow</b><span class="label">Beta</span></a>
+    <a class="back" href="/" aria-label="Back to stillwork">
+      <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="33" r="8" fill="var(--ember)"/></svg>
+      stillwork
+    </a>
+  </header>
+
+  <section class="project">
+    <div class="label">Project</div>
+    <h1 id="projectName" contenteditable="true" spellcheck="false"></h1>
+    <p class="sub" id="projectSub"></p>
+  </section>
+
+  <section class="stats" id="stats" aria-label="Project status"></section>
+
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+
+  <main class="panel" id="panel"></main>
+
+  <footer>
+    <span>Saved in this browser only. Sitefellow beta by <a href="/">stillwork</a>.</span>
+    <span class="tools">
+      <button type="button" id="exportBtn">Export</button>
+      <button type="button" id="importBtn">Import</button>
+      <button type="button" id="resetBtn">Reset demo</button>
+      <input type="file" id="importFile" accept="application/json" class="sr">
+    </span>
+  </footer>
+</div>
+
+<dialog id="dlg"><form method="dialog" id="dlgForm"></form></dialog>
+
+<script>
+(() => {
+  const KEY = 'sitefellow-beta-v1';
+  const DAY = 86400000;
+  const $ = (s, el = document) => el.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const uid = () => Math.random().toString(36).slice(2, 9);
+  const iso = (d) => new Date(d - new Date(d).getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+  const fmt = (s) => s ? parse(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+  const plus = (n) => iso(new Date(today().getTime() + n * DAY));
+
+  function demo() {
+    const ph = { prep: uid(), shell: uid(), fit: uid(), finish: uid() };
+    const r = { kit: uid(), bath: uid(), liv: uid(), ter: uid() };
+    const t = {}; ['strip', 'asb', 'elec', 'plumb', 'win', 'floor', 'kit', 'tile', 'paint', 'ter'].forEach(k => t[k] = uid());
+    return {
+      project: { name: 'House renovation', sub: 'Kitchen, bathroom and terrace · demo project' },
+      phases: [
+        { id: ph.prep, name: 'Preparation' }, { id: ph.shell, name: 'Shell and services' },
+        { id: ph.fit, name: 'Fit-out' }, { id: ph.finish, name: 'Finishing' }
+      ],
+      rooms: [
+        { id: r.kit, name: 'Kitchen', notes: 'Open towards the living room. Island with induction hob.' },
+        { id: r.bath, name: 'Bathroom', notes: 'Walk-in shower, underfloor heating.' },
+        { id: r.liv, name: 'Living room', notes: 'Keep original ceiling mouldings.' },
+        { id: r.ter, name: 'Terrace', notes: 'Larch decking facing south-west.' }
+      ],
+      tasks: [
+        { id: t.strip, name: 'Strip out kitchen and bath', phase: ph.prep, trade: 'Builder', room: r.kit, start: plus(-24), end: plus(-17), status: 'done', dep: '', blocker: '' },
+        { id: t.asb, name: 'Asbestos survey', phase: ph.prep, trade: 'Surveyor', room: '', start: plus(-20), end: plus(-16), status: 'done', dep: '', blocker: '' },
+        { id: t.elec, name: 'First fix electrics', phase: ph.shell, trade: 'Electrician', room: r.kit, start: plus(-14), end: plus(-3), status: 'done', dep: t.strip, blocker: '' },
+        { id: t.plumb, name: 'First fix plumbing', phase: ph.shell, trade: 'Plumber', room: r.bath, start: plus(-10), end: plus(3), status: 'active', dep: t.strip, blocker: '' },
+        { id: t.win, name: 'New windows', phase: ph.shell, trade: 'Carpenter', room: r.liv, start: plus(-2), end: plus(6), status: 'blocked', dep: '', blocker: 'Window delivery delayed one week' },
+        { id: t.floor, name: 'Underfloor heating and screed', phase: ph.fit, trade: 'Plumber', room: r.bath, start: plus(4), end: plus(14), status: 'planned', dep: t.plumb, blocker: '' },
+        { id: t.kit, name: 'Kitchen installation', phase: ph.fit, trade: 'Kitchen fitter', room: r.kit, start: plus(15), end: plus(25), status: 'planned', dep: t.elec, blocker: '' },
+        { id: t.tile, name: 'Bathroom tiling', phase: ph.fit, trade: 'Tiler', room: r.bath, start: plus(12), end: plus(22), status: 'planned', dep: t.floor, blocker: '' },
+        { id: t.paint, name: 'Painting', phase: ph.finish, trade: 'Painter', room: r.liv, start: plus(26), end: plus(33), status: 'planned', dep: t.kit, blocker: '' },
+        { id: t.ter, name: 'Terrace decking', phase: ph.finish, trade: 'Carpenter', room: r.ter, start: plus(30), end: plus(38), status: 'planned', dep: '', blocker: '' }
+      ],
+      decisions: [
+        { id: uid(), title: 'Tile format in the shower', detail: 'Large format 60×120 or small mosaic on the floor for grip.', status: 'open', decision: '', owner: 'Client', due: plus(5) },
+        { id: uid(), title: 'Worktop material', detail: 'Oiled oak, terrazzo or steel.', status: 'open', decision: '', owner: 'Client', due: plus(9) },
+        { id: uid(), title: 'Keep the chimney breast', detail: 'Structural engineer confirmed it can stay.', status: 'decided', decision: 'Keep it and plaster over.', owner: 'Client', due: plus(-12) }
+      ],
+      messages: [
+        { id: uid(), author: 'Mads', role: 'contractor', text: 'Windows will arrive a week late from the supplier. We will do the bathroom pipes first so nothing waits.', at: plus(-2) },
+        { id: uid(), author: 'You', role: 'client', text: 'Thanks for the heads-up. Does that move the kitchen date?', at: plus(-2) },
+        { id: uid(), author: 'Mads', role: 'contractor', text: 'No, the kitchen is not affected. I have marked the windows as blocked in the plan.', at: plus(-1) }
+      ],
+      docs: [
+        { id: uid(), title: 'Floor plan, ground floor', kind: 'Drawing', url: '' },
+        { id: uid(), title: 'Kitchen quote', kind: 'Quote', url: '' },
+        { id: uid(), title: 'Asbestos report', kind: 'Report', url: '' }
+      ]
+    };
+  }
+
+  let S;
+  try { S = JSON.parse(localStorage.getItem(KEY)) || demo(); } catch (e) { S = demo(); }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  let tab = 'timeline';
+
+  const byId = (arr, id) => arr.find(x => x.id === id);
+  const statusLabel = { planned: 'Planned', active: 'In progress', blocked: 'Blocked', done: 'Done' };
+
+  function conflict(t) {
+    if (!t.dep) return null;
+    const d = byId(S.tasks, t.dep);
+    if (!d) return null;
+    return parse(t.start) <= parse(d.end) ? d : null;
+  }
+
+  function renderHead() {
+    const n = $('#projectName');
+    if (document.activeElement !== n) n.textContent = S.project.name;
+    $('#projectSub').textContent = S.project.sub;
+    const total = S.tasks.length || 1;
+    const done = S.tasks.filter(t => t.status === 'done').length;
+    const blocked = S.tasks.filter(t => t.status === 'blocked' || conflict(t)).length;
+    const open = S.decisions.filter(d => d.status === 'open').length;
+    const next = S.tasks.filter(t => t.status === 'planned').sort((a, b) => a.start.localeCompare(b.start))[0];
+    $('#stats').innerHTML = `
+      <div class="stat"><div class="v">${Math.round(done / total * 100)}%</div><div class="k label">Complete</div></div>
+      <div class="stat"><div class="v ${blocked ? 'warn' : ''}">${blocked}</div><div class="k label">Blocked</div></div>
+      <div class="stat"><div class="v">${open}</div><div class="k label">Open decisions</div></div>
+      <div class="stat"><div class="v">${next ? fmt(next.start) : '·'}</div><div class="k label">${next ? 'Next: ' + esc(next.trade || next.name) : 'Next start'}</div></div>`;
+    const tabs = [['timeline', 'Timeline', S.tasks.length], ['decisions', 'Decisions', open], ['rooms', 'Rooms', S.rooms.length], ['dialogue', 'Dialogue', S.messages.length], ['documents', 'Documents', S.docs.length]];
+    $('#tabs').innerHTML = tabs.map(([k, l, c]) => `<button role="tab" aria-selected="${tab === k}" data-tab="${k}">${l}<span class="count">${c}</span></button>`).join('');
+  }
+
+  function render() {
+    renderHead();
+    const p = $('#panel');
+    if (tab === 'timeline') p.innerHTML = timeline();
+    if (tab === 'decisions') p.innerHTML = decisions();
+    if (tab === 'rooms') p.innerHTML = rooms();
+    if (tab === 'dialogue') p.innerHTML = dialogue();
+    if (tab === 'documents') p.innerHTML = documents();
+    if (tab === 'timeline') {
+      const tl = $('.tl');
+      const t = $('.today');
+      if (tl && t && !tl.dataset.scrolled) { tl.scrollLeft = Math.max(0, parseFloat(t.style.left) - tl.clientWidth * 0.45); tl.dataset.scrolled = '1'; }
+    }
+  }
+
+  function timeline() {
+    const head = `<div class="panel-head"><h2>Timeline <em>first.</em></h2><button class="btn" data-act="add-task">Add task</button></div>`;
+    if (!S.tasks.length) return head + `<p class="empty">No tasks yet. Add the first one.</p>`;
+    const starts = S.tasks.map(t => parse(t.start)), ends = S.tasks.map(t => parse(t.end));
+    let min = new Date(Math.min(...starts, today())), max = new Date(Math.max(...ends, today()));
+    min = new Date(min.getTime() - ((min.getDay() + 6) % 7) * DAY - 7 * DAY);
+    max = new Date(max.getTime() + 21 * DAY);
+    const px = window.innerWidth < 600 ? 9 : 13;
+    const days = Math.round((max - min) / DAY);
+    const W = days * px;
+    const x = (d) => Math.round((parse(d) - min) / DAY) * px;
+    let weeks = '';
+    for (let i = 0; i < days; i += 7) {
+      const d = new Date(min.getTime() + i * DAY);
+      weeks += `<div class="tl-week" style="width:${7 * px}px">${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>`;
+    }
+    let rows = '';
+    S.phases.forEach(ph => {
+      const ts = S.tasks.filter(t => t.phase === ph.id).sort((a, b) => a.start.localeCompare(b.start));
+      if (!ts.length) return;
+      rows += `<div class="tl-phase">${esc(ph.name)}</div>`;
+      ts.forEach(t => {
+        const c = conflict(t);
+        const w = Math.max(px, x(t.end) - x(t.start) + px);
+        const flag = t.status === 'blocked' ? 'Blocked' : c ? 'Clash' : '';
+        rows += `<div class="tl-row"><button class="bar ${t.status} ${flag ? 'blocked' : ''}" data-act="edit-task" data-id="${t.id}" style="left:${x(t.start)}px;width:${w}px" title="${esc(t.name)}">
+          <span class="outside"><span style="color:var(--ink)">${esc(t.name)}</span>${t.trade ? ' · ' + esc(t.trade) : ''}${flag ? ` <span class="flag">${flag}</span>` : ''}</span></button></div>`;
+      });
+    });
+    const tx = Math.round((today() - min) / DAY) * px;
+    return head + `<div class="tl"><div class="tl-inner" style="width:${W + 260}px">
+      <div class="tl-scale">${weeks}</div>${rows}
+      <div class="today" style="left:${tx}px"><span>Today</span></div></div></div>
+      <div class="legend"><span><i></i>Planned</span><span><i style="background:var(--ink)"></i>In progress</span><span><i style="background:var(--moss);border-color:var(--moss)"></i>Done</span><span><i style="border:2px solid var(--ember)"></i>Blocked or clash</span></div>`;
+  }
+
+  function decisions() {
+    const list = [...S.decisions].sort((a, b) => (a.status === b.status ? (a.due || '').localeCompare(b.due || '') : a.status === 'open' ? -1 : 1));
+    return `<div class="panel-head"><h2>Decisions <em>to make.</em></h2><button class="btn" data-act="add-decision">Add decision</button></div>` +
+      (list.length ? `<ul class="list">${list.map(d => {
+        const late = d.status === 'open' && d.due && parse(d.due) < today();
+        return `<li><button class="row-btn" data-act="edit-decision" data-id="${d.id}">
+          <strong>${esc(d.title)}</strong>
+          <span class="chip ${d.status === 'decided' ? 'ok' : late ? 'warn' : 'ink'}">${d.status === 'decided' ? 'Decided' : late ? 'Overdue' : 'Open' + (d.due ? ' · ' + fmt(d.due) : '')}</span>
+          <span class="meta">${esc(d.status === 'decided' && d.decision ? d.decision : d.detail)}${d.owner ? ' · ' + esc(d.owner) : ''}</span>
+        </button></li>`; }).join('')}</ul>` : `<p class="empty">Nothing to decide right now.</p>`);
+  }
+
+  function rooms() {
+    return `<div class="panel-head"><h2>Rooms <em>in detail.</em></h2><button class="btn" data-act="add-room">Add room</button></div>` +
+      (S.rooms.length ? `<div class="rooms">${S.rooms.map(r => {
+        const ts = S.tasks.filter(t => t.room === r.id);
+        const done = ts.filter(t => t.status === 'done').length;
+        return `<button class="room" data-act="edit-room" data-id="${r.id}">
+          <span class="label">${ts.length ? done + ' of ' + ts.length + ' done' : 'No tasks'}</span>
+          <h3>${esc(r.name)}</h3>
+          <span class="meta">${esc(r.notes)}</span>
+          <ul>${ts.map(t => `<li><span class="chip ${t.status === 'done' ? 'ok' : t.status === 'blocked' ? 'warn' : t.status === 'active' ? 'ink' : ''}">${esc(t.name)}</span></li>`).join('')}</ul>
+        </button>`; }).join('')}</div>` : `<p class="empty">No rooms yet.</p>`);
+  }
+
+  function dialogue() {
+    return `<div class="panel-head"><h2>Dialogue, <em>in one place.</em></h2></div>
+      <ul class="thread">${S.messages.map(m => `<li class="msg ${m.role}">
+        <div class="who"><strong>${esc(m.author)}</strong><span class="label">${m.role === 'client' ? 'Client' : 'Contractor'} · ${fmt(m.at)}</span></div>
+        <div>${esc(m.text)}</div></li>`).join('') || '<li class="empty">No messages yet.</li>'}</ul>
+      <form class="composer" id="composer">
+        <div class="field"><label class="label" for="role">Writing as</label>
+          <select id="role"><option value="client">Client</option><option value="contractor">Contractor</option></select></div>
+        <div class="field"><label class="label" for="msgText">Message</label><input type="text" id="msgText" placeholder="Write a short update" required></div>
+        <button class="btn" type="submit">Send</button>
+      </form>`;
+  }
+
+  function documents() {
+    return `<div class="panel-head"><h2>Documents <em>and drawings.</em></h2><button class="btn" data-act="add-doc">Add document</button></div>` +
+      (S.docs.length ? `<ul class="list">${S.docs.map(d => `<li><button class="row-btn" data-act="edit-doc" data-id="${d.id}">
+        <strong>${esc(d.title)}</strong><span class="chip">${esc(d.kind)}</span>
+        <span class="meta">${d.url ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 60)) : 'No link yet'}</span></button></li>`).join('')}</ul>` : `<p class="empty">No documents yet.</p>`);
+  }
+
+  // Dialogs
+  const dlg = $('#dlg'), form = $('#dlgForm');
+  const opts = (arr, sel, blank) => (blank ? `<option value="">${blank}</option>` : '') + arr.map(o => `<option value="${o.id}" ${o.id === sel ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
+  function open(html, onSave, onDelete) {
+    form.innerHTML = html + `<div class="actions">${onDelete ? '<button type="button" class="btn danger" data-dlg="delete">Delete</button>' : ''}
+      <span class="right"><button type="button" class="btn ghost" data-dlg="cancel">Cancel</button><button type="submit" class="btn">Save</button></span></div>`;
+    form.onsubmit = (e) => { e.preventDefault(); const ok = onSave(new FormData(form)); if (ok !== false) { dlg.close(); save(); render(); } };
+    form.onclick = (e) => {
+      const a = e.target.closest('[data-dlg]'); if (!a) return;
+      if (a.dataset.dlg === 'cancel') dlg.close();
+      if (a.dataset.dlg === 'delete' && confirm('Delete this item?')) { onDelete(); dlg.close(); save(); render(); }
+    };
+    dlg.showModal();
+    const first = form.querySelector('input,textarea,select'); if (first) first.focus();
+  }
+
+  function taskDialog(t) {
+    const isNew = !t;
+    t = t || { id: uid(), name: '', phase: S.phases[0]?.id || '', trade: '', room: '', start: plus(0), end: plus(7), status: 'planned', dep: '', blocker: '' };
+    const c = conflict(t);
+    open(`<h3>${isNew ? 'New task' : 'Edit task'}</h3>
+      <div class="field"><label class="label" for="f-name">Task</label><input type="text" id="f-name" name="name" value="${esc(t.name)}" required></div>
+      <div class="grid2">
+        <div class="field"><label class="label" for="f-phase">Phase</label><select id="f-phase" name="phase">${opts(S.phases, t.phase)}<option value="__new">New phase…</option></select></div>
+        <div class="field"><label class="label" for="f-trade">Trade or contractor</label><input type="text" id="f-trade" name="trade" value="${esc(t.trade)}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label class="label" for="f-start">Start</label><input type="date" id="f-start" name="start" value="${t.start}" required></div>
+        <div class="field"><label class="label" for="f-end">End</label><input type="date" id="f-end" name="end" value="${t.end}" required></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label class="label" for="f-status">Status</label><select id="f-status" name="status">${Object.entries(statusLabel).map(([k, v]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+        <div class="field"><label class="label" for="f-room">Room</label><select id="f-room" name="room">${opts(S.rooms, t.room, 'No room')}</select></div>
+      </div>
+      <div class="field"><label class="label" for="f-dep">Starts after</label><select id="f-dep" name="dep">${opts(S.tasks.filter(x => x.id !== t.id), t.dep, 'No dependency')}</select>
+        ${c ? `<span class="warn-text">Starts before “${esc(c.name)}” ends on ${fmt(c.end)}.</span>` : ''}</div>
+      <div class="field"><label class="label" for="f-blocker">What is blocking it</label><input type="text" id="f-blocker" name="blocker" value="${esc(t.blocker)}" placeholder="Leave empty if nothing"></div>`,
+      (f) => {
+        const v = Object.fromEntries(f.entries());
+        if (parse(v.end) < parse(v.start)) { alert('The end date must be on or after the start date.'); return false; }
+        if (v.phase === '__new') {
+          const name = prompt('Name of the new phase'); if (!name) return false;
+          const ph = { id: uid(), name }; S.phases.push(ph); v.phase = ph.id;
+        }
+        if (v.blocker && v.status !== 'done') v.status = 'blocked';
+        Object.assign(t, v);
+        if (isNew) S.tasks.push(t);
+      },
+      isNew ? null : () => { S.tasks = S.tasks.filter(x => x.id !== t.id); S.tasks.forEach(x => { if (x.dep === t.id) x.dep = ''; }); });
+  }
+
+  function decisionDialog(d) {
+    const isNew = !d;
+    d = d || { id: uid(), title: '', detail: '', status: 'open', decision: '', owner: 'Client', due: plus(7) };
+    open(`<h3>${isNew ? 'New decision' : 'Decision'}</h3>
+      <div class="field"><label class="label" for="d-title">Question</label><input type="text" id="d-title" name="title" value="${esc(d.title)}" required></div>
+      <div class="field"><label class="label" for="d-detail">Options and context</label><textarea id="d-detail" name="detail">${esc(d.detail)}</textarea></div>
+      <div class="grid2">
+        <div class="field"><label class="label" for="d-owner">Who decides</label><input type="text" id="d-owner" name="owner" value="${esc(d.owner)}"></div>
+        <div class="field"><label class="label" for="d-due">Needed by</label><input type="date" id="d-due" name="due" value="${d.due || ''}"></div>
+      </div>
+      <div class="field"><label class="label" for="d-decision">Decision</label><input type="text" id="d-decision" name="decision" value="${esc(d.decision)}" placeholder="Fill in when decided"></div>
+      <p class="hint">Writing a decision marks it as decided.</p>`,
+      (f) => { const v = Object.fromEntries(f.entries()); v.status = v.decision.trim() ? 'decided' : 'open'; Object.assign(d, v); if (isNew) S.decisions.push(d); },
+      isNew ? null : () => { S.decisions = S.decisions.filter(x => x.id !== d.id); });
+  }
+
+  function roomDialog(r) {
+    const isNew = !r;
+    r = r || { id: uid(), name: '', notes: '' };
+    open(`<h3>${isNew ? 'New room' : 'Room'}</h3>
+      <div class="field"><label class="label" for="r-name">Name</label><input type="text" id="r-name" name="name" value="${esc(r.name)}" required></div>
+      <div class="field"><label class="label" for="r-notes">Notes</label><textarea id="r-notes" name="notes">${esc(r.notes)}</textarea></div>`,
+      (f) => { Object.assign(r, Object.fromEntries(f.entries())); if (isNew) S.rooms.push(r); },
+      isNew ? null : () => { S.rooms = S.rooms.filter(x => x.id !== r.id); S.tasks.forEach(t => { if (t.room === r.id) t.room = ''; }); });
+  }
+
+  function docDialog(d) {
+    const isNew = !d;
+    d = d || { id: uid(), title: '', kind: 'Drawing', url: '' };
+    open(`<h3>${isNew ? 'New document' : 'Document'}</h3>
+      <div class="field"><label class="label" for="o-title">Title</label><input type="text" id="o-title" name="title" value="${esc(d.title)}" required></div>
+      <div class="grid2">
+        <div class="field"><label class="label" for="o-kind">Type</label><select id="o-kind" name="kind">${['Drawing', 'Quote', 'Contract', 'Report', 'Photo', 'Other'].map(k => `<option ${k === d.kind ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
+        <div class="field"><label class="label" for="o-url">Link</label><input type="url" id="o-url" name="url" value="${esc(d.url)}" placeholder="https://"></div>
+      </div>
+      ${d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">Open document</a>` : '<p class="hint">Paste a link to a file in Drive, Dropbox or similar.</p>'}`,
+      (f) => { Object.assign(d, Object.fromEntries(f.entries())); if (isNew) S.docs.push(d); },
+      isNew ? null : () => { S.docs = S.docs.filter(x => x.id !== d.id); });
+  }
+
+  // Events
+  document.addEventListener('click', (e) => {
+    const tb = e.target.closest('[data-tab]');
+    if (tb) { tab = tb.dataset.tab; render(); return; }
+    const a = e.target.closest('[data-act]'); if (!a) return;
+    const id = a.dataset.id;
+    ({
+      'add-task': () => taskDialog(), 'edit-task': () => taskDialog(byId(S.tasks, id)),
+      'add-decision': () => decisionDialog(), 'edit-decision': () => decisionDialog(byId(S.decisions, id)),
+      'add-room': () => roomDialog(), 'edit-room': () => roomDialog(byId(S.rooms, id)),
+      'add-doc': () => docDialog(), 'edit-doc': () => docDialog(byId(S.docs, id))
+    })[a.dataset.act]?.();
+  });
+  document.addEventListener('submit', (e) => {
+    if (e.target.id !== 'composer') return;
+    e.preventDefault();
+    const text = $('#msgText').value.trim(); if (!text) return;
+    const role = $('#role').value;
+    S.messages.push({ id: uid(), author: role === 'client' ? 'You' : 'Contractor', role, text, at: plus(0) });
+    save(); render(); $('#role').value = role; $('#msgText').focus();
+  });
+  const pn = $('#projectName');
+  pn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pn.blur(); } });
+  pn.addEventListener('blur', () => { const v = pn.textContent.trim(); S.project.name = v || 'Untitled project'; save(); render(); });
+
+  $('#exportBtn').onclick = () => {
+    const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = (S.project.name || 'sitefellow').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.json'; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  };
+  $('#importBtn').onclick = () => $('#importFile').click();
+  $('#importFile').onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const d = JSON.parse(await f.text());
+      if (!d.project || !Array.isArray(d.tasks)) throw new Error();
+      ['phases', 'rooms', 'decisions', 'messages', 'docs'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
+      S = d; save(); render();
+    } catch (err) { alert('That file does not look like a Sitefellow export.'); }
+    e.target.value = '';
+  };
+  $('#resetBtn').onclick = () => { if (confirm('Replace everything with the demo project?')) { S = demo(); save(); tab = 'timeline'; render(); } };
+
+  let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (tab === 'timeline') render(); }, 200); });
+  render();
+})();
+</script>
+</body>
+</html>
