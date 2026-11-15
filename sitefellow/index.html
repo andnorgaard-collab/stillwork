@@ -89,7 +89,7 @@
   .bar.active .flag, .bar.done .flag { color: inherit; }
   .bar .outside { position: absolute; left: calc(100% + 8px); color: var(--graphite); font-size: 13px; }
   .today { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.5px solid var(--ember); pointer-events: none; }
-  .today span { position: absolute; top: 7px; left: 0; background: var(--paper); padding: 1px 6px 1px 4px; z-index: 2; font-family: var(--mono); font-size: 11px; color: var(--ember); }
+  .today span { position: absolute; top: 7px; left: 0; background: var(--paper); padding: 1px 6px 1px 4px; z-index: 2; white-space: nowrap; font-family: var(--mono); font-size: 11px; color: var(--ember); }
   .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 16px; font-size: 13px; color: var(--graphite); }
   .legend i { display: inline-block; width: 14px; height: 10px; border: 1px solid var(--ink); margin-right: 6px; vertical-align: -1px; }
 
@@ -140,6 +140,11 @@
   .hint { font-size: 13px; color: var(--graphite); }
   .warn-text { font-size: 14px; color: var(--ember); }
 
+  .right-top { display: flex; align-items: center; gap: 20px; }
+  .lang { display: flex; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  .lang button { background: none; border: 0; padding: 3px 9px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; color: var(--graphite); cursor: pointer; }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .lang button:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
   footer { border-top: 1px solid var(--rule); padding: 24px 0 48px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 14px; color: var(--graphite); }
   footer .tools { display: flex; gap: 16px; flex-wrap: wrap; }
   footer button { background: none; border: 0; color: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 4px; }
@@ -150,30 +155,31 @@
 <div class="wrap">
   <header class="top">
     <a class="brand" href="/sitefellow/"><b>Sitefellow</b><span class="label">Beta</span></a>
-    <a class="back" href="/work/" aria-label="Back to stillwork work">
+    <div class="right-top"><div class="lang" role="group" aria-label="Language"><button type="button" data-lang="en">EN</button><button type="button" data-lang="da">DA</button></div>
+    <a class="back" href="/work/" aria-label="stillwork">
       <svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="33" r="8" fill="var(--ember)"/></svg>
       stillwork
-    </a>
+    </a></div>
   </header>
 
   <section class="project">
-    <div class="label">Project</div>
+    <div class="label" data-t="project">Project</div>
     <h1 id="projectName" contenteditable="true" spellcheck="false"></h1>
     <p class="sub" id="projectSub"></p>
   </section>
 
-  <section class="stats" id="stats" aria-label="Project status"></section>
+  <section class="stats" id="stats"></section>
 
   <nav class="tabs" role="tablist" id="tabs"></nav>
 
   <main class="panel" id="panel"></main>
 
   <footer>
-    <span>Saved in this browser only. Sitefellow beta by <a href="/">stillwork</a>.</span>
+    <span><span data-t="saved">Saved in this browser only.</span> Sitefellow beta · <a href="/">stillwork</a></span>
     <span class="tools">
-      <button type="button" id="exportBtn">Export</button>
-      <button type="button" id="importBtn">Import</button>
-      <button type="button" id="resetBtn">Reset demo</button>
+      <button type="button" id="exportBtn" data-t="export">Export</button>
+      <button type="button" id="importBtn" data-t="import">Import</button>
+      <button type="button" id="resetBtn" data-t="reset">Reset demo</button>
       <input type="file" id="importFile" accept="application/json" class="sr">
     </span>
   </footer>
@@ -184,6 +190,7 @@
 <script>
 (() => {
   const KEY = 'sitefellow-beta-v1';
+  const LKEY = 'sitefellow-lang';
   const DAY = 86400000;
   const $ = (s, el = document) => el.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -191,68 +198,133 @@
   const iso = (d) => new Date(d - new Date(d).getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
   const today = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
-  const fmt = (s) => s ? parse(s).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
   const plus = (n) => iso(new Date(today().getTime() + n * DAY));
 
-  function demo() {
+  const I18N = {
+    en: {
+      project: 'Project', saved: 'Saved in this browser only.', export: 'Export', import: 'Import', reset: 'Reset demo',
+      status: 'Project status', complete: 'Complete', blocked: 'Blocked', openDec: 'Open decisions', next: 'Next', nextStart: 'Next start',
+      tabs: { timeline: 'Timeline', decisions: 'Decisions', rooms: 'Rooms', dialogue: 'Dialogue', documents: 'Documents' },
+      tlHead: 'Timeline <em>first.</em>', addTask: 'Add task', noTasks: 'No tasks yet. Add the first one.',
+      clash: 'Clash', today: 'Today', planned: 'Planned', active: 'In progress', done: 'Done', blockedClash: 'Blocked or clash',
+      decHead: 'Decisions <em>to make.</em>', addDec: 'Add decision', decided: 'Decided', overdue: 'Overdue', open: 'Open', noDec: 'Nothing to decide right now.',
+      roomHead: 'Rooms <em>in detail.</em>', addRoom: 'Add room', of: 'of', doneLow: 'done', noTaskRoom: 'No tasks', noRooms: 'No rooms yet.',
+      dlgHead: 'Dialogue, <em>in one place.</em>', client: 'Client', contractor: 'Contractor', writingAs: 'Writing as', message: 'Message', msgPh: 'Write a short update', send: 'Send', noMsg: 'No messages yet.', you: 'You',
+      docHead: 'Documents <em>and drawings.</em>', addDoc: 'Add document', noLink: 'No link yet', noDocs: 'No documents yet.',
+      del: 'Delete', cancel: 'Cancel', save: 'Save', confirmDel: 'Delete this item?',
+      newTask: 'New task', editTask: 'Edit task', task: 'Task', phase: 'Phase', newPhase: 'New phase…', trade: 'Trade or contractor', start: 'Start', end: 'End', statusL: 'Status', room: 'Room', noRoom: 'No room',
+      after: 'Starts after', noDep: 'No dependency', startsBefore: (n, d) => `Starts before “${n}” ends on ${d}.`, blocking: 'What is blocking it', blockPh: 'Leave empty if nothing',
+      endErr: 'The end date must be on or after the start date.', phaseName: 'Name of the new phase',
+      newDec: 'New decision', decision: 'Decision', question: 'Question', context: 'Options and context', who: 'Who decides', by: 'Needed by', decPh: 'Fill in when decided', decHint: 'Writing a decision marks it as decided.',
+      newRoom: 'New room', name: 'Name', notes: 'Notes',
+      newDoc: 'New document', document: 'Document', title: 'Title', type: 'Type', link: 'Link', openDoc: 'Open document', linkHint: 'Paste a link to a file in Drive, Dropbox or similar.',
+      kinds: { Drawing: 'Drawing', Quote: 'Quote', Contract: 'Contract', Report: 'Report', Photo: 'Photo', Other: 'Other' },
+      badFile: 'That file does not look like a Sitefellow export.', confirmReset: 'Replace everything with the demo project?', untitled: 'Untitled project'
+    },
+    da: {
+      project: 'Projekt', saved: 'Gemmes kun i denne browser.', export: 'Eksportér', import: 'Importér', reset: 'Nulstil demo',
+      status: 'Projektstatus', complete: 'Færdigt', blocked: 'Blokeret', openDec: 'Åbne beslutninger', next: 'Næste', nextStart: 'Næste start',
+      tabs: { timeline: 'Tidslinje', decisions: 'Beslutninger', rooms: 'Rum', dialogue: 'Dialog', documents: 'Dokumenter' },
+      tlHead: 'Tidslinjen <em>først.</em>', addTask: 'Tilføj opgave', noTasks: 'Ingen opgaver endnu. Tilføj den første.',
+      clash: 'Konflikt', today: 'I dag', planned: 'Planlagt', active: 'I gang', done: 'Færdig', blockedClash: 'Blokeret eller konflikt',
+      decHead: 'Beslutninger <em>der skal tages.</em>', addDec: 'Tilføj beslutning', decided: 'Besluttet', overdue: 'Forsinket', open: 'Åben', noDec: 'Intet at beslutte lige nu.',
+      roomHead: 'Rummene <em>i detaljen.</em>', addRoom: 'Tilføj rum', of: 'af', doneLow: 'færdige', noTaskRoom: 'Ingen opgaver', noRooms: 'Ingen rum endnu.',
+      dlgHead: 'Dialogen, <em>samlet ét sted.</em>', client: 'Bygherre', contractor: 'Håndværker', writingAs: 'Skriver som', message: 'Besked', msgPh: 'Skriv en kort opdatering', send: 'Send', noMsg: 'Ingen beskeder endnu.', you: 'Dig',
+      docHead: 'Dokumenter <em>og tegninger.</em>', addDoc: 'Tilføj dokument', noLink: 'Intet link endnu', noDocs: 'Ingen dokumenter endnu.',
+      del: 'Slet', cancel: 'Annullér', save: 'Gem', confirmDel: 'Vil du slette dette?',
+      newTask: 'Ny opgave', editTask: 'Ret opgave', task: 'Opgave', phase: 'Fase', newPhase: 'Ny fase…', trade: 'Fag eller håndværker', start: 'Start', end: 'Slut', statusL: 'Status', room: 'Rum', noRoom: 'Intet rum',
+      after: 'Starter efter', noDep: 'Ingen afhængighed', startsBefore: (n, d) => `Starter før “${n}” er færdig ${d}.`, blocking: 'Hvad blokerer', blockPh: 'Lad stå tomt, hvis intet',
+      endErr: 'Slutdatoen skal være samme dag som eller efter startdatoen.', phaseName: 'Navn på den nye fase',
+      newDec: 'Ny beslutning', decision: 'Beslutning', question: 'Spørgsmål', context: 'Muligheder og baggrund', who: 'Hvem beslutter', by: 'Senest', decPh: 'Udfyldes når der er besluttet', decHint: 'Når en beslutning er skrevet, markeres den som besluttet.',
+      newRoom: 'Nyt rum', name: 'Navn', notes: 'Noter',
+      newDoc: 'Nyt dokument', document: 'Dokument', title: 'Titel', type: 'Type', link: 'Link', openDoc: 'Åbn dokument', linkHint: 'Indsæt et link til en fil i Drive, Dropbox eller lignende.',
+      kinds: { Drawing: 'Tegning', Quote: 'Tilbud', Contract: 'Kontrakt', Report: 'Rapport', Photo: 'Foto', Other: 'Andet' },
+      badFile: 'Filen ligner ikke en Sitefellow-eksport.', confirmReset: 'Vil du erstatte alt med demoprojektet?', untitled: 'Unavngivet projekt'
+    }
+  };
+  let lang = 'en';
+  try { lang = localStorage.getItem(LKEY) || ((navigator.language || '').toLowerCase().startsWith('da') ? 'da' : 'en'); } catch (e) {}
+  const T = () => I18N[lang];
+  const fmt = (s) => s ? parse(s).toLocaleDateString(lang === 'da' ? 'da-DK' : 'en-GB', { day: 'numeric', month: 'short' }) : '';
+
+  function demo(l) {
+    const da = l === 'da';
+    const L = (en, d) => da ? d : en;
     const ph = { prep: uid(), shell: uid(), fit: uid(), finish: uid() };
     const r = { kit: uid(), bath: uid(), liv: uid(), ter: uid() };
     const t = {}; ['strip', 'asb', 'elec', 'plumb', 'win', 'floor', 'kit', 'tile', 'paint', 'ter'].forEach(k => t[k] = uid());
     return {
-      project: { name: 'House renovation', sub: 'Kitchen, bathroom and terrace · demo project' },
+      project: { name: L('House renovation', 'Husrenovering'), sub: L('Kitchen, bathroom and terrace · demo project', 'Køkken, bad og terrasse · demoprojekt') },
       phases: [
-        { id: ph.prep, name: 'Preparation' }, { id: ph.shell, name: 'Shell and services' },
-        { id: ph.fit, name: 'Fit-out' }, { id: ph.finish, name: 'Finishing' }
+        { id: ph.prep, name: L('Preparation', 'Forberedelse') }, { id: ph.shell, name: L('Shell and services', 'Råhus og installationer') },
+        { id: ph.fit, name: L('Fit-out', 'Indretning') }, { id: ph.finish, name: L('Finishing', 'Finish') }
       ],
       rooms: [
-        { id: r.kit, name: 'Kitchen', notes: 'Open towards the living room. Island with induction hob.' },
-        { id: r.bath, name: 'Bathroom', notes: 'Walk-in shower, underfloor heating.' },
-        { id: r.liv, name: 'Living room', notes: 'Keep original ceiling mouldings.' },
-        { id: r.ter, name: 'Terrace', notes: 'Larch decking facing south-west.' }
+        { id: r.kit, name: L('Kitchen', 'Køkken'), notes: L('Open towards the living room. Island with induction hob.', 'Åbent mod stuen. Køkkenø med induktionskogeplade.') },
+        { id: r.bath, name: L('Bathroom', 'Badeværelse'), notes: L('Walk-in shower, underfloor heating.', 'Walk-in bruser og gulvvarme.') },
+        { id: r.liv, name: L('Living room', 'Stue'), notes: L('Keep original ceiling mouldings.', 'Bevar de originale stuklofter.') },
+        { id: r.ter, name: L('Terrace', 'Terrasse'), notes: L('Larch decking facing south-west.', 'Terrassebrædder i lærk mod sydvest.') }
       ],
       tasks: [
-        { id: t.strip, name: 'Strip out kitchen and bath', phase: ph.prep, trade: 'Builder', room: r.kit, start: plus(-24), end: plus(-17), status: 'done', dep: '', blocker: '' },
-        { id: t.asb, name: 'Asbestos survey', phase: ph.prep, trade: 'Surveyor', room: '', start: plus(-20), end: plus(-16), status: 'done', dep: '', blocker: '' },
-        { id: t.elec, name: 'First fix electrics', phase: ph.shell, trade: 'Electrician', room: r.kit, start: plus(-14), end: plus(-3), status: 'done', dep: t.strip, blocker: '' },
-        { id: t.plumb, name: 'First fix plumbing', phase: ph.shell, trade: 'Plumber', room: r.bath, start: plus(-10), end: plus(3), status: 'active', dep: t.strip, blocker: '' },
-        { id: t.win, name: 'New windows', phase: ph.shell, trade: 'Carpenter', room: r.liv, start: plus(-2), end: plus(6), status: 'blocked', dep: '', blocker: 'Window delivery delayed one week' },
-        { id: t.floor, name: 'Underfloor heating and screed', phase: ph.fit, trade: 'Plumber', room: r.bath, start: plus(4), end: plus(14), status: 'planned', dep: t.plumb, blocker: '' },
-        { id: t.kit, name: 'Kitchen installation', phase: ph.fit, trade: 'Kitchen fitter', room: r.kit, start: plus(15), end: plus(25), status: 'planned', dep: t.elec, blocker: '' },
-        { id: t.tile, name: 'Bathroom tiling', phase: ph.fit, trade: 'Tiler', room: r.bath, start: plus(12), end: plus(22), status: 'planned', dep: t.floor, blocker: '' },
-        { id: t.paint, name: 'Painting', phase: ph.finish, trade: 'Painter', room: r.liv, start: plus(26), end: plus(33), status: 'planned', dep: t.kit, blocker: '' },
-        { id: t.ter, name: 'Terrace decking', phase: ph.finish, trade: 'Carpenter', room: r.ter, start: plus(30), end: plus(38), status: 'planned', dep: '', blocker: '' }
+        { id: t.strip, name: L('Strip out kitchen and bath', 'Nedrivning af køkken og bad'), phase: ph.prep, trade: L('Builder', 'Tømrer'), room: r.kit, start: plus(-24), end: plus(-17), status: 'done', dep: '', blocker: '' },
+        { id: t.asb, name: L('Asbestos survey', 'Asbestundersøgelse'), phase: ph.prep, trade: L('Surveyor', 'Miljørådgiver'), room: '', start: plus(-20), end: plus(-16), status: 'done', dep: '', blocker: '' },
+        { id: t.elec, name: L('First fix electrics', 'El-føring'), phase: ph.shell, trade: L('Electrician', 'Elektriker'), room: r.kit, start: plus(-14), end: plus(-3), status: 'done', dep: t.strip, blocker: '' },
+        { id: t.plumb, name: L('First fix plumbing', 'Rørføring'), phase: ph.shell, trade: L('Plumber', 'VVS'), room: r.bath, start: plus(-10), end: plus(3), status: 'active', dep: t.strip, blocker: '' },
+        { id: t.win, name: L('New windows', 'Nye vinduer'), phase: ph.shell, trade: L('Carpenter', 'Tømrer'), room: r.liv, start: plus(-2), end: plus(6), status: 'blocked', dep: '', blocker: L('Window delivery delayed one week', 'Levering af vinduer er forsinket en uge') },
+        { id: t.floor, name: L('Underfloor heating and screed', 'Gulvvarme og afretning'), phase: ph.fit, trade: L('Plumber', 'VVS'), room: r.bath, start: plus(4), end: plus(14), status: 'planned', dep: t.plumb, blocker: '' },
+        { id: t.kit, name: L('Kitchen installation', 'Montering af køkken'), phase: ph.fit, trade: L('Kitchen fitter', 'Køkkenmontør'), room: r.kit, start: plus(15), end: plus(25), status: 'planned', dep: t.elec, blocker: '' },
+        { id: t.tile, name: L('Bathroom tiling', 'Fliser på badet'), phase: ph.fit, trade: L('Tiler', 'Flisemurer'), room: r.bath, start: plus(12), end: plus(22), status: 'planned', dep: t.floor, blocker: '' },
+        { id: t.paint, name: L('Painting', 'Maling'), phase: ph.finish, trade: L('Painter', 'Maler'), room: r.liv, start: plus(26), end: plus(33), status: 'planned', dep: t.kit, blocker: '' },
+        { id: t.ter, name: L('Terrace decking', 'Terrassebrædder'), phase: ph.finish, trade: L('Carpenter', 'Tømrer'), room: r.ter, start: plus(30), end: plus(38), status: 'planned', dep: '', blocker: '' }
       ],
       decisions: [
-        { id: uid(), title: 'Tile format in the shower', detail: 'Large format 60×120 or small mosaic on the floor for grip.', status: 'open', decision: '', owner: 'Client', due: plus(5) },
-        { id: uid(), title: 'Worktop material', detail: 'Oiled oak, terrazzo or steel.', status: 'open', decision: '', owner: 'Client', due: plus(9) },
-        { id: uid(), title: 'Keep the chimney breast', detail: 'Structural engineer confirmed it can stay.', status: 'decided', decision: 'Keep it and plaster over.', owner: 'Client', due: plus(-12) }
+        { id: uid(), title: L('Tile format in the shower', 'Fliseformat i bruseren'), detail: L('Large format 60×120 or small mosaic on the floor for grip.', 'Store fliser 60×120 eller lille mosaik på gulvet for at undgå glid.'), status: 'open', decision: '', owner: L('Client', 'Bygherre'), due: plus(5) },
+        { id: uid(), title: L('Worktop material', 'Materiale til bordplade'), detail: L('Oiled oak, terrazzo or steel.', 'Olieret eg, terrazzo eller stål.'), status: 'open', decision: '', owner: L('Client', 'Bygherre'), due: plus(9) },
+        { id: uid(), title: L('Keep the chimney breast', 'Bevar skorstenen'), detail: L('Structural engineer confirmed it can stay.', 'Ingeniøren har bekræftet, at den kan blive.'), status: 'decided', decision: L('Keep it and plaster over.', 'Den bevares og pudses.'), owner: L('Client', 'Bygherre'), due: plus(-12) }
       ],
       messages: [
-        { id: uid(), author: 'Mads', role: 'contractor', text: 'Windows will arrive a week late from the supplier. We will do the bathroom pipes first so nothing waits.', at: plus(-2) },
-        { id: uid(), author: 'You', role: 'client', text: 'Thanks for the heads-up. Does that move the kitchen date?', at: plus(-2) },
-        { id: uid(), author: 'Mads', role: 'contractor', text: 'No, the kitchen is not affected. I have marked the windows as blocked in the plan.', at: plus(-1) }
+        { id: uid(), author: 'Mads', role: 'contractor', text: L('Windows will arrive a week late from the supplier. We will do the bathroom pipes first so nothing waits.', 'Vinduerne kommer en uge for sent fra leverandøren. Vi tager rørene på badet først, så intet står stille.'), at: plus(-2) },
+        { id: uid(), author: L('You', 'Dig'), role: 'client', text: L('Thanks for the heads-up. Does that move the kitchen date?', 'Tak for besked. Rykker det køkkenet?'), at: plus(-2) },
+        { id: uid(), author: 'Mads', role: 'contractor', text: L('No, the kitchen is not affected. I have marked the windows as blocked in the plan.', 'Nej, køkkenet er ikke berørt. Jeg har markeret vinduerne som blokeret i planen.'), at: plus(-1) }
       ],
       docs: [
-        { id: uid(), title: 'Floor plan, ground floor', kind: 'Drawing', url: '' },
-        { id: uid(), title: 'Kitchen quote', kind: 'Quote', url: '' },
-        { id: uid(), title: 'Asbestos report', kind: 'Report', url: '' }
-      ]
+        { id: uid(), title: L('Floor plan, ground floor', 'Plantegning, stueetage'), kind: 'Drawing', url: '' },
+        { id: uid(), title: L('Kitchen quote', 'Tilbud på køkken'), kind: 'Quote', url: '' },
+        { id: uid(), title: L('Asbestos report', 'Asbestrapport'), kind: 'Report', url: '' }
+      ],
+      demo: l
     };
   }
 
   let S;
-  try { S = JSON.parse(localStorage.getItem(KEY)) || demo(); } catch (e) { S = demo(); }
+  try { S = JSON.parse(localStorage.getItem(KEY)) || demo(lang); } catch (e) { S = demo(lang); }
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
   let tab = 'timeline';
+  let touched = false;
 
   const byId = (arr, id) => arr.find(x => x.id === id);
-  const statusLabel = { planned: 'Planned', active: 'In progress', blocked: 'Blocked', done: 'Done' };
+  const statusLabel = () => ({ planned: T().planned, active: T().active, blocked: T().blocked, done: T().done });
 
   function conflict(t) {
     if (!t.dep) return null;
     const d = byId(S.tasks, t.dep);
     if (!d) return null;
     return parse(t.start) <= parse(d.end) ? d : null;
+  }
+
+  function setLang(l) {
+    lang = l;
+    try { localStorage.setItem(LKEY, l); } catch (e) {}
+    // An untouched demo follows the language; real projects keep their own text.
+    if (S.demo && S.demo !== l && !touched) { S = demo(l); save(); }
+    render();
+  }
+
+  function renderStatic() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-t]').forEach(el => { el.textContent = T()[el.dataset.t]; });
+    document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === lang));
+    $('#stats').setAttribute('aria-label', T().status);
   }
 
   function renderHead() {
@@ -265,32 +337,28 @@
     const open = S.decisions.filter(d => d.status === 'open').length;
     const next = S.tasks.filter(t => t.status === 'planned').sort((a, b) => a.start.localeCompare(b.start))[0];
     $('#stats').innerHTML = `
-      <div class="stat"><div class="v">${Math.round(done / total * 100)}%</div><div class="k label">Complete</div></div>
-      <div class="stat"><div class="v ${blocked ? 'warn' : ''}">${blocked}</div><div class="k label">Blocked</div></div>
-      <div class="stat"><div class="v">${open}</div><div class="k label">Open decisions</div></div>
-      <div class="stat"><div class="v">${next ? fmt(next.start) : '·'}</div><div class="k label">${next ? 'Next: ' + esc(next.trade || next.name) : 'Next start'}</div></div>`;
-    const tabs = [['timeline', 'Timeline', S.tasks.length], ['decisions', 'Decisions', open], ['rooms', 'Rooms', S.rooms.length], ['dialogue', 'Dialogue', S.messages.length], ['documents', 'Documents', S.docs.length]];
-    $('#tabs').innerHTML = tabs.map(([k, l, c]) => `<button role="tab" aria-selected="${tab === k}" data-tab="${k}">${l}<span class="count">${c}</span></button>`).join('');
+      <div class="stat"><div class="v">${Math.round(done / total * 100)}%</div><div class="k label">${T().complete}</div></div>
+      <div class="stat"><div class="v ${blocked ? 'warn' : ''}">${blocked}</div><div class="k label">${T().blocked}</div></div>
+      <div class="stat"><div class="v">${open}</div><div class="k label">${T().openDec}</div></div>
+      <div class="stat"><div class="v">${next ? fmt(next.start) : '·'}</div><div class="k label">${next ? T().next + ': ' + esc(next.trade || next.name) : T().nextStart}</div></div>`;
+    const tabs = [['timeline', S.tasks.length], ['decisions', open], ['rooms', S.rooms.length], ['dialogue', S.messages.length], ['documents', S.docs.length]];
+    $('#tabs').innerHTML = tabs.map(([k, c]) => `<button role="tab" aria-selected="${tab === k}" data-tab="${k}">${T().tabs[k]}<span class="count">${c}</span></button>`).join('');
   }
 
   function render() {
+    renderStatic();
     renderHead();
     const p = $('#panel');
-    if (tab === 'timeline') p.innerHTML = timeline();
-    if (tab === 'decisions') p.innerHTML = decisions();
-    if (tab === 'rooms') p.innerHTML = rooms();
-    if (tab === 'dialogue') p.innerHTML = dialogue();
-    if (tab === 'documents') p.innerHTML = documents();
+    p.innerHTML = ({ timeline, decisions, rooms, dialogue, documents })[tab]();
     if (tab === 'timeline') {
-      const tl = $('.tl');
-      const t = $('.today');
-      if (tl && t && !tl.dataset.scrolled) { tl.scrollLeft = Math.max(0, parseFloat(t.style.left) - tl.clientWidth * 0.45); tl.dataset.scrolled = '1'; }
+      const tl = $('.tl'), t = $('.today');
+      if (tl && t) tl.scrollLeft = Math.max(0, parseFloat(t.style.left) - tl.clientWidth * 0.45);
     }
   }
 
   function timeline() {
-    const head = `<div class="panel-head"><h2>Timeline <em>first.</em></h2><button class="btn" data-act="add-task">Add task</button></div>`;
-    if (!S.tasks.length) return head + `<p class="empty">No tasks yet. Add the first one.</p>`;
+    const head = `<div class="panel-head"><h2>${T().tlHead}</h2><button class="btn" data-act="add-task">${T().addTask}</button></div>`;
+    if (!S.tasks.length) return head + `<p class="empty">${T().noTasks}</p>`;
     const starts = S.tasks.map(t => parse(t.start)), ends = S.tasks.map(t => parse(t.end));
     let min = new Date(Math.min(...starts, today())), max = new Date(Math.max(...ends, today()));
     min = new Date(min.getTime() - ((min.getDay() + 6) % 7) * DAY - 7 * DAY);
@@ -302,7 +370,7 @@
     let weeks = '';
     for (let i = 0; i < days; i += 7) {
       const d = new Date(min.getTime() + i * DAY);
-      weeks += `<div class="tl-week" style="width:${7 * px}px">${d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>`;
+      weeks += `<div class="tl-week" style="width:${7 * px}px">${fmt(iso(d))}</div>`;
     }
     let rows = '';
     S.phases.forEach(ph => {
@@ -312,7 +380,7 @@
       ts.forEach(t => {
         const c = conflict(t);
         const w = Math.max(px, x(t.end) - x(t.start) + px);
-        const flag = t.status === 'blocked' ? 'Blocked' : c ? 'Clash' : '';
+        const flag = t.status === 'blocked' ? T().blocked : c ? T().clash : '';
         rows += `<div class="tl-row"><button class="bar ${t.status} ${flag ? 'blocked' : ''}" data-act="edit-task" data-id="${t.id}" style="left:${x(t.start)}px;width:${w}px" title="${esc(t.name)}">
           <span class="outside"><span style="color:var(--ink)">${esc(t.name)}</span>${t.trade ? ' · ' + esc(t.trade) : ''}${flag ? ` <span class="flag">${flag}</span>` : ''}</span></button></div>`;
       });
@@ -320,66 +388,66 @@
     const tx = Math.round((today() - min) / DAY) * px;
     return head + `<div class="tl"><div class="tl-inner" style="width:${W + 260}px">
       <div class="tl-scale">${weeks}</div>${rows}
-      <div class="today" style="left:${tx}px"><span>Today</span></div></div></div>
-      <div class="legend"><span><i></i>Planned</span><span><i style="background:var(--ink)"></i>In progress</span><span><i style="background:var(--moss);border-color:var(--moss)"></i>Done</span><span><i style="border:2px solid var(--ember)"></i>Blocked or clash</span></div>`;
+      <div class="today" style="left:${tx}px"><span>${T().today}</span></div></div></div>
+      <div class="legend"><span><i></i>${T().planned}</span><span><i style="background:var(--ink)"></i>${T().active}</span><span><i style="background:var(--moss);border-color:var(--moss)"></i>${T().done}</span><span><i style="border:2px solid var(--ember)"></i>${T().blockedClash}</span></div>`;
   }
 
   function decisions() {
     const list = [...S.decisions].sort((a, b) => (a.status === b.status ? (a.due || '').localeCompare(b.due || '') : a.status === 'open' ? -1 : 1));
-    return `<div class="panel-head"><h2>Decisions <em>to make.</em></h2><button class="btn" data-act="add-decision">Add decision</button></div>` +
+    return `<div class="panel-head"><h2>${T().decHead}</h2><button class="btn" data-act="add-decision">${T().addDec}</button></div>` +
       (list.length ? `<ul class="list">${list.map(d => {
         const late = d.status === 'open' && d.due && parse(d.due) < today();
         return `<li><button class="row-btn" data-act="edit-decision" data-id="${d.id}">
           <strong>${esc(d.title)}</strong>
-          <span class="chip ${d.status === 'decided' ? 'ok' : late ? 'warn' : 'ink'}">${d.status === 'decided' ? 'Decided' : late ? 'Overdue' : 'Open' + (d.due ? ' · ' + fmt(d.due) : '')}</span>
+          <span class="chip ${d.status === 'decided' ? 'ok' : late ? 'warn' : 'ink'}">${d.status === 'decided' ? T().decided : late ? T().overdue : T().open + (d.due ? ' · ' + fmt(d.due) : '')}</span>
           <span class="meta">${esc(d.status === 'decided' && d.decision ? d.decision : d.detail)}${d.owner ? ' · ' + esc(d.owner) : ''}</span>
-        </button></li>`; }).join('')}</ul>` : `<p class="empty">Nothing to decide right now.</p>`);
+        </button></li>`; }).join('')}</ul>` : `<p class="empty">${T().noDec}</p>`);
   }
 
   function rooms() {
-    return `<div class="panel-head"><h2>Rooms <em>in detail.</em></h2><button class="btn" data-act="add-room">Add room</button></div>` +
+    return `<div class="panel-head"><h2>${T().roomHead}</h2><button class="btn" data-act="add-room">${T().addRoom}</button></div>` +
       (S.rooms.length ? `<div class="rooms">${S.rooms.map(r => {
         const ts = S.tasks.filter(t => t.room === r.id);
         const done = ts.filter(t => t.status === 'done').length;
         return `<button class="room" data-act="edit-room" data-id="${r.id}">
-          <span class="label">${ts.length ? done + ' of ' + ts.length + ' done' : 'No tasks'}</span>
+          <span class="label">${ts.length ? `${done} ${T().of} ${ts.length} ${T().doneLow}` : T().noTaskRoom}</span>
           <h3>${esc(r.name)}</h3>
           <span class="meta">${esc(r.notes)}</span>
           <ul>${ts.map(t => `<li><span class="chip ${t.status === 'done' ? 'ok' : t.status === 'blocked' ? 'warn' : t.status === 'active' ? 'ink' : ''}">${esc(t.name)}</span></li>`).join('')}</ul>
-        </button>`; }).join('')}</div>` : `<p class="empty">No rooms yet.</p>`);
+        </button>`; }).join('')}</div>` : `<p class="empty">${T().noRooms}</p>`);
   }
 
   function dialogue() {
-    return `<div class="panel-head"><h2>Dialogue, <em>in one place.</em></h2></div>
+    return `<div class="panel-head"><h2>${T().dlgHead}</h2></div>
       <ul class="thread">${S.messages.map(m => `<li class="msg ${m.role}">
-        <div class="who"><strong>${esc(m.author)}</strong><span class="label">${m.role === 'client' ? 'Client' : 'Contractor'} · ${fmt(m.at)}</span></div>
-        <div>${esc(m.text)}</div></li>`).join('') || '<li class="empty">No messages yet.</li>'}</ul>
+        <div class="who"><strong>${esc(m.author)}</strong><span class="label">${m.role === 'client' ? T().client : T().contractor} · ${fmt(m.at)}</span></div>
+        <div>${esc(m.text)}</div></li>`).join('') || `<li class="empty">${T().noMsg}</li>`}</ul>
       <form class="composer" id="composer">
-        <div class="field"><label class="label" for="role">Writing as</label>
-          <select id="role"><option value="client">Client</option><option value="contractor">Contractor</option></select></div>
-        <div class="field"><label class="label" for="msgText">Message</label><input type="text" id="msgText" placeholder="Write a short update" required></div>
-        <button class="btn" type="submit">Send</button>
+        <div class="field"><label class="label" for="role">${T().writingAs}</label>
+          <select id="role"><option value="client">${T().client}</option><option value="contractor">${T().contractor}</option></select></div>
+        <div class="field"><label class="label" for="msgText">${T().message}</label><input type="text" id="msgText" placeholder="${T().msgPh}" required></div>
+        <button class="btn" type="submit">${T().send}</button>
       </form>`;
   }
 
   function documents() {
-    return `<div class="panel-head"><h2>Documents <em>and drawings.</em></h2><button class="btn" data-act="add-doc">Add document</button></div>` +
+    return `<div class="panel-head"><h2>${T().docHead}</h2><button class="btn" data-act="add-doc">${T().addDoc}</button></div>` +
       (S.docs.length ? `<ul class="list">${S.docs.map(d => `<li><button class="row-btn" data-act="edit-doc" data-id="${d.id}">
-        <strong>${esc(d.title)}</strong><span class="chip">${esc(d.kind)}</span>
-        <span class="meta">${d.url ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 60)) : 'No link yet'}</span></button></li>`).join('')}</ul>` : `<p class="empty">No documents yet.</p>`);
+        <strong>${esc(d.title)}</strong><span class="chip">${esc(T().kinds[d.kind] || d.kind)}</span>
+        <span class="meta">${d.url ? esc(d.url.replace(/^https?:\/\//, '').slice(0, 60)) : T().noLink}</span></button></li>`).join('')}</ul>` : `<p class="empty">${T().noDocs}</p>`);
   }
 
   // Dialogs
   const dlg = $('#dlg'), form = $('#dlgForm');
   const opts = (arr, sel, blank) => (blank ? `<option value="">${blank}</option>` : '') + arr.map(o => `<option value="${o.id}" ${o.id === sel ? 'selected' : ''}>${esc(o.name)}</option>`).join('');
   function open(html, onSave, onDelete) {
-    form.innerHTML = html + `<div class="actions">${onDelete ? '<button type="button" class="btn danger" data-dlg="delete">Delete</button>' : ''}
-      <span class="right"><button type="button" class="btn ghost" data-dlg="cancel">Cancel</button><button type="submit" class="btn">Save</button></span></div>`;
-    form.onsubmit = (e) => { e.preventDefault(); const ok = onSave(new FormData(form)); if (ok !== false) { dlg.close(); save(); render(); } };
+    form.innerHTML = html + `<div class="actions">${onDelete ? `<button type="button" class="btn danger" data-dlg="delete">${T().del}</button>` : ''}
+      <span class="right"><button type="button" class="btn ghost" data-dlg="cancel">${T().cancel}</button><button type="submit" class="btn">${T().save}</button></span></div>`;
+    form.onsubmit = (e) => { e.preventDefault(); const ok = onSave(new FormData(form)); if (ok !== false) { touched = true; S.demo = ''; dlg.close(); save(); render(); } };
     form.onclick = (e) => {
       const a = e.target.closest('[data-dlg]'); if (!a) return;
       if (a.dataset.dlg === 'cancel') dlg.close();
-      if (a.dataset.dlg === 'delete' && confirm('Delete this item?')) { onDelete(); dlg.close(); save(); render(); }
+      if (a.dataset.dlg === 'delete' && confirm(T().confirmDel)) { onDelete(); S.demo = ''; dlg.close(); save(); render(); }
     };
     dlg.showModal();
     const first = form.querySelector('input,textarea,select'); if (first) first.focus();
@@ -389,28 +457,28 @@
     const isNew = !t;
     t = t || { id: uid(), name: '', phase: S.phases[0]?.id || '', trade: '', room: '', start: plus(0), end: plus(7), status: 'planned', dep: '', blocker: '' };
     const c = conflict(t);
-    open(`<h3>${isNew ? 'New task' : 'Edit task'}</h3>
-      <div class="field"><label class="label" for="f-name">Task</label><input type="text" id="f-name" name="name" value="${esc(t.name)}" required></div>
+    open(`<h3>${isNew ? T().newTask : T().editTask}</h3>
+      <div class="field"><label class="label" for="f-name">${T().task}</label><input type="text" id="f-name" name="name" value="${esc(t.name)}" required></div>
       <div class="grid2">
-        <div class="field"><label class="label" for="f-phase">Phase</label><select id="f-phase" name="phase">${opts(S.phases, t.phase)}<option value="__new">New phase…</option></select></div>
-        <div class="field"><label class="label" for="f-trade">Trade or contractor</label><input type="text" id="f-trade" name="trade" value="${esc(t.trade)}"></div>
+        <div class="field"><label class="label" for="f-phase">${T().phase}</label><select id="f-phase" name="phase">${opts(S.phases, t.phase)}<option value="__new">${T().newPhase}</option></select></div>
+        <div class="field"><label class="label" for="f-trade">${T().trade}</label><input type="text" id="f-trade" name="trade" value="${esc(t.trade)}"></div>
       </div>
       <div class="grid2">
-        <div class="field"><label class="label" for="f-start">Start</label><input type="date" id="f-start" name="start" value="${t.start}" required></div>
-        <div class="field"><label class="label" for="f-end">End</label><input type="date" id="f-end" name="end" value="${t.end}" required></div>
+        <div class="field"><label class="label" for="f-start">${T().start}</label><input type="date" id="f-start" name="start" value="${t.start}" required></div>
+        <div class="field"><label class="label" for="f-end">${T().end}</label><input type="date" id="f-end" name="end" value="${t.end}" required></div>
       </div>
       <div class="grid2">
-        <div class="field"><label class="label" for="f-status">Status</label><select id="f-status" name="status">${Object.entries(statusLabel).map(([k, v]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
-        <div class="field"><label class="label" for="f-room">Room</label><select id="f-room" name="room">${opts(S.rooms, t.room, 'No room')}</select></div>
+        <div class="field"><label class="label" for="f-status">${T().statusL}</label><select id="f-status" name="status">${Object.entries(statusLabel()).map(([k, v]) => `<option value="${k}" ${k === t.status ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+        <div class="field"><label class="label" for="f-room">${T().room}</label><select id="f-room" name="room">${opts(S.rooms, t.room, T().noRoom)}</select></div>
       </div>
-      <div class="field"><label class="label" for="f-dep">Starts after</label><select id="f-dep" name="dep">${opts(S.tasks.filter(x => x.id !== t.id), t.dep, 'No dependency')}</select>
-        ${c ? `<span class="warn-text">Starts before “${esc(c.name)}” ends on ${fmt(c.end)}.</span>` : ''}</div>
-      <div class="field"><label class="label" for="f-blocker">What is blocking it</label><input type="text" id="f-blocker" name="blocker" value="${esc(t.blocker)}" placeholder="Leave empty if nothing"></div>`,
+      <div class="field"><label class="label" for="f-dep">${T().after}</label><select id="f-dep" name="dep">${opts(S.tasks.filter(x => x.id !== t.id), t.dep, T().noDep)}</select>
+        ${c ? `<span class="warn-text">${esc(T().startsBefore(c.name, fmt(c.end)))}</span>` : ''}</div>
+      <div class="field"><label class="label" for="f-blocker">${T().blocking}</label><input type="text" id="f-blocker" name="blocker" value="${esc(t.blocker)}" placeholder="${T().blockPh}"></div>`,
       (f) => {
         const v = Object.fromEntries(f.entries());
-        if (parse(v.end) < parse(v.start)) { alert('The end date must be on or after the start date.'); return false; }
+        if (parse(v.end) < parse(v.start)) { alert(T().endErr); return false; }
         if (v.phase === '__new') {
-          const name = prompt('Name of the new phase'); if (!name) return false;
+          const name = prompt(T().phaseName); if (!name) return false;
           const ph = { id: uid(), name }; S.phases.push(ph); v.phase = ph.id;
         }
         if (v.blocker && v.status !== 'done') v.status = 'blocked';
@@ -422,16 +490,16 @@
 
   function decisionDialog(d) {
     const isNew = !d;
-    d = d || { id: uid(), title: '', detail: '', status: 'open', decision: '', owner: 'Client', due: plus(7) };
-    open(`<h3>${isNew ? 'New decision' : 'Decision'}</h3>
-      <div class="field"><label class="label" for="d-title">Question</label><input type="text" id="d-title" name="title" value="${esc(d.title)}" required></div>
-      <div class="field"><label class="label" for="d-detail">Options and context</label><textarea id="d-detail" name="detail">${esc(d.detail)}</textarea></div>
+    d = d || { id: uid(), title: '', detail: '', status: 'open', decision: '', owner: T().client, due: plus(7) };
+    open(`<h3>${isNew ? T().newDec : T().decision}</h3>
+      <div class="field"><label class="label" for="d-title">${T().question}</label><input type="text" id="d-title" name="title" value="${esc(d.title)}" required></div>
+      <div class="field"><label class="label" for="d-detail">${T().context}</label><textarea id="d-detail" name="detail">${esc(d.detail)}</textarea></div>
       <div class="grid2">
-        <div class="field"><label class="label" for="d-owner">Who decides</label><input type="text" id="d-owner" name="owner" value="${esc(d.owner)}"></div>
-        <div class="field"><label class="label" for="d-due">Needed by</label><input type="date" id="d-due" name="due" value="${d.due || ''}"></div>
+        <div class="field"><label class="label" for="d-owner">${T().who}</label><input type="text" id="d-owner" name="owner" value="${esc(d.owner)}"></div>
+        <div class="field"><label class="label" for="d-due">${T().by}</label><input type="date" id="d-due" name="due" value="${d.due || ''}"></div>
       </div>
-      <div class="field"><label class="label" for="d-decision">Decision</label><input type="text" id="d-decision" name="decision" value="${esc(d.decision)}" placeholder="Fill in when decided"></div>
-      <p class="hint">Writing a decision marks it as decided.</p>`,
+      <div class="field"><label class="label" for="d-decision">${T().decision}</label><input type="text" id="d-decision" name="decision" value="${esc(d.decision)}" placeholder="${T().decPh}"></div>
+      <p class="hint">${T().decHint}</p>`,
       (f) => { const v = Object.fromEntries(f.entries()); v.status = v.decision.trim() ? 'decided' : 'open'; Object.assign(d, v); if (isNew) S.decisions.push(d); },
       isNew ? null : () => { S.decisions = S.decisions.filter(x => x.id !== d.id); });
   }
@@ -439,9 +507,9 @@
   function roomDialog(r) {
     const isNew = !r;
     r = r || { id: uid(), name: '', notes: '' };
-    open(`<h3>${isNew ? 'New room' : 'Room'}</h3>
-      <div class="field"><label class="label" for="r-name">Name</label><input type="text" id="r-name" name="name" value="${esc(r.name)}" required></div>
-      <div class="field"><label class="label" for="r-notes">Notes</label><textarea id="r-notes" name="notes">${esc(r.notes)}</textarea></div>`,
+    open(`<h3>${isNew ? T().newRoom : T().room}</h3>
+      <div class="field"><label class="label" for="r-name">${T().name}</label><input type="text" id="r-name" name="name" value="${esc(r.name)}" required></div>
+      <div class="field"><label class="label" for="r-notes">${T().notes}</label><textarea id="r-notes" name="notes">${esc(r.notes)}</textarea></div>`,
       (f) => { Object.assign(r, Object.fromEntries(f.entries())); if (isNew) S.rooms.push(r); },
       isNew ? null : () => { S.rooms = S.rooms.filter(x => x.id !== r.id); S.tasks.forEach(t => { if (t.room === r.id) t.room = ''; }); });
   }
@@ -449,19 +517,21 @@
   function docDialog(d) {
     const isNew = !d;
     d = d || { id: uid(), title: '', kind: 'Drawing', url: '' };
-    open(`<h3>${isNew ? 'New document' : 'Document'}</h3>
-      <div class="field"><label class="label" for="o-title">Title</label><input type="text" id="o-title" name="title" value="${esc(d.title)}" required></div>
+    open(`<h3>${isNew ? T().newDoc : T().document}</h3>
+      <div class="field"><label class="label" for="o-title">${T().title}</label><input type="text" id="o-title" name="title" value="${esc(d.title)}" required></div>
       <div class="grid2">
-        <div class="field"><label class="label" for="o-kind">Type</label><select id="o-kind" name="kind">${['Drawing', 'Quote', 'Contract', 'Report', 'Photo', 'Other'].map(k => `<option ${k === d.kind ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
-        <div class="field"><label class="label" for="o-url">Link</label><input type="url" id="o-url" name="url" value="${esc(d.url)}" placeholder="https://"></div>
+        <div class="field"><label class="label" for="o-kind">${T().type}</label><select id="o-kind" name="kind">${Object.keys(T().kinds).map(k => `<option value="${k}" ${k === d.kind ? 'selected' : ''}>${T().kinds[k]}</option>`).join('')}</select></div>
+        <div class="field"><label class="label" for="o-url">${T().link}</label><input type="url" id="o-url" name="url" value="${esc(d.url)}" placeholder="https://"></div>
       </div>
-      ${d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">Open document</a>` : '<p class="hint">Paste a link to a file in Drive, Dropbox or similar.</p>'}`,
+      ${d.url ? `<a href="${esc(d.url)}" target="_blank" rel="noopener">${T().openDoc}</a>` : `<p class="hint">${T().linkHint}</p>`}`,
       (f) => { Object.assign(d, Object.fromEntries(f.entries())); if (isNew) S.docs.push(d); },
       isNew ? null : () => { S.docs = S.docs.filter(x => x.id !== d.id); });
   }
 
   // Events
   document.addEventListener('click', (e) => {
+    const lb = e.target.closest('[data-lang]');
+    if (lb) { setLang(lb.dataset.lang); return; }
     const tb = e.target.closest('[data-tab]');
     if (tb) { tab = tb.dataset.tab; render(); return; }
     const a = e.target.closest('[data-act]'); if (!a) return;
@@ -478,17 +548,21 @@
     e.preventDefault();
     const text = $('#msgText').value.trim(); if (!text) return;
     const role = $('#role').value;
-    S.messages.push({ id: uid(), author: role === 'client' ? 'You' : 'Contractor', role, text, at: plus(0) });
-    save(); render(); $('#role').value = role; $('#msgText').focus();
+    S.messages.push({ id: uid(), author: role === 'client' ? T().you : T().contractor, role, text, at: plus(0) });
+    S.demo = ''; save(); render(); $('#role').value = role; $('#msgText').focus();
   });
   const pn = $('#projectName');
   pn.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); pn.blur(); } });
-  pn.addEventListener('blur', () => { const v = pn.textContent.trim(); S.project.name = v || 'Untitled project'; save(); render(); });
+  pn.addEventListener('blur', () => {
+    const v = pn.textContent.trim() || T().untitled;
+    if (v !== S.project.name) { S.project.name = v; S.demo = ''; save(); }
+    render();
+  });
 
   $('#exportBtn').onclick = () => {
     const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = (S.project.name || 'sitefellow').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.json'; a.click();
+    a.download = (S.project.name || 'sitefellow').toLowerCase().replace(/[^a-z0-9æøå]+/g, '-') + '.json'; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   };
   $('#importBtn').onclick = () => $('#importFile').click();
@@ -498,15 +572,18 @@
       const d = JSON.parse(await f.text());
       if (!d.project || !Array.isArray(d.tasks)) throw new Error();
       ['phases', 'rooms', 'decisions', 'messages', 'docs'].forEach(k => { if (!Array.isArray(d[k])) d[k] = []; });
-      S = d; save(); render();
-    } catch (err) { alert('That file does not look like a Sitefellow export.'); }
+      d.demo = ''; S = d; save(); render();
+    } catch (err) { alert(T().badFile); }
     e.target.value = '';
   };
-  $('#resetBtn').onclick = () => { if (confirm('Replace everything with the demo project?')) { S = demo(); save(); tab = 'timeline'; render(); } };
+  $('#resetBtn').onclick = () => { if (confirm(T().confirmReset)) { S = demo(lang); save(); tab = 'timeline'; render(); } };
+
+  if (S.demo && S.demo !== lang) { S = demo(lang); save(); }
 
   let rt; window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (tab === 'timeline') render(); }, 200); });
   render();
 })();
 </script>
+
 </body>
 </html>
