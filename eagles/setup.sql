@@ -1,4 +1,4 @@
--- Dragør Eagles · run once in Supabase: SQL Editor → New query → paste → Run
+-- Dragør Eagles · applied to the "stillwork supabase" project on 15 Nov 2026 (kept here for reference)
 create table if not exists hoops_players (
   id uuid primary key default gen_random_uuid(),
   name text not null unique check (char_length(name) between 1 and 40),
