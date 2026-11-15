@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stillwork</title>
+<meta name="description" content="Stillwork is a small studio for useful digital tools, built quietly by Anders Nørgaard-Carlsen in Copenhagen.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231c1b19'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f4f1ea'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --text: #1c1b19;
+    --muted: #6f6b63;
+    --line: #dcd7cc;
+    --dot: #b8563a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161614;
+      --text: #ece8df;
+      --muted: #8f8a80;
+      --line: #2e2d2a;
+      --dot: #d9765a;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Instrument Sans", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 0 24px;
+  }
+  main {
+    width: 100%;
+    max-width: 640px;
+    padding: 14vh 0 10vh;
+    display: flex;
+    flex-direction: column;
+    gap: 72px;
+  }
+  .mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .mark span {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--dot);
+  }
+  h1 {
+    font-family: "Instrument Serif", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(40px, 8vw, 60px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  h1 em { color: var(--muted); }
+  .intro p { margin-top: 24px; color: var(--muted); max-width: 30em; }
+  h2 {
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  ul { list-style: none; border-top: 1px solid var(--line); }
+  li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 16px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  li strong { font-weight: 500; }
+  li p { grid-column: 1 / -1; color: var(--muted); font-size: 15px; }
+  .status { font-size: 13px; color: var(--muted); align-self: center; }
+  footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  a { color: inherit; text-underline-offset: 3px; text-decoration-color: var(--line); }
+  a:hover { text-decoration-color: currentColor; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark"><span></span>stillwork</div>
+
+  <section class="intro">
+    <h1>Useful things,<br><em>made quietly.</em></h1>
+    <p>A small studio for practical digital tools and ideas worth trying. Built in Copenhagen, one project at a time.</p>
+  </section>
+
+  <section>
+    <h2>Work</h2>
+    <ul>
+      <li>
+        <strong>Sitefellow</strong>
+        <span class="status">In development</span>
+        <p>Software for people who build together. Timelines, decisions and documents for craft and construction teams.</p>
+      </li>
+      <li>
+        <strong>Small tools</strong>
+        <span class="status">Ongoing</span>
+        <p>Dashboards and helpers for everyday problems at home and at work.</p>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <span>Anders Nørgaard-Carlsen</span>
+    <a href="https://www.linkedin.com/in/anders-norgaard">LinkedIn</a>
+  </footer>
+</main>
+</body>
+</html>
