@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dragør Eagles · Tuesday Hoops</title>
+<meta name="description" content="Dragør Eagles basketball. Tuesdays at 20:00. Check in, show up, climb the board.">
+<meta name="theme-color" content="#2b0f4c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Eagles">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232b0f4c'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23ff7a1a' stroke='%23111' stroke-width='3'/%3E%3Cpath d='M12 32h40M32 12v40M18 18c8 8 8 20 0 28M46 18c-8 8-8 20 0 28' fill='none' stroke='%23111' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Archivo:wght@500;700;900&family=Archivo+Narrow:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --purple: #3d1470;
+    --purple-deep: #2b0f4c;
+    --teal: #12c8b6;
+    --red: #ff2e4d;
+    --gold: #ffc22e;
+    --orange: #ff7a1a;
+    --black: #111014;
+    --white: #fffaf0;
+    --silver: #c9c6d6;
+    --display: "Bungee", "Archivo", Impact, sans-serif;
+    --shade: "Bungee Shade", "Bungee", Impact, sans-serif;
+    --body: "Archivo", system-ui, sans-serif;
+    --narrow: "Archivo Narrow", "Archivo", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+  body {
+    min-height: 100vh;
+    font-family: var(--body);
+    color: var(--white);
+    background-color: var(--purple-deep);
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 40l22-14 14 26z' fill='%2312c8b6' stroke='%23111014'/%3E%3Cpath d='M140 24c10-12 20 12 30 0s20 12 30 0' stroke='%23ffc22e'/%3E%3Cpath d='M150 150l26 6-18 20z' fill='%23ff2e4d' stroke='%23111014'/%3E%3Cpath d='M30 160c10-12 20 12 30 0s20 12 30 0' stroke='%2312c8b6'/%3E%3Ccircle cx='96' cy='96' r='7' fill='%23ffc22e' stroke='%23111014'/%3E%3Cpath d='M190 90l8 8M198 90l-8 8' stroke='%23ff2e4d'/%3E%3Cpath d='M60 110l6 6M66 110l-6 6' stroke='%23c9c6d6'/%3E%3C/g%3E%3C/svg%3E"),
+      linear-gradient(160deg, #4a1786 0%, #2b0f4c 55%, #1b0a33 100%);
+    background-attachment: fixed;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  button, input, select { font: inherit; color: inherit; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 18px; }
+
+  /* Hero */
+  .hero { position: relative; padding: 28px 0 8px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
+  .crest { width: 132px; height: 132px; filter: drop-shadow(6px 6px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+  .title { font-family: var(--shade); font-size: clamp(38px, 9vw, 84px); line-height: .9; color: var(--gold); text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--black); letter-spacing: .01em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
+  .title small { display: block; font-family: var(--display); font-size: .5em; color: var(--teal); text-shadow: 3px 3px 0 var(--black); margin-top: 6px; }
+  .tagline { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .sticker { font-family: var(--display); font-size: 14px; padding: 6px 12px; background: var(--red); color: var(--white); border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--black); transform: rotate(-2deg); }
+  .sticker:nth-child(2) { background: var(--teal); color: var(--black); transform: rotate(1.5deg); }
+  .sticker:nth-child(3) { background: var(--gold); color: var(--black); transform: rotate(-1deg); }
+  @media (max-width: 560px) { .crest { width: 92px; height: 92px; } }
+
+  /* Panels */
+  .panel { position: relative; margin-top: 30px; background: var(--white); color: var(--black); border: 4px solid var(--black); box-shadow: 10px 10px 0 var(--black), 10px 10px 0 4px var(--teal); padding: 22px 20px 24px; }
+  .panel.teal { background: var(--teal); }
+  .panel.stripes { background-image: repeating-linear-gradient(90deg, transparent 0 22px, rgba(61,20,112,.09) 22px 25px); }
+  .panel h2 { font-family: var(--display); font-size: clamp(24px, 5vw, 36px); line-height: 1; color: var(--purple); text-transform: uppercase; }
+  .panel h2 .hot { color: var(--red); }
+  .kicker { font-family: var(--narrow); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--purple); margin-bottom: 8px; }
+  .claw { position: absolute; top: -26px; right: 18px; width: 86px; height: 60px; }
+
+  /* Next game */
+  .game { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  .date { font-family: var(--display); font-size: clamp(30px, 8vw, 56px); line-height: .95; color: var(--black); }
+  .date span { color: var(--red); }
+  .meter { text-align: center; background: var(--purple); color: var(--gold); border: 4px solid var(--black); padding: 8px 14px 10px; transform: rotate(3deg); box-shadow: 5px 5px 0 var(--black); min-width: 108px; }
+  .meter b { display: block; font-family: var(--display); font-size: 52px; line-height: 1; }
+  .meter i { font-style: normal; font-family: var(--narrow); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--white); }
+  .verdict { margin-top: 14px; font-family: var(--display); font-size: 18px; padding: 8px 12px; display: inline-block; border: 3px solid var(--black); }
+  .verdict.on { background: var(--teal); }
+  .verdict.close { background: var(--gold); }
+  .verdict.off { background: var(--red); color: var(--white); }
+
+  .me { margin-top: 20px; padding-top: 18px; border-top: 4px dashed var(--purple); }
+  .me-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .me select, .me input { border: 3px solid var(--black); background: var(--white); padding: 10px 12px; font-weight: 700; min-width: 0; flex: 1; border-radius: 0; }
+  .me select:focus, .me input:focus { outline: 3px solid var(--teal); outline-offset: 0; }
+  .btn { font-family: var(--display); font-size: 18px; padding: 12px 18px; border: 4px solid var(--black); cursor: pointer; box-shadow: 5px 5px 0 var(--black); transition: transform .08s, box-shadow .08s; background: var(--gold); color: var(--black); text-transform: uppercase; touch-action: manipulation; }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
+  .btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  .btn.in { background: var(--teal); }
+  .btn.out { background: var(--red); color: var(--white); }
+  .btn.small { font-size: 14px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--black); }
+  .btn[aria-pressed="true"] { outline: 4px solid var(--purple); outline-offset: 3px; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .choice .btn { font-size: clamp(20px, 5vw, 28px); padding: 16px 10px; }
+  .hello { font-family: var(--narrow); font-weight: 700; font-size: 16px; }
+  .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-weight: 700; color: var(--purple); }
+
+  .roster { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-family: var(--narrow); font-weight: 700; font-size: 15px; padding: 5px 10px; border: 3px solid var(--black); background: var(--white); }
+  .chip.in { background: var(--teal); }
+  .chip.out { background: var(--black); color: var(--silver); text-decoration: line-through; }
+  .chip.unknown { background: transparent; border-style: dashed; color: #6c6780; }
+
+  /* Board */
+  .board { width: 100%; border-collapse: collapse; margin-top: 14px; font-family: var(--narrow); font-weight: 700; }
+  .board th { font-family: var(--display); font-size: 13px; text-align: left; background: var(--purple); color: var(--gold); padding: 8px 10px; font-weight: 400; }
+  .board th.n, .board td.n { text-align: right; }
+  .board td { padding: 10px; border-bottom: 3px solid var(--black); font-size: 17px; }
+  .board tr:nth-child(odd) td { background: rgba(18,200,182,.12); }
+  .rank { font-family: var(--display); color: var(--red); width: 42px; }
+  .bar { height: 10px; background: #e3dff0; border: 2px solid var(--black); margin-top: 4px; }
+  .bar i { display: block; height: 100%; background: var(--red); }
+  .badges { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 18px; }
+  .badge { border: 4px solid var(--black); padding: 14px; box-shadow: 6px 6px 0 var(--black); }
+  .badge.mvp { background: var(--gold); transform: rotate(-1.5deg); }
+  .badge.ghost { background: var(--purple); color: var(--white); transform: rotate(1.5deg); }
+  .badge .k { font-family: var(--display); font-size: 14px; }
+  .badge .who { font-family: var(--shade); font-size: 30px; line-height: 1; margin: 8px 0 6px; word-break: break-word; }
+  .badge .why { font-family: var(--narrow); font-weight: 700; }
+
+  .history { list-style: none; margin-top: 12px; }
+  .history li { display: grid; grid-template-columns: 112px 52px 1fr; gap: 10px; padding: 9px 0; border-bottom: 3px solid var(--black); font-family: var(--narrow); font-weight: 700; align-items: baseline; }
+  .history .d { font-family: var(--display); font-size: 14px; color: var(--purple); }
+  .history .c { font-family: var(--display); font-size: 18px; color: var(--red); }
+
+  .empty { font-family: var(--narrow); font-weight: 700; font-size: 17px; padding: 8px 0; }
+  .notice { margin-top: 30px; background: var(--red); color: var(--white); border: 4px solid var(--black); padding: 16px; font-family: var(--narrow); font-weight: 700; box-shadow: 8px 8px 0 var(--black); }
+  .notice code { background: var(--black); padding: 1px 6px; }
+  footer { margin: 44px 0 30px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: var(--narrow); font-weight: 700; font-size: 14px; color: var(--silver); }
+  footer a { color: var(--gold); }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) rotate(-2deg) scale(.6); opacity: 0; background: var(--gold); color: var(--black); border: 4px solid var(--black); box-shadow: 6px 6px 0 var(--black); font-family: var(--display); font-size: 22px; padding: 12px 18px; transition: all .25s cubic-bezier(.2,1.6,.4,1); pointer-events: none; z-index: 9; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) rotate(-2deg) scale(1); }
+  @media (prefers-reduced-motion: reduce) { .crest { animation: none; } .toast { transition: none; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <svg class="crest" viewBox="0 0 200 200" role="img" aria-label="Dragør Eagles crest">
+      <circle cx="104" cy="112" r="74" fill="#ff7a1a" stroke="#111014" stroke-width="6"/>
+      <path d="M30 112h148M104 38v148M52 60c26 26 26 78 0 104M156 60c-26 26-26 78 0 104" fill="none" stroke="#111014" stroke-width="5"/>
+      <path d="M58 74L22 62L44 84L10 92L44 100L20 116L62 108Z" fill="#12c8b6" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M58 74L92 44L140 38L168 54L186 64L166 76L144 80L132 100L96 110L62 106Z" fill="#fffaf0" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M166 54L198 66L186 80L170 78Z" fill="#ffc22e" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M198 66L192 90L182 80Z" fill="#ffc22e" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M118 52L150 54L134 64Z" fill="#111014"/>
+      <circle cx="136" cy="58" r="3.5" fill="#ff2e4d"/>
+      <path d="M78 70L104 60M74 86L112 76M84 100L120 92" stroke="#3d1470" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+    <h1 class="title">Dragør<br>Eagles<small>Tuesday Hoops</small></h1>
+    <div class="tagline"><span class="sticker">Tuesdays · 20:00</span><span class="sticker">Check in or check out</span><span class="sticker">No ghosts</span></div>
+  </header>
+
+  <div id="notice"></div>
+
+  <section class="panel stripes" aria-labelledby="next-h">
+    <svg class="claw" viewBox="0 0 86 60" aria-hidden="true"><path d="M14 4L4 56M38 2L28 58M62 4L52 56" stroke="#ff2e4d" stroke-width="9" stroke-linecap="round"/><path d="M14 4L4 56M38 2L28 58M62 4L52 56" stroke="#111014" stroke-width="3" stroke-linecap="round" transform="translate(4 2)"/></svg>
+    <div class="kicker" id="next-h">Next run</div>
+    <div class="game">
+      <div class="date" id="gameDate">…</div>
+      <div class="meter"><b id="countIn">0</b><i>ballers in</i></div>
+    </div>
+    <div class="verdict" id="verdict">Loading</div>
+    <ul class="roster" id="roster" aria-label="Who's coming"></ul>
+
+    <div class="me" id="me"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="board-h">
+    <div class="kicker">Attendance</div>
+    <h2 id="board-h">The <span class="hot">Board</span></h2>
+    <div class="badges" id="badges"></div>
+    <table class="board" id="board"></table>
+  </section>
+
+  <section class="panel teal" aria-labelledby="hist-h">
+    <div class="kicker" style="color:var(--black)">Box scores</div>
+    <h2 id="hist-h" style="color:var(--black)">Past <span class="hot">runs</span></h2>
+    <ul class="history" id="history"></ul>
+  </section>
+
+  <footer><span>Dragør Eagles Basketball</span><span>Built by <a href="/work/">stillwork</a></span></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const SUPABASE_URL = 'https://ctnszohyjljhorwgrabl.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0bnN6b2h5amxqaG9yd2dyYWJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTk3MzEsImV4cCI6MjA4OTA3NTczMX0.kG9E_fWc_zF59o8kmfGoZ8hhaSJO0NwbKsb9Yy1Sb24';
+  const MIN = 4;       // fewest players for a game
+  const FULL = 6;      // a proper run
+  const ME_KEY = 'eagles-me';
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const pretty = (s, opts = { weekday: 'short', day: 'numeric', month: 'short' }) => parse(s).toLocaleDateString('en-GB', opts);
+
+  // Tuesday 20:00 is game time; the current game stays "next" until 22:00 that evening.
+  function nextGame(now = new Date()) {
+    const d = new Date(now); d.setHours(0, 0, 0, 0);
+    const day = d.getDay();
+    let add = (2 - day + 7) % 7;
+    if (add === 0 && now.getHours() >= 22) add = 7;
+    d.setDate(d.getDate() + add);
+    return ymd(d);
+  }
+  function tuesdaysBetween(fromYmd, toYmd) { // inclusive list of Tuesdays from..to
+    const out = []; const d = parse(fromYmd); const end = parse(toYmd);
+    d.setDate(d.getDate() + ((2 - d.getDay() + 7) % 7));
+    while (d <= end) { out.push(ymd(d)); d.setDate(d.getDate() + 7); }
+    return out;
+  }
+
+  let sb = null, players = [], checkins = [], meId = null;
+  try { meId = localStorage.getItem(ME_KEY); } catch (e) {}
+  const GAME = nextGame();
+
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800); }
+
+  async function load() {
+    const [p, c] = await Promise.all([
+      sb.from('hoops_players').select('id,name,created_at').order('name'),
+      sb.from('hoops_checkins').select('player_id,game_date,status')
+    ]);
+    if (p.error || c.error) throw (p.error || c.error);
+    players = p.data; checkins = c.data;
+    if (meId && !players.find(x => x.id === meId)) meId = null;
+    render();
+  }
+
+  const statusFor = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date) || {}).status;
+
+  function render() {
+    $('#gameDate').innerHTML = `${esc(pretty(GAME, { weekday: 'long' }))}<br><span>${esc(pretty(GAME, { day: 'numeric', month: 'short' }))} · 20:00</span>`;
+    const ins = players.filter(p => statusFor(p.id, GAME) === 'in');
+    $('#countIn').textContent = ins.length;
+    const v = $('#verdict');
+    if (ins.length >= FULL) { v.className = 'verdict on'; v.textContent = 'Game on! Full run 🔥'; }
+    else if (ins.length >= MIN) { v.className = 'verdict close'; v.textContent = `Game on · ${FULL - ins.length} more for a full run`; }
+    else { v.className = 'verdict off'; v.textContent = `Need ${MIN - ins.length} more to play`; }
+
+    const order = { in: 0, undefined: 1, out: 2 };
+    $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || a.name.localeCompare(b.name))
+      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}">${esc(p.name)}${s === 'in' ? ' ✓' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+
+    renderMe(); renderBoard(); renderHistory();
+  }
+
+  function renderMe() {
+    const me = players.find(p => p.id === meId);
+    const box = $('#me');
+    if (!me) {
+      box.innerHTML = `<div class="kicker">Who are you?</div>
+        <div class="me-row">
+          ${players.length ? `<label class="sr" for="pick">Pick your name</label><select id="pick"><option value="">Pick your name</option>${players.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn small" data-act="pick">That's me</button>` : ''}
+        </div>
+        <div class="me-row" style="margin-top:12px">
+          <label class="sr" for="newName">New player name</label><input id="newName" maxlength="40" placeholder="New here? Your name" autocomplete="name">
+          <button class="btn small in" data-act="join">Join the squad</button>
+        </div>`;
+      return;
+    }
+    const s = statusFor(me.id, GAME);
+    box.innerHTML = `<div class="hello">Yo, ${esc(me.name)}! You're <b>${s === 'in' ? 'IN' : s === 'out' ? 'OUT' : 'not checked in yet'}</b> for ${esc(pretty(GAME))}. <button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+      <div class="choice">
+        <button class="btn in" data-act="in" aria-pressed="${s === 'in'}">I'm in 🏀</button>
+        <button class="btn out" data-act="out" aria-pressed="${s === 'out'}">I'm out</button>
+      </div>`;
+  }
+
+  function stats() {
+    const today = new Date();
+    const lastPlayed = (() => { const g = nextGame(today); const d = parse(g); return ymd(new Date(d.getTime() - 7 * 864e5)); })();
+    return players.map(p => {
+      const since = ymd(new Date(p.created_at));
+      const possible = tuesdaysBetween(since, lastPlayed);
+      const played = checkins.filter(c => c.player_id === p.id && c.status === 'in' && c.game_date <= lastPlayed).length;
+      const missed = possible.filter(d => statusFor(p.id, d) !== 'in').length;
+      const silent = possible.filter(d => !statusFor(p.id, d)).length;
+      let streak = 0; for (let i = possible.length - 1; i >= 0 && statusFor(p.id, possible[i]) === 'in'; i--) streak++;
+      return { ...p, possible: possible.length, played, missed, silent, streak, rate: possible.length ? played / possible.length : null };
+    });
+  }
+
+  function renderBoard() {
+    const st = stats().sort((a, b) => b.played - a.played || (b.rate ?? -1) - (a.rate ?? -1) || a.name.localeCompare(b.name));
+    if (!st.length) { $('#board').innerHTML = ''; $('#badges').innerHTML = '<p class="empty">The board fills up after the first Tuesday.</p>'; return; }
+    const ranked = st.filter(s => s.possible > 0);
+    const mvp = ranked[0];
+    const ghosts = ranked.filter(s => s.possible >= 2).sort((a, b) => a.rate - b.rate || b.missed - a.missed);
+    const ghost = ghosts[0] && ghosts[0] !== mvp && ghosts[0].rate < 0.5 ? ghosts[0] : null;
+    $('#badges').innerHTML =
+      (mvp && mvp.played ? `<div class="badge mvp"><div class="k">🏆 Iron Eagle</div><div class="who">${esc(mvp.name)}</div><div class="why">${mvp.played} runs${mvp.streak > 1 ? ` · ${mvp.streak} in a row` : ''}</div></div>` : '') +
+      (ghost ? `<div class="badge ghost"><div class="k">👻 Ghost of the court</div><div class="who">${esc(ghost.name)}</div><div class="why">Showed up ${ghost.played} of ${ghost.possible} Tuesdays</div></div>` : '');
+    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Missed</th><th class="n">Rate</th></tr></thead><tbody>` +
+      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}${s.streak > 2 ? ' 🔥' : ''}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
+        <td class="n">${s.played}</td><td class="n">${s.missed}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td></tr>`).join('') + '</tbody>';
+  }
+
+  function renderHistory() {
+    const dates = [...new Set(checkins.map(c => c.game_date))].filter(d => d < GAME).sort().reverse().slice(0, 12);
+    $('#history').innerHTML = dates.map(d => {
+      const who = checkins.filter(c => c.game_date === d && c.status === 'in').map(c => (players.find(p => p.id === c.player_id) || {}).name).filter(Boolean).sort();
+      return `<li><span class="d">${esc(pretty(d, { day: 'numeric', month: 'short', year: '2-digit' }))}</span><span class="c">${who.length}</span><span>${who.length ? esc(who.join(', ')) : 'Nobody checked in'}</span></li>`;
+    }).join('') || '<li class="empty">No runs on the books yet.</li>';
+  }
+
+  async function setStatus(status) {
+    const prev = checkins.slice();
+    const i = checkins.findIndex(c => c.player_id === meId && c.game_date === GAME);
+    if (i >= 0) checkins[i] = { ...checkins[i], status }; else checkins.push({ player_id: meId, game_date: GAME, status });
+    render();
+    const { error } = await sb.from('hoops_checkins').upsert({ player_id: meId, game_date: GAME, status, updated_at: new Date().toISOString() }, { onConflict: 'player_id,game_date' });
+    if (error) { checkins = prev; render(); toast('Could not save. Try again'); return; }
+    toast(status === 'in' ? 'You’re in! 🏀' : 'Got it. Next time!');
+  }
+
+  async function join() {
+    const name = $('#newName').value.trim().replace(/\s+/g, ' ');
+    if (!name) { $('#newName').focus(); return; }
+    if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) { toast('That name is taken'); return; }
+    const { data, error } = await sb.from('hoops_players').insert({ name }).select('id,name,created_at').single();
+    if (error) { toast('Could not join. Try again'); return; }
+    players.push(data); players.sort((a, b) => a.name.localeCompare(b.name));
+    meId = data.id; try { localStorage.setItem(ME_KEY, meId); } catch (e) {}
+    render(); toast(`Welcome, ${name}!`);
+  }
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-act]'); if (!a) return;
+    const act = a.dataset.act;
+    if (act === 'in' || act === 'out') setStatus(act);
+    if (act === 'join') join();
+    if (act === 'pick') { const v = $('#pick').value; if (!v) return; meId = v; try { localStorage.setItem(ME_KEY, v); } catch (e) {} render(); }
+    if (act === 'switch') { meId = null; try { localStorage.removeItem(ME_KEY); } catch (e) {} render(); }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'newName') join(); });
+
+  function fail(err) {
+    console.error(err);
+    const missing = /relation|does not exist|schema cache/i.test(err && err.message || '');
+    $('#notice').innerHTML = `<div class="notice">${missing ? 'The court isn’t built yet: the database tables are missing. Run the setup SQL in Supabase once, then reload.' : 'Can’t reach the court right now. Check your connection and reload.'}</div>`;
+    $('#verdict').className = 'verdict off'; $('#verdict').textContent = 'Offline';
+  }
+
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    load().catch(fail);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) load().catch(() => {}); });
+  } catch (err) { fail(err); }
+})();
+</script>
+</body>
+</html>
