@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="CoffeeBuddies" />
-  <meta name="theme-color" content="#f4f1ea" />
+  <meta name="theme-color" content="#f6f4ef" />
   <title>CoffeeBuddies</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,20 +14,20 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <style>
     :root {
-      --sort:        #1c1b19;
+      --sort:        #161513;
       --mørkgrå:     #33312d;
-      --grå:         #6b675f;
+      --grå:         #625e56;
       --lysgrå:      #a8a196;
-      --border:      #dcd7cc;
-      --baggrund:    #f4f1ea;
-      --kort:        #f4f1ea;
-      --tekst:       #1c1b19;
-      --tekst-2:     #6b675f;
-      --tekst-3:     #6b675f;
-      --accent:      #b04f33;
-      --accent-lys:  #b04f33;
-      --accent-mørk: #1c1b19;
-      --roed:        #b04f33;
+      --border:      #dedad0;
+      --baggrund:    #f6f4ef;
+      --kort:        #f6f4ef;
+      --tekst:       #161513;
+      --tekst-2:     #625e56;
+      --tekst-3:     #625e56;
+      --accent:      #c24424;
+      --accent-lys:  #c24424;
+      --accent-mørk: #161513;
+      --roed:        #c24424;
       --safe-top:    env(safe-area-inset-top, 0px);
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -494,7 +494,7 @@
     .navn-forslag-meta { display: block; font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
 
     /* ── STILLWORK CVI ── */
-    :root { color-scheme: light; --ember: #b04f33; --moss: #4f5d45; --mono: 'IBM Plex Mono', ui-monospace, monospace; }
+    :root { color-scheme: light; --ember: #c24424; --moss: #46583f; --mono: 'IBM Plex Mono', ui-monospace, monospace; }
     body { font-size: 16px; }
     .logo, .auth-logo, .kort-navn, .sektion-titel, .stats-titel, .tom-titel, .modal-titel, .rediger-titel, .vilkaar-titel,
     .del-modal-titel, .home-navn, .praef-vaerdi, .home-smag-val, .anbefalet-navn, .oversigt-tal, .top-nr, .trending-nr, .score-badge .score-num { font-weight: 400 !important; letter-spacing: -.01em; }
@@ -510,9 +510,9 @@
     nav button.aktiv { color: var(--sort); }
     nav button.aktiv .ikon { filter: none; }
     .kaffe-kort, .sektion, .feed-post, .following-kort, .trending-kort, .anbefalet-kort, .home-smag-kort, .praef-kort { background: transparent; }
-    .kaffe-kort:active { background: #e9e3d6; }
-    @media (hover: hover) { .kaffe-kort:hover { background: #e9e3d6; border-color: var(--sort); } }
-    .smags-slider, .profil-boks, .feed-kaffe-kort, .foto-zone, .ai-raekke { background: #e9e3d6; }
+    .kaffe-kort:active { background: #ebe6da; }
+    @media (hover: hover) { .kaffe-kort:hover { background: #ebe6da; border-color: var(--sort); } }
+    .smags-slider, .profil-boks, .feed-kaffe-kort, .foto-zone, .ai-raekke { background: #ebe6da; }
     input[type=text], input[type=email], input[type=password], textarea, .søg-input, .social-søg-input { background: transparent; }
     .primær-knap, .gem-knap, .social-søg-knap, .følg-knap, .anbefalet-koeb, .highscore-score, .trending-score { background: var(--sort); color: var(--baggrund); }
     .valg-knap.aktiv, .skala-knap.aktiv, .score-knap.aktiv, .sort-knap.aktiv { background: var(--sort); border-color: var(--sort); color: var(--baggrund); }
@@ -1352,10 +1352,10 @@ const SMAG_FELTER = [
 ];
 
 function scorefarve(s) {
-  if (s >= 9) return '#1c1b19';
-  if (s >= 7) return '#b04f33';
-  if (s >= 5) return '#4f5d45';
-  return '#6b675f';
+  if (s >= 9) return '#161513';
+  if (s >= 7) return '#c24424';
+  if (s >= 5) return '#46583f';
+  return '#625e56';
 }
 function scoretekst(s) {
   if (s >= 9) return 'Outstanding';
