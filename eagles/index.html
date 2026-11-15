@@ -189,8 +189,8 @@
 (() => {
   const SUPABASE_URL = 'https://liqjvlaexuxchlfhtlhz.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcWp2bGFleHV4Y2hsZmh0bGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NjE1NDIsImV4cCI6MjExMDMzNzU0Mn0.B69F-iRsky4n3NrmCCzDP2BbFAmT3Ef8Ukq_ZYJRyG4';
-  const MIN = 4;       // fewest players for a game
-  const FULL = 6;      // a proper run
+  const MIN = 6;       // fewest players for a game
+  const FULL = 10;     // full 5 on 5
   const ME_KEY = 'eagles-me';
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -238,8 +238,8 @@
     const ins = players.filter(p => statusFor(p.id, GAME) === 'in');
     $('#countIn').textContent = ins.length;
     const v = $('#verdict');
-    if (ins.length >= FULL) { v.className = 'verdict on'; v.textContent = 'Game on! Full run 🔥'; }
-    else if (ins.length >= MIN) { v.className = 'verdict close'; v.textContent = `Game on · ${FULL - ins.length} more for a full run`; }
+    if (ins.length >= FULL) { v.className = 'verdict on'; v.textContent = 'Full 5 on 5! 🔥'; }
+    else if (ins.length >= MIN) { v.className = 'verdict close'; v.textContent = `Game on! ${FULL - ins.length} more for 5 on 5`; }
     else { v.className = 'verdict off'; v.textContent = `Need ${MIN - ins.length} more to play`; }
 
     const order = { in: 0, undefined: 1, out: 2 };
