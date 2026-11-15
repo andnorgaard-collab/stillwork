@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="CoffeeBuddies" />
+  <meta name="theme-color" content="#f4f1ea" />
+  <title>CoffeeBuddies</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <style>
+    :root {
+      --sort:        #1c1b19;
+      --mørkgrå:     #33312d;
+      --grå:         #6b675f;
+      --lysgrå:      #a8a196;
+      --border:      #dcd7cc;
+      --baggrund:    #f4f1ea;
+      --kort:        #f4f1ea;
+      --tekst:       #1c1b19;
+      --tekst-2:     #6b675f;
+      --tekst-3:     #6b675f;
+      --accent:      #b04f33;
+      --accent-lys:  #b04f33;
+      --accent-mørk: #1c1b19;
+      --roed:        #b04f33;
+      --safe-top:    env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Instrument Sans', system-ui, sans-serif;
+      background: var(--baggrund);
+      color: var(--tekst);
+      max-width: 900px;
+      margin: 0 auto;
+      min-height: 100dvh;
+    }
+
+    /* ── AUTH ── */
+    #auth-skærm {
+      display: none;
+      min-height: 100dvh;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: calc(var(--safe-top) + 32px) 24px calc(var(--safe-bottom) + 32px);
+      background: var(--sort);
+    }
+    #auth-skærm.vis { display: flex; }
+    .auth-logo {
+      font-family: 'Instrument Serif', Georgia, serif; font-size: 38px; font-weight: 700;
+      color: #F5F1EB; margin-bottom: 8px; text-align: center; letter-spacing: -.5px;
+    }
+    .auth-sub {
+      font-size: 10px; letter-spacing: 3.5px; text-transform: uppercase;
+      color: rgba(245,241,235,.3); margin-bottom: 48px; text-align: center; font-weight: 500;
+    }
+    .auth-boks {
+      background: rgba(245,241,235,.04); border: 1px solid rgba(245,241,235,.09);
+      border-radius: 16px; padding: 28px 24px; width: 100%; max-width: 420px;
+    }
+    .auth-faner { display: flex; border-bottom: 1px solid rgba(245,241,235,.09); margin-bottom: 24px; }
+    .auth-fane {
+      flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600;
+      color: rgba(245,241,235,.3); cursor: pointer; border-bottom: 2px solid transparent;
+      transition: all .15s; margin-bottom: -1px;
+    }
+    .auth-fane.aktiv { color: #F5F1EB; border-bottom-color: var(--accent-lys); }
+    .auth-felt-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: rgba(245,241,235,.35); margin-bottom: 6px; margin-top: 16px;
+    }
+    .auth-felt-label:first-of-type { margin-top: 0; }
+    .auth-input {
+      width: 100%; background: rgba(245,241,235,.05); border: 1px solid rgba(245,241,235,.1);
+      border-radius: 2px; padding: 13px 14px; font-size: 15px; color: #F5F1EB; font-family: inherit;
+    }
+    .auth-input:focus { outline: none; border-color: rgba(196,149,106,.6); }
+    .auth-knap {
+      width: 100%; background: var(--accent-lys); color: var(--sort); border: none;
+      border-radius: 2px; padding: 15px; font-size: 16px; font-weight: 700;
+      cursor: pointer; font-family: inherit; margin-top: 24px; transition: opacity .15s;
+      touch-action: manipulation; -webkit-appearance: none; letter-spacing: .3px;
+    }
+    .auth-knap:disabled { opacity: .45; }
+    .auth-fejl { font-size: 13px; color: #E07070; margin-top: 12px; text-align: center; min-height: 18px; }
+
+
+    /* ── HEADER ── */
+    header {
+      background: var(--kort);
+      border-bottom: 1px solid var(--border);
+      padding: calc(var(--safe-top) + 14px) 20px 14px;
+      position: sticky; top: 0; z-index: 50;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; font-weight: 700; color: var(--sort); letter-spacing: -.3px; }
+    .logo-tagline { font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--tekst-3); margin-top: 2px; }
+
+    /* ── USER AVATAR / DROPDOWN ── */
+    .header-avatar {
+      width: 34px; height: 34px; border-radius: 17px; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white; cursor: pointer;
+      border: none; font-family: inherit; flex-shrink: 0;
+      transition: opacity .15s;
+    }
+    .header-avatar:hover { opacity: .82; }
+    .bruger-dropdown-overlay { position: fixed; inset: 0; z-index: 150; display: none; }
+    .bruger-dropdown-overlay.aaben { display: block; }
+    .bruger-dropdown {
+      position: fixed; top: calc(var(--safe-top) + 62px); right: 16px;
+      background: var(--kort); border: 1px solid var(--border);
+      border-radius: 4px; padding: 6px; min-width: 200px; z-index: 160;
+      box-shadow: 0 8px 24px rgba(28,24,20,.12);
+    }
+    .dd-info { padding: 10px 12px 12px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+    .dd-navn { font-size: 14px; font-weight: 700; color: var(--sort); }
+    .dd-email { font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
+    .dd-knap {
+      width: 100%; background: none; border: none; text-align: left;
+      padding: 10px 12px; font-size: 14px; font-weight: 500; color: var(--tekst);
+      font-family: inherit; cursor: pointer; border-radius: 2px; display: block;
+      transition: background .1s;
+    }
+    .dd-knap:hover { background: var(--baggrund); }
+    .dd-knap.fare { color: var(--roed); }
+
+    /* ── TERMS MODAL ── */
+    .vilkaar-overlay { position: fixed; inset: 0; background: rgba(28,24,20,.6); display: none; align-items: flex-end; justify-content: center; z-index: 300; padding: 0; }
+    .vilkaar-overlay.aaben { display: flex; }
+    .vilkaar-boks { background: var(--kort); border-radius: 0; width: 100%; max-width: 640px; max-height: 88dvh; display: flex; flex-direction: column; }
+    .vilkaar-header { padding: 20px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .vilkaar-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 19px; font-weight: 700; }
+    .vilkaar-luk { background: var(--baggrund); border: none; border-radius: 2px; padding: 6px 14px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--tekst); }
+    .vilkaar-indhold { padding: 20px; overflow-y: auto; flex: 1; font-size: 13px; color: var(--tekst-2); line-height: 1.7; }
+    .vilkaar-indhold h3 { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--tekst-3); margin: 20px 0 6px; }
+    .vilkaar-indhold h3:first-child { margin-top: 0; }
+    .vilkaar-indhold p { margin-bottom: 10px; }
+    .vilkaar-dato { font-size: 11px; color: var(--tekst-3); margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+    /* Auth-screen terms checkbox */
+    .auth-vilkaar { display: flex; align-items: flex-start; gap: 10px; margin-top: 14px; }
+    .auth-vilkaar input[type=checkbox] { width: 17px; height: 17px; flex-shrink: 0; margin-top: 2px; accent-color: var(--accent-lys); cursor: pointer; }
+    .auth-vilkaar label { font-size: 12px; color: rgba(245,241,235,.45); line-height: 1.5; cursor: pointer; }
+    .auth-vilkaar a { color: rgba(196,149,106,.85); text-decoration: underline; cursor: pointer; }
+
+    /* ── EDIT PROFILE MODAL ── */
+    .rediger-overlay { position: fixed; inset: 0; background: rgba(28,24,20,.5); display: none; align-items: center; justify-content: center; z-index: 200; padding: 24px; }
+    .rediger-overlay.aaben { display: flex; }
+    .rediger-boks { background: var(--kort); border-radius: 16px; padding: 24px; width: 100%; max-width: 380px; }
+    .rediger-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .rediger-under { font-size: 13px; color: var(--tekst-3); margin-bottom: 20px; }
+    .rediger-fejl { font-size: 13px; color: var(--roed); margin-top: 8px; min-height: 18px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 100%; max-width: 900px; background: var(--kort);
+      border-top: 1px solid var(--border); display: flex;
+      padding-bottom: var(--safe-bottom); z-index: 100;
+    }
+    nav button {
+      flex: 1; background: none; border: none; padding: 10px 4px 8px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      font-size: 10px; color: var(--tekst-3); font-family: 'Instrument Sans', system-ui, sans-serif;
+      font-weight: 600; letter-spacing: .6px; text-transform: uppercase; transition: color .15s;
+    }
+    nav button .ikon { font-size: 18px; }
+    nav button.aktiv { color: var(--accent); }
+
+    /* ── MAIN ── */
+    main { padding: 0 0 calc(65px + var(--safe-bottom)) 0; min-height: 100dvh; }
+    .side { display: none; }
+    .side.aktiv { display: block; }
+
+    /* ── STATS BAR ── */
+    .oversigt { background: var(--kort); border-bottom: 1px solid var(--border); display: flex; justify-content: space-around; padding: 18px 24px 20px; }
+    .oversigt-tal { font-family: 'Instrument Serif', Georgia, serif; font-size: 30px; font-weight: 700; color: var(--accent); }
+    .oversigt-label { font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tekst-3); margin-top: 5px; }
+    .oversigt-deler { width: 1px; background: var(--border); }
+
+    /* ── COFFEE CARDS ── */
+    .kaffe-liste { padding: 16px 16px 8px; display: flex; flex-direction: column; gap: 10px; }
+    .kaffe-kort { background: var(--kort); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: all .12s; }
+    .kaffe-kort .kort-indhold { padding: 16px; }
+    .kort-foto-banner { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .modal-foto { width: 100%; max-height: 260px; object-fit: cover; border-radius: 4px; margin-bottom: 16px; display: block; }
+    .foto-zone { border: 2px dashed var(--border); border-radius: 4px; overflow: hidden; cursor: pointer; position: relative; background: var(--baggrund); min-height: 120px; display: flex; align-items: center; justify-content: center; }
+    .foto-zone-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px; }
+    .foto-zone-ikon { font-size: 32px; }
+    .foto-zone-tekst { font-size: 13px; color: var(--tekst-3); }
+    .foto-zone img { width: 100%; max-height: 200px; object-fit: cover; display: block; }
+    .foto-fjern-knap { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,.55); color: #fff; border: none; border-radius: 2px; padding: 4px 10px; font-size: 12px; cursor: pointer; font-family: inherit; }
+    .ai-raekke { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 10px 12px; background: var(--baggrund); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
+    .ai-raekke-ikon { font-size: 16px; flex-shrink: 0; }
+    .ai-raekke-tekst { font-size: 13px; color: var(--tekst-2); flex: 1; }
+    .ai-raekke-status { font-size: 12px; font-weight: 600; color: var(--accent); }
+    .ai-raekke.analyserer { border-color: var(--accent-lys); background: #FDF6EE; }
+    .ai-raekke.success { border-color: #5B8C5A; background: #F2F8F2; }
+    .ai-raekke.fejl { border-color: var(--roed); background: #FDF2F2; }
+    .ai-raekke.success .ai-raekke-status { color: #3A6B39; }
+    .ai-raekke.fejl .ai-raekke-status { color: var(--roed); }
+    .ai-key-boks { margin-top: 8px; display: none; }
+    .ai-key-boks.vis { display: block; }
+    .ai-key-input-raekke { display: flex; gap: 8px; margin-top: 4px; }
+    .ai-key-input { flex: 1; background: var(--baggrund); border: 1px solid var(--border); border-radius: 2px; padding: 10px 12px; font-size: 14px; color: var(--tekst); font-family: inherit; }
+    .ai-key-input:focus { outline: none; border-color: var(--accent-lys); }
+    .ai-key-gem-knap { background: var(--accent); color: white; border: none; border-radius: 2px; padding: 10px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+    .ai-key-slet-knap { font-size: 12px; color: var(--tekst-3); background: none; border: none; cursor: pointer; font-family: inherit; padding: 4px 0; text-decoration: underline; }
+    .kaffe-kort:active { background: #F0EAE0; border-color: #D4C8B8; }
+    .kort-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+    .kort-navn { font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; font-weight: 700; margin-bottom: 2px; color: var(--tekst); }
+    .kort-meta { font-size: 12px; color: var(--tekst-2); margin-bottom: 6px; }
+    .kort-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .rister-tag { border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; border: 1px solid; }
+    .forarbejdning-tag { border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 600; letter-spacing: .5px; border: 1px solid var(--border); color: var(--tekst-2); background: var(--baggrund); text-transform: uppercase; }
+    .score-badge { border-radius: 4px; padding: 8px 12px; text-align: center; flex-shrink: 0; min-width: 60px; }
+    .score-badge .score-num { color: white; font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; font-weight: 700; display: block; line-height: 1; }
+    .score-badge .score-tekst { color: rgba(255,255,255,.7); font-size: 9px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; display: block; margin-top: 2px; }
+    .smags-bar { display: flex; gap: 2px; margin-bottom: 4px; }
+    .smags-bar-col { flex: 1; height: 24px; border-radius: 3px; position: relative; background: var(--baggrund); overflow: hidden; border: 1px solid var(--border); }
+    .smags-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 2px; }
+    .kort-bund { display: flex; justify-content: space-between; align-items: center; }
+    .dato { font-size: 11px; color: var(--tekst-3); }
+    .slet-knap { font-size: 12px; color: var(--roed); font-weight: 600; background: none; border: none; cursor: pointer; font-family: inherit; padding: 4px 0; transition: opacity .15s; }
+
+    /* ── EMPTY STATE ── */
+    .tom { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; padding: 40px; text-align: center; }
+    .tom-emoji { font-size: 64px; margin-bottom: 20px; }
+    .tom-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 26px; font-weight: 700; margin-bottom: 12px; }
+    .tom-tekst { font-size: 15px; color: var(--tekst-2); line-height: 1.7; margin-bottom: 32px; max-width: 280px; }
+    .primær-knap { background: var(--sort); color: #F5F1EB; border: none; border-radius: 2px; padding: 14px 28px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+    /* ── FORM ── */
+    .form-container { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .sektion { background: var(--kort); border-radius: 4px; padding: 18px; border: 1px solid var(--border); }
+    .sektion-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 18px; font-weight: 700; color: var(--tekst); margin-bottom: 2px; }
+    .sektion-under { font-size: 12px; color: var(--tekst-3); margin-bottom: 14px; }
+    .felt-label { font-size: 10px; font-weight: 700; margin-bottom: 6px; margin-top: 14px; color: var(--tekst-3); letter-spacing: 1px; text-transform: uppercase; }
+    .felt-label:first-of-type { margin-top: 0; }
+    input[type=text], input[type=email], input[type=password], textarea {
+      width: 100%; border: 1px solid var(--border); border-radius: 2px;
+      padding: 11px 13px; font-size: 15px; color: var(--tekst); background: var(--baggrund); font-family: inherit;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+    textarea { height: 90px; resize: none; }
+    .valg-raekke { display: flex; flex-wrap: wrap; gap: 7px; }
+    .valg-knap { border: 1px solid var(--border); border-radius: 2px; padding: 7px 13px; background: var(--baggrund); font-size: 13px; font-weight: 500; color: var(--tekst-2); cursor: pointer; font-family: inherit; transition: all .12s; }
+    .valg-knap.aktiv { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* ── TASTE SLIDERS ── */
+    .smags-slider { background: var(--baggrund); border-radius: 4px; padding: 12px; border: 1px solid var(--border); margin-bottom: 8px; }
+    .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; }
+    .slider-label { font-size: 14px; font-weight: 600; color: var(--tekst); }
+    .slider-badge { width: 28px; height: 28px; border-radius: 2px; display: flex; align-items: center; justify-content: center; background: var(--accent); }
+    .slider-badge span { color: white; font-weight: 700; font-size: 12px; }
+    .slider-beskr { font-size: 11px; color: var(--tekst-3); margin-bottom: 8px; }
+    .skala { display: flex; gap: 3px; }
+    .skala-knap { flex: 1; height: 32px; border-radius: 4px; border: 1px solid var(--border); background: var(--baggrund); cursor: pointer; font-size: 10px; font-weight: 600; color: var(--lysgrå); font-family: inherit; transition: all .1s; }
+    .skala-knap.aktiv { background: var(--accent); border-color: var(--accent); color: white; }
+    .skala-etiketter { display: flex; justify-content: space-between; margin-top: 3px; }
+    .skala-etiketter span { font-size: 10px; color: var(--tekst-3); }
+
+    /* ── SCORE ── */
+    .score-knapper { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+    .score-knap { width: 46px; height: 46px; border-radius: 2px; border: 1px solid var(--border); background: var(--baggrund); font-size: 16px; font-weight: 700; color: var(--lysgrå); cursor: pointer; font-family: inherit; transition: all .12s; }
+    .score-knap.aktiv { background: var(--accent); border-color: var(--accent); color: white; }
+    .samlet-badge-container { display: flex; justify-content: center; margin-bottom: 4px; }
+    .gem-knap { background: var(--sort); color: #F5F1EB; border: none; border-radius: 4px; padding: 17px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; font-family: inherit; margin-bottom: 8px; touch-action: manipulation; letter-spacing: .3px; }
+
+    /* ── PROFILE / STATS ── */
+    .stats-header { background: var(--kort); border-bottom: 1px solid var(--border); padding: 20px; }
+    .stats-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 24px; font-weight: 700; margin-bottom: 4px; color: var(--sort); }
+    .stats-under { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--tekst-3); margin-bottom: 12px; }
+    .profil-boks { background: var(--baggrund); border-radius: 4px; padding: 12px; border: 1px solid var(--border); }
+    .profil-tekst { font-size: 14px; color: var(--tekst-2); line-height: 1.7; }
+    .praef-raekke { display: flex; gap: 10px; margin-bottom: 10px; }
+    .praef-kort { flex: 1; border-radius: 4px; padding: 14px; text-align: center; background: var(--baggrund); border: 1px solid var(--border); }
+    .praef-emoji { font-size: 20px; margin-bottom: 6px; }
+    .praef-label { font-size: 10px; color: var(--tekst-3); margin-bottom: 4px; letter-spacing: .5px; text-transform: uppercase; }
+    .praef-vaerdi { font-family: 'Instrument Serif', Georgia, serif; font-size: 17px; font-weight: 700; color: var(--sort); }
+    .praef-score { font-size: 10px; color: var(--tekst-3); margin-top: 2px; }
+    .praef-fuld { flex-direction: row !important; align-items: center; gap: 12px; text-align: left !important; }
+    .bar-container { margin-bottom: 12px; }
+    .bar-label-raekke { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .bar-label { font-size: 13px; font-weight: 600; }
+    .bar-vaerdi { font-size: 13px; font-weight: 700; color: var(--accent); }
+    .bar-spor { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .bar-fyld { height: 100%; border-radius: 4px; background: var(--accent); transition: width .5s ease; }
+    .top-kaffe-raekke { display: flex; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .top-nr { font-family: 'Instrument Serif', Georgia, serif; font-size: 17px; font-weight: 700; color: var(--accent); width: 36px; }
+    .top-info { flex: 1; margin-right: 12px; min-width: 0; }
+    .top-navn { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-meta { font-size: 11px; color: var(--tekst-3); }
+    .top-score { width: 38px; height: 38px; border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .top-score span { color: white; font-weight: 700; font-size: 15px; }
+
+    /* ── RECOMMENDATIONS ── */
+    .anbefalet-kort { background: var(--kort); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
+    .anbefalet-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+    .anbefalet-navn { font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; font-weight: 700; color: var(--sort); flex: 1; }
+    .anbefalet-match { font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(139,96,53,.1); padding: 3px 7px; border-radius: 4px; white-space: nowrap; margin-left: 8px; flex-shrink: 0; }
+    .anbefalet-risteri { font-size: 11px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--tekst-3); margin-bottom: 6px; }
+    .anbefalet-meta { font-size: 12px; color: var(--tekst-3); margin-bottom: 8px; }
+    .anbefalet-begrundelse { font-size: 13px; color: var(--tekst-2); line-height: 1.6; margin-bottom: 12px; }
+    .anbefalet-koeb { display: inline-block; background: var(--sort); color: #F5F1EB; border-radius: 2px; padding: 8px 16px; font-size: 13px; font-weight: 600; text-decoration: none; font-family: inherit; }
+    .anbefalet-koeb:hover { opacity: .85; }
+    .ai-analyse-knap { background: var(--sort); color: #F5F1EB; border: none; border-radius: 2px; padding: 7px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity .15s; white-space: nowrap; touch-action: manipulation; }
+    .ai-analyse-knap:disabled { opacity: .45; cursor: wait; }
+    .ai-badge { background: rgba(28,24,20,.08) !important; color: var(--sort) !important; }
+    .ai-profil-kort { background: linear-gradient(135deg, var(--accent-mørk), var(--accent)); color: #F5F1EB; border-radius: 4px; padding: 16px; margin-bottom: 12px; font-size: 14px; line-height: 1.65; font-style: italic; }
+
+    /* ── SOCIAL ── */
+    .social-header { background: var(--kort); border-bottom: 1px solid var(--border); padding: 20px; }
+    .social-søg-raekke { display: flex; gap: 8px; margin-bottom: 0; }
+    .social-søg-input { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; background: var(--baggrund); font-family: inherit; color: var(--sort); }
+    .social-søg-input:focus { outline: none; border-color: var(--accent); }
+    .social-søg-knap { background: var(--sort); color: #F5F1EB; border: none; border-radius: 4px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .social-søg-resultater { margin-top: 12px; }
+    .bruger-raekke { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .bruger-mini-avatar { width: 34px; height: 34px; border-radius: 17px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+    .bruger-info { flex: 1; }
+    .bruger-navn-tekst { font-size: 14px; font-weight: 600; color: var(--sort); }
+    .bruger-følger-count { font-size: 11px; color: var(--tekst-3); margin-top: 1px; }
+    .følg-knap { background: var(--sort); color: white; border: none; border-radius: 2px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; }
+    .følg-knap.følger { background: none; border: 1px solid var(--border); color: var(--tekst-2); }
+    .following-kort { background: var(--kort); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; }
+    .following-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .following-info { flex: 1; min-width: 0; }
+    .following-navn { font-weight: 600; font-size: 15px; color: var(--tekst-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .following-stats { font-size: 12px; color: var(--tekst-3); margin-top: 2px; }
+    .following-smag { font-size: 12px; color: var(--tekst-2); margin-top: 6px; }
+    .smag-chip { display: inline-block; background: var(--baggrund); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--tekst-2); margin: 2px 2px 0 0; }
+    .feed-post { background: var(--kort); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 12px; }
+    .feed-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .feed-avatar { width: 32px; height: 32px; border-radius: 16px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+    .feed-meta { flex: 1; }
+    .feed-navn { font-size: 13px; font-weight: 700; color: var(--sort); }
+    .feed-tid { font-size: 11px; color: var(--tekst-3); }
+    .feed-badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 4px; }
+    .feed-badge.anbefal { background: rgba(92,175,90,.15); color: #3e8c3c; }
+    .feed-badge.advarsel { background: rgba(224,112,112,.15); color: var(--roed); }
+    .feed-kaffe-kort { background: var(--baggrund); border: 1px solid var(--border); border-radius: 4px; padding: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .feed-kaffe-info { flex: 1; min-width: 0; }
+    .feed-kaffe-navn { font-size: 14px; font-weight: 600; color: var(--sort); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed-kaffe-meta { font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
+    .feed-kaffe-score { width: 36px; height: 36px; border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .feed-kaffe-score span { color: white; font-weight: 700; font-size: 14px; }
+    .feed-besked { font-size: 13px; color: var(--tekst-2); line-height: 1.6; border-left: 3px solid var(--border); padding-left: 10px; }
+    .del-knap { background: none; border: 1px solid var(--border); border-radius: 2px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--tekst-2); transition: all .15s; }
+    .del-knap:hover { border-color: var(--accent); color: var(--accent); }
+    .del-modal-overlay { position: fixed; inset: 0; background: rgba(28,24,20,.5); display: none; align-items: flex-end; justify-content: center; z-index: 200; padding: 24px; }
+    .del-modal-overlay.aaben { display: flex; }
+    .del-modal-boks { background: var(--kort); border-radius: 4px; padding: 24px; width: 100%; max-width: 500px; }
+    .del-modal-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; font-weight: 700; margin-bottom: 4px; color: var(--sort); }
+    .del-modal-sub { font-size: 13px; color: var(--tekst-3); margin-bottom: 20px; }
+    .del-type-raekke { display: flex; gap: 10px; margin-bottom: 16px; }
+    .del-type-knap { flex: 1; border: 2px solid var(--border); border-radius: 4px; padding: 14px; text-align: center; cursor: pointer; background: var(--baggrund); transition: all .15s; user-select: none; }
+    .del-type-knap.aktiv-anbefal { border-color: #3e8c3c; background: rgba(92,175,90,.1); }
+    .del-type-knap.aktiv-advarsel { border-color: var(--roed); background: rgba(224,112,112,.1); }
+    .del-type-emoji { font-size: 24px; margin-bottom: 6px; }
+    .del-type-label { font-size: 13px; font-weight: 700; color: var(--sort); }
+    .del-besked-felt { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; font-family: inherit; background: var(--baggrund); color: var(--sort); resize: none; height: 80px; margin-bottom: 16px; }
+    .del-besked-felt:focus { outline: none; border-color: var(--accent); }
+    .del-annuller { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 14px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer; font-family: inherit; color: var(--tekst-2); margin-bottom: 8px; }
+    .del-modtager-sektion { margin-bottom: 16px; }
+    .del-modtager-label { font-size: 11px; font-weight: 600; color: var(--tekst-3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+    .del-modtager-liste { display: flex; flex-wrap: wrap; gap: 8px; max-height: 120px; overflow-y: auto; }
+    .del-modtager-chip { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 4px; border: 1.5px solid var(--border); background: var(--baggrund); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--tekst-2); transition: all .15s; user-select: none; }
+    .del-modtager-chip.valgt { border-color: var(--accent); background: rgba(139,96,53,.12); color: var(--accent); }
+    .chip-avatar { width: 20px; height: 20px; border-radius: 4px; background: var(--accent); color: white; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .highscore-raekke { display: flex; align-items: center; border-radius: 4px; padding: 10px 0; border-bottom: 1px solid var(--border); gap: 12px; }
+    .highscore-raekke:last-child { border-bottom: none; }
+    .highscore-nr { font-size: 14px; font-weight: 800; color: var(--accent); width: 26px; flex-shrink: 0; text-align: center; }
+    .highscore-info { flex: 1; min-width: 0; }
+    .highscore-navn { font-size: 14px; font-weight: 600; color: var(--sort); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .highscore-meta { font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
+    .highscore-score { background: var(--sort); color: white; border-radius: 2px; padding: 5px 10px; text-align: center; flex-shrink: 0; }
+    .highscore-score-tal { font-size: 15px; font-weight: 800; line-height: 1; }
+    .highscore-score-lbl { font-size: 9px; letter-spacing: .4px; opacity: .65; margin-top: 2px; }
+    .highscore-din { background: rgba(139,96,53,.12); color: var(--accent); border-radius: 2px; padding: 3px 7px; font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+
+    /* ── HOME ── */
+    .home-welcome { background: var(--sort); padding: 20px 20px 18px; }
+    .home-greeting { font-size: 11px; font-weight: 600; letter-spacing: 1.8px; text-transform: uppercase; color: rgba(245,241,235,.45); margin-bottom: 3px; }
+    .home-navn { font-family: 'Instrument Serif', Georgia, serif; font-size: 26px; font-weight: 700; color: #F5F1EB; line-height: 1.15; }
+    .home-tagline { font-size: 13px; color: rgba(245,241,235,.55); margin-top: 5px; }
+    .home-section { padding: 0 16px; }
+    .home-section-titel { font-size: 11px; font-weight: 700; color: var(--tekst-3); text-transform: uppercase; letter-spacing: .8px; padding: 18px 0 10px; }
+    .trending-kort { background: var(--kort); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 0; }
+    .trending-kaffe { display: flex; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 10px; }
+    .trending-kaffe:last-child { border-bottom: none; }
+    .trending-nr { font-family: 'Instrument Serif', Georgia, serif; font-size: 19px; font-weight: 800; width: 28px; flex-shrink: 0; text-align: center; color: var(--border); }
+    .trending-nr-1 { color: #C9A227; }
+    .trending-nr-2 { color: #8D8D8D; }
+    .trending-nr-3 { color: #A0694E; }
+    .trending-info { flex: 1; min-width: 0; }
+    .trending-navn { font-size: 14px; font-weight: 700; color: var(--sort); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .trending-meta { font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
+    .trending-antal { font-size: 10px; color: var(--tekst-3); margin-top: 1px; }
+    .trending-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .trending-score { background: var(--sort); color: white; border-radius: 2px; padding: 5px 9px; text-align: center; }
+    .trending-score-tal { font-size: 15px; font-weight: 800; line-height: 1; }
+    .trending-score-lbl { font-size: 8px; letter-spacing: .5px; opacity: .6; margin-top: 1px; }
+    .trending-din { background: rgba(139,96,53,.12); color: var(--accent); border-radius: 2px; padding: 3px 7px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .home-smag-raekke { display: flex; gap: 10px; }
+    .home-smag-kort { flex: 1; background: var(--kort); border: 1px solid var(--border); border-radius: 4px; padding: 14px; text-align: center; }
+    .home-smag-emoji { font-size: 20px; margin-bottom: 6px; }
+    .home-smag-label { font-size: 10px; font-weight: 600; color: var(--tekst-3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+    .home-smag-val { font-family: 'Instrument Serif', Georgia, serif; font-size: 16px; font-weight: 700; color: var(--sort); }
+    .home-smag-score { font-size: 10px; color: var(--tekst-3); margin-top: 2px; }
+    .home-deler { height: 1px; background: var(--border); margin: 20px 0 0; }
+    .home-coffees-header { padding: 14px 16px 0; display: flex; align-items: center; justify-content: space-between; }
+    .home-coffees-titel { font-size: 11px; font-weight: 700; color: var(--tekst-3); text-transform: uppercase; letter-spacing: .8px; }
+    .trending-tom { padding: 20px; text-align: center; color: var(--tekst-3); font-size: 13px; }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(28,24,20,.7); display: none; align-items: flex-end; justify-content: center; z-index: 200; }
+    .modal-overlay.aaben { display: flex; }
+    .modal { background: var(--kort); border-radius: 0; padding: 24px; padding-bottom: calc(24px + var(--safe-bottom)); width: 100%; max-width: 900px; max-height: 90dvh; overflow-y: auto; }
+    .modal-titel { font-family: 'Instrument Serif', Georgia, serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .modal-meta { font-size: 13px; color: var(--tekst-3); margin-bottom: 20px; }
+    .modal-luk { float: right; background: var(--baggrund); border: 1px solid var(--border); border-radius: 2px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; color: var(--tekst-2); }
+
+    /* ── SIGN OUT (profile page) ── */
+    .profil-signout { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .profil-bruger { display: flex; align-items: center; gap: 10px; }
+    .profil-avatar { width: 36px; height: 36px; border-radius: 18px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; flex-shrink: 0; }
+    .profil-navn { font-size: 15px; font-weight: 700; color: var(--sort); }
+    .profil-email { font-size: 12px; color: var(--tekst-3); margin-top: 1px; }
+    .signout-knap { background: none; border: 1px solid var(--border); border-radius: 2px; padding: 7px 13px; font-size: 13px; font-weight: 600; color: var(--tekst-2); cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; }
+    .signout-knap:hover { border-color: var(--roed); color: var(--roed); }
+
+    /* ── SPINNER ── */
+    .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.2); border-top-color: white; border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TABLET GRID ── */
+    @media (min-width: 600px) {
+      .kaffe-liste { display: grid; grid-template-columns: 1fr 1fr; }
+      .form-container { max-width: 640px; margin: 0 auto; }
+      .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; padding: 0 16px; }
+      .stats-grid .sektion { margin: 16px 0 0; }
+      .auth-boks { padding: 36px 32px; }
+    }
+
+    /* ── HOVER ── */
+    @media (hover: hover) {
+      .kaffe-kort:hover { background: #F0EAE0; border-color: #D4C8B8; }
+      .primær-knap:hover, .gem-knap:hover { background: var(--mørkgrå); }
+      .annuller-knap:hover { background: #EDE5DA; }
+      .valg-knap:hover:not(.aktiv) { background: #EDE5DA; border-color: #C8B8A0; }
+      .skala-knap:hover:not(.aktiv), .score-knap:hover:not(.aktiv) { background: #EDE5DA; color: var(--grå); border-color: #C8B8A0; }
+      .auth-knap:hover:not(:disabled) { opacity: .85; }
+      .sort-knap:hover:not(.aktiv) { background: #EDE5DA; border-color: #C8B8A0; }
+      .slet-knap:hover { opacity: .65; }
+    }
+
+    /* ── SEARCH & SORT ── */
+    .liste-toolbar { padding: 12px 16px 0; }
+    .søg-input { width: 100%; border: 1px solid var(--border); border-radius: 2px; padding: 10px 13px; font-size: 15px; color: var(--tekst); background: var(--kort); font-family: inherit; margin-bottom: 8px; }
+    .søg-input:focus { outline: none; border-color: var(--accent); }
+    .sort-raekke { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sort-knap { border: 1px solid var(--border); border-radius: 4px; padding: 5px 12px; background: var(--baggrund); font-size: 12px; font-weight: 600; color: var(--tekst-2); cursor: pointer; font-family: inherit; transition: all .12s; }
+    .sort-knap.aktiv { background: var(--accent); border-color: var(--accent); color: white; }
+
+    /* ── TASTE BAR LABELS ── */
+    .smags-bar-labels { display: flex; gap: 2px; margin-top: 2px; margin-bottom: 8px; }
+    .smags-bar-label { flex: 1; font-size: 7px; font-weight: 600; color: var(--tekst-3); text-align: center; text-transform: uppercase; letter-spacing: .3px; }
+
+    /* ── CANCEL BUTTON ── */
+    .annuller-knap { background: none; color: var(--tekst-2); border: 1px solid var(--border); border-radius: 4px; padding: 15px; font-size: 15px; font-weight: 500; width: 100%; cursor: pointer; font-family: inherit; margin-bottom: 8px; touch-action: manipulation; -webkit-appearance: none; }
+
+    /* ── FORGOT PASSWORD ── */
+    .glemt-knap { background: none; border: none; color: rgba(245,241,235,.3); font-size: 13px; cursor: pointer; font-family: inherit; text-decoration: underline; touch-action: manipulation; }
+
+    /* ── VARIETY SUGGESTIONS ── */
+    .boennesort-forslag { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+    .forslag-knap { border: 1px dashed var(--border); border-radius: 4px; padding: 3px 9px; background: none; font-size: 11px; color: var(--tekst-3); cursor: pointer; font-family: inherit; transition: all .12s; }
+    .forslag-knap:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── COFFEE NAME AUTOCOMPLETE ── */
+    .navn-autocomplete-wrapper { position: relative; }
+    .navn-autocomplete { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--kort); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; z-index: 200; box-shadow: 0 6px 20px rgba(0,0,0,.10); }
+    .navn-forslag { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); }
+    .navn-forslag:last-child { border-bottom: none; }
+    .navn-forslag:active { background: var(--bg); }
+    .navn-forslag-navn { display: block; font-size: 14px; font-weight: 600; color: var(--tekst-1); }
+    .navn-forslag-meta { display: block; font-size: 11px; color: var(--tekst-3); margin-top: 2px; }
+
+    /* ── STILLWORK CVI ── */
+    :root { color-scheme: light; --ember: #b04f33; --moss: #4f5d45; --mono: 'IBM Plex Mono', ui-monospace, monospace; }
+    body { font-size: 16px; }
+    .logo, .auth-logo, .kort-navn, .sektion-titel, .stats-titel, .tom-titel, .modal-titel, .rediger-titel, .vilkaar-titel,
+    .del-modal-titel, .home-navn, .praef-vaerdi, .home-smag-val, .anbefalet-navn, .oversigt-tal, .top-nr, .trending-nr, .score-badge .score-num { font-weight: 400 !important; letter-spacing: -.01em; }
+    .oversigt-tal, .top-nr, .trending-nr { font-style: italic; }
+    .logo { font-size: 26px; }
+    .logo-tagline, .oversigt-label, .stats-under, .felt-label, .home-greeting, .home-section-titel, .home-coffees-titel,
+    .praef-label, .home-smag-label, .del-modtager-label, .vilkaar-indhold h3, .smags-bar-label, nav button, .auth-felt-label, .auth-sub, .rister-tag, .forarbejdning-tag {
+      font-family: var(--mono) !important; font-weight: 400 !important; letter-spacing: .12em !important;
+    }
+    .logo-tagline a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--border); }
+    header { background: var(--baggrund); }
+    nav { background: var(--baggrund); }
+    nav button.aktiv { color: var(--sort); }
+    nav button.aktiv .ikon { filter: none; }
+    .kaffe-kort, .sektion, .feed-post, .following-kort, .trending-kort, .anbefalet-kort, .home-smag-kort, .praef-kort { background: transparent; }
+    .kaffe-kort:active { background: #e9e3d6; }
+    @media (hover: hover) { .kaffe-kort:hover { background: #e9e3d6; border-color: var(--sort); } }
+    .smags-slider, .profil-boks, .feed-kaffe-kort, .foto-zone, .ai-raekke { background: #e9e3d6; }
+    input[type=text], input[type=email], input[type=password], textarea, .søg-input, .social-søg-input { background: transparent; }
+    .primær-knap, .gem-knap, .social-søg-knap, .følg-knap, .anbefalet-koeb, .highscore-score, .trending-score { background: var(--sort); color: var(--baggrund); }
+    .valg-knap.aktiv, .skala-knap.aktiv, .score-knap.aktiv, .sort-knap.aktiv { background: var(--sort); border-color: var(--sort); color: var(--baggrund); }
+    .slider-badge { background: var(--ember); }
+    .bar-fyld { background: var(--ember); }
+    .bar-spor { border-radius: 0; height: 6px; }
+    .trending-nr-1, .trending-nr-2, .trending-nr-3 { color: var(--ember); }
+    .trending-din, .highscore-din, .anbefalet-match { background: rgba(176,79,51,.12); color: var(--ember); }
+    .feed-badge.anbefal { background: rgba(79,93,69,.14); color: var(--moss); }
+    .del-type-knap.aktiv-anbefal { border-color: var(--moss); background: rgba(79,93,69,.1); }
+    .ai-profil-kort { background: var(--sort); font-style: normal; font-family: 'Instrument Serif', Georgia, serif; font-size: 20px; line-height: 1.35; }
+    .home-welcome { background: transparent; border-bottom: 1px solid var(--border); padding: 28px 20px 22px; }
+    .home-greeting { color: var(--tekst-3); }
+    .home-navn { color: var(--sort); font-size: 38px; line-height: 1.05; }
+    .home-tagline { color: var(--tekst-2); }
+    .oversigt { background: transparent; }
+    .oversigt-tal { color: var(--sort); font-size: 36px; }
+    .modal, .rediger-boks, .del-modal-boks, .vilkaar-boks, .bruger-dropdown, .navn-autocomplete { background: var(--baggrund); box-shadow: none; border: 1px solid var(--border); }
+    /* Auth on paper */
+    #auth-skærm { background: var(--baggrund); }
+    .auth-logo { color: var(--sort); font-size: 52px; }
+    .auth-sub { color: var(--tekst-3); }
+    .auth-boks { background: transparent; border: 1px solid var(--border); border-radius: 0; }
+    .auth-faner { border-bottom-color: var(--border); }
+    .auth-fane { color: var(--tekst-3); font-weight: 500; }
+    .auth-fane.aktiv { color: var(--sort); border-bottom-color: var(--sort); }
+    .auth-felt-label { color: var(--tekst-3); }
+    .auth-input { background: transparent; border-color: var(--border); color: var(--sort); }
+    .auth-input:focus { border-color: var(--sort); }
+    .auth-knap { background: var(--sort); color: var(--baggrund); font-weight: 500; }
+    .auth-fejl { color: var(--ember); }
+    .auth-vilkaar label { color: var(--tekst-2); }
+    .auth-vilkaar a { color: var(--ember); }
+    .glemt-knap { color: var(--tekst-3); }
+    .auth-tilbage { display: block; margin-top: 28px; text-align: center; font-size: 14px; color: var(--tekst-3); text-decoration: none; }
+    .auth-tilbage:hover { color: var(--sort); }
+    /* AI features are off on stillwork.dk */
+    .ai-raekke, .ai-key-boks, .ai-analyse-knap { display: none !important; }
+    .spinner { border-color: rgba(244,241,234,.25); border-top-color: var(--baggrund); }
+  </style>
+</head>
+<body>
+
+
+<!-- AUTH SCREEN -->
+<div id="auth-skærm" class="vis">
+  <div class="auth-logo">CoffeeBuddies</div>
+  <div class="auth-sub">The grind is real</div>
+  <div class="auth-boks">
+    <div class="auth-faner">
+      <div class="auth-fane aktiv" id="fane-login" onclick="skiftFane('login')">Sign in</div>
+      <div class="auth-fane" id="fane-opret" onclick="skiftFane('opret')">Create account</div>
+    </div>
+
+    <!-- SIGN IN -->
+    <div id="login-form">
+      <form onsubmit="event.preventDefault(); logInd()">
+        <div class="auth-felt-label">Email</div>
+        <input class="auth-input" type="email" id="login-email" placeholder="your@email.co.uk" autocomplete="email" />
+        <div class="auth-felt-label">Password</div>
+        <input class="auth-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+        <button class="auth-knap" id="login-knap" type="submit">Sign in</button>
+      </form>
+      <div class="auth-fejl" id="login-fejl"></div>
+      <div style="text-align:center;margin-top:14px">
+        <button onclick="glemt()" class="glemt-knap">Forgot password?</button>
+      </div>
+    </div>
+
+    <!-- CREATE ACCOUNT -->
+    <div id="opret-form" style="display:none">
+      <form onsubmit="event.preventDefault(); opretKonto()">
+        <div class="auth-felt-label">Username</div>
+        <input class="auth-input" type="text" id="opret-brugernavn" placeholder="CoffeeBuddy42" autocomplete="username" />
+        <div class="auth-felt-label">Email</div>
+        <input class="auth-input" type="email" id="opret-email" placeholder="your@email.co.uk" autocomplete="email" />
+        <div class="auth-felt-label">Password</div>
+        <input class="auth-input" type="password" id="opret-password" placeholder="At least 6 characters" autocomplete="new-password" />
+        <div class="auth-vilkaar">
+          <input type="checkbox" id="vilkaar-check" />
+          <label for="vilkaar-check">I have read and agree to the <a onclick="visVilkaar()">Terms of Use &amp; Privacy Policy</a></label>
+        </div>
+        <button class="auth-knap" id="opret-knap" type="submit">Create account</button>
+      </form>
+      <div class="auth-fejl" id="opret-fejl"></div>
+    </div>
+  </div>
+  <a class="auth-tilbage" href="/work/">← stillwork</a>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <header>
+    <div onclick="visSide('liste')" style="cursor:pointer">
+      <div class="logo">CoffeeBuddies</div>
+      <div class="logo-tagline">The grind is real · <a href="/work/">stillwork</a></div>
+    </div>
+    <button class="header-avatar" id="header-avatar" onclick="toggleDropdown()">?</button>
+  </header>
+
+  <!-- USER DROPDOWN -->
+  <div class="bruger-dropdown-overlay" id="dropdown-overlay" onclick="lukkDropdown()">
+    <div class="bruger-dropdown" onclick="event.stopPropagation()">
+      <div class="dd-info">
+        <div class="dd-navn" id="dd-navn">–</div>
+        <div class="dd-email" id="dd-email">–</div>
+      </div>
+      <button class="dd-knap" onclick="åbnRedigerProfil()">✏️  Edit profile</button>
+      <button class="dd-knap" style="color:var(--tekst-3);font-size:13px" onclick="lukkDropdown();visVilkaar()">📋  Terms of Use</button>
+      <button class="dd-knap fare" onclick="logUd()">Sign out</button>
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div class="rediger-overlay" id="rediger-overlay" onclick="lukkRedigerProfil(event)">
+    <div class="rediger-boks" onclick="event.stopPropagation()">
+      <div class="rediger-titel">Edit Profile</div>
+      <div class="rediger-under">Change your username</div>
+      <div class="felt-label">Username</div>
+      <input type="text" id="rediger-brugernavn" placeholder="CoffeeBuddy42" autocomplete="username" />
+      <div class="rediger-fejl" id="rediger-fejl"></div>
+      <button class="gem-knap" id="rediger-gem-knap" onclick="gemProfil()" style="margin-top:16px;margin-bottom:0">Save</button>
+      <button class="annuller-knap" onclick="lukkRedigerProfil()" style="margin-top:8px;margin-bottom:0">Cancel</button>
+    </div>
+  </div>
+  <main>
+    <!-- COFFEES LIST / HOME -->
+    <div class="side aktiv" id="side-liste">
+
+      <!-- Welcome banner -->
+      <div class="home-welcome" id="home-welcome">
+        <div class="home-greeting">Welcome back</div>
+        <div class="home-navn" id="home-navn">–</div>
+        <div class="home-tagline" id="home-tagline">Loading your stats…</div>
+      </div>
+
+      <!-- Quick stats bar -->
+      <div class="oversigt">
+        <div><div class="oversigt-tal" id="antal-kaffer">–</div><div class="oversigt-label">Coffees Tasted</div></div>
+        <div class="oversigt-deler"></div>
+        <div><div class="oversigt-tal" id="gns-score">–</div><div class="oversigt-label">Avg. Score</div></div>
+      </div>
+
+      <!-- Trending this month -->
+      <div class="home-section">
+        <div class="home-section-titel">🔥 Trending This Month</div>
+        <div class="trending-kort" id="home-trending-indhold">
+          <div class="trending-tom"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:22px;height:22px;margin:0 auto"></div></div>
+        </div>
+      </div>
+
+      <!-- Taste snapshot (hidden until data loaded) -->
+      <div class="home-section" id="home-smag-sektion" style="display:none">
+        <div class="home-section-titel">Your Taste Snapshot</div>
+        <div class="home-smag-raekke" id="home-smag-indhold"></div>
+      </div>
+
+      <!-- Recommendations (shown when enough data) -->
+      <div class="home-section" id="home-anbefaling-sektion" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="home-section-titel" style="padding-bottom:10px">⭐ Recommended for You</div>
+          <button class="ai-analyse-knap" id="ai-anbefaling-knap" onclick="analyserSmagMedAI()">✦ AI Analysis</button>
+        </div>
+        <div id="home-anbefaling-indhold"></div>
+      </div>
+
+      <!-- Your coffees divider + search/sort -->
+      <div class="home-deler"></div>
+      <div class="home-coffees-header">
+        <div class="home-coffees-titel">Your Coffees</div>
+      </div>
+      <div class="liste-toolbar" id="liste-toolbar" style="display:none">
+        <input class="søg-input" type="text" id="søg-input" placeholder="Search coffees..." oninput="søgOgGengi()" />
+        <div class="sort-raekke">
+          <button class="sort-knap aktiv" id="sort-nyeste" onclick="sætSortering('nyeste')">Latest</button>
+          <button class="sort-knap" id="sort-score" onclick="sætSortering('score')">Highest Score</button>
+          <button class="sort-knap" id="sort-navn" onclick="sætSortering('navn')">Name A–Z</button>
+        </div>
+      </div>
+      <div id="kaffe-liste-container"></div>
+    </div>
+
+    <!-- ADD / EDIT COFFEE -->
+    <div class="side" id="side-ny">
+      <div class="form-container">
+        <div class="sektion">
+          <div class="sektion-titel">Photo</div>
+          <div class="sektion-under">Optional — tap to take a photo or pick from gallery</div>
+          <div class="foto-zone" id="foto-zone" onclick="document.getElementById('foto-input').click()">
+            <div class="foto-zone-placeholder" id="foto-placeholder">
+              <div class="foto-zone-ikon">📷</div>
+              <div class="foto-zone-tekst">Add photo</div>
+            </div>
+            <img id="foto-preview" style="display:none" alt="preview">
+            <button class="foto-fjern-knap" id="foto-fjern" style="display:none" onclick="event.stopPropagation();fjernFoto()">Remove</button>
+          </div>
+          <input type="file" id="foto-input" accept="image/*" style="display:none" onchange="fotoValgt(event)">
+          <div class="ai-raekke" id="ai-raekke">
+            <div class="ai-raekke-ikon">✦</div>
+            <div class="ai-raekke-tekst" id="ai-raekke-tekst">AI analysis ready — add a photo to analyse</div>
+            <div class="ai-raekke-status" id="ai-raekke-status"></div>
+          </div>
+        </div>
+        <div class="sektion">
+          <div class="sektion-titel">Coffee Details</div>
+          <div class="felt-label">Coffee Name *</div>
+          <div class="navn-autocomplete-wrapper">
+            <input type="text" id="f-navn" placeholder="e.g. Ethiopia Yirgacheffe" autocomplete="off"
+              oninput="søgKaffeNavn(this.value)"
+              onblur="setTimeout(skjulNavnSuggestioner, 150)" />
+            <div id="navn-autocomplete" class="navn-autocomplete" style="display:none"></div>
+          </div>
+          <div class="felt-label">Origin / Producer</div>
+          <input type="text" id="f-oprindelse" placeholder="e.g. Ethiopia, La Cabra" />
+          <div class="felt-label">Variety / Cultivar</div>
+          <input type="text" id="f-boennesort" placeholder="e.g. Gesha, Bourbon, Heirloom..." />
+          <div class="boennesort-forslag" id="boennesort-forslag"></div>
+          <div class="felt-label">Roast Level</div>
+          <div class="valg-raekke" id="rister-valg"></div>
+          <div class="felt-label">Processing</div>
+          <div class="valg-raekke" id="forarbejdning-valg"></div>
+          <div class="felt-label">Brew Method</div>
+          <div class="valg-raekke" id="bryg-valg"></div>
+        </div>
+        <div class="sektion">
+          <div class="sektion-titel">Taste Assessment</div>
+          <div class="sektion-under">Scale 1 (mild) → 10 (intense)</div>
+          <div id="smags-slidere"></div>
+        </div>
+        <div class="sektion">
+          <div class="sektion-titel">My Personal Score</div>
+          <div class="sektion-under">How much do <em>you</em> enjoy this coffee? This is your subjective preference — not an objective quality measure.</div>
+          <div class="samlet-badge-container" style="margin-top:12px"><div id="samlet-badge"></div></div>
+          <div class="score-knapper" id="score-knapper"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;padding:0 2px">
+            <span style="font-size:10px;color:var(--tekst-3)">Not for me</span>
+            <span style="font-size:10px;color:var(--tekst-3)">Outstanding</span>
+          </div>
+        </div>
+        <div class="sektion">
+          <div class="sektion-titel">Tasting Notes</div>
+          <textarea id="f-noter" placeholder="Your personal tasting notes on flavour, aroma, finish..."></textarea>
+        </div>
+        <button class="annuller-knap" id="annuller-knap" onclick="annullerForm()">Cancel</button>
+        <div id="form-fejl" style="display:none;color:var(--roed);font-size:13px;padding:8px 0 4px;text-align:center"></div>
+        <button class="gem-knap" id="gem-knap" onclick="gemVurdering()">Save Rating</button>
+      </div>
+    </div>
+
+    <!-- PROFILE / STATS -->
+    <div class="side" id="side-stats">
+      <div class="stats-header" id="stats-header"></div>
+      <div class="stats-grid" id="stats-indhold"></div>
+    </div>
+
+    <!-- SOCIAL FEED -->
+    <div class="side" id="side-social">
+      <div class="social-header">
+        <div class="stats-titel">Social Feed</div>
+        <div class="stats-under" id="social-undertitel">Find friends and see their ratings</div>
+        <div class="social-søg-raekke">
+          <input class="social-søg-input" id="social-søg-input" type="text" placeholder="Search by username..." onkeydown="if(event.key==='Enter')søgBrugere()" />
+          <button class="social-søg-knap" onclick="søgBrugere()">Search</button>
+        </div>
+        <div class="social-søg-resultater" id="social-søg-resultater"></div>
+      </div>
+      <div style="padding:16px 16px 0">
+        <div class="sektion" id="mine-kaffer-sektion">
+          <div class="sektion-titel">My Ratings</div>
+          <div class="sektion-under" id="mine-kaffer-under">Your coffee ratings</div>
+          <div id="mine-kaffer-indhold"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:22px;height:22px;margin:8px auto"></div></div>
+        </div>
+      </div>
+      <div style="padding:16px 16px 0">
+        <div class="sektion">
+          <div class="sektion-titel">☕ Top Coffees</div>
+          <div class="sektion-under">Highest-rated across all users</div>
+          <div id="social-highscore-indhold"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:22px;height:22px;margin:8px auto"></div></div>
+        </div>
+      </div>
+      <div id="following-sektion" style="display:none">
+        <div style="padding:12px 16px 4px"><div style="font-size:11px;font-weight:600;color:var(--tekst-3);text-transform:uppercase;letter-spacing:.6px">People You Follow</div></div>
+        <div style="padding:0 16px 8px" id="following-liste-indhold"></div>
+      </div>
+      <div style="padding:12px 16px 4px"><div style="font-size:11px;font-weight:600;color:var(--tekst-3);text-transform:uppercase;letter-spacing:.6px">Friend Activity</div></div>
+      <div class="stats-grid" id="social-feed-indhold"></div>
+    </div>
+  </main>
+
+  <nav>
+    <button class="aktiv" id="nav-liste" onclick="visSide('liste')">
+      <span class="ikon">☕</span>Coffees
+    </button>
+    <button id="nav-ny" onclick="aabneNyKaffe()">
+      <span class="ikon">＋</span>Add
+    </button>
+    <button id="nav-social" onclick="visSide('social')">
+      <span class="ikon">◈</span>Social
+    </button>
+  </nav>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="lukModal(event)">
+  <div class="modal" id="modal-indhold"></div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="del-modal-overlay" id="del-modal-overlay" onclick="lukkDelModal(event)">
+  <div class="del-modal-boks" onclick="event.stopPropagation()">
+    <div class="del-modal-titel" id="del-modal-titel">Share Rating</div>
+    <div class="del-modal-sub" id="del-modal-sub"></div>
+    <div class="del-type-raekke">
+      <div class="del-type-knap aktiv-anbefal" id="del-type-anbefal" onclick="vælgDelType('recommend')">
+        <div class="del-type-emoji">👍</div>
+        <div class="del-type-label">Recommend</div>
+      </div>
+      <div class="del-type-knap" id="del-type-advarsel" onclick="vælgDelType('warn')">
+        <div class="del-type-emoji">⚠️</div>
+        <div class="del-type-label">Avoid</div>
+      </div>
+    </div>
+    <textarea class="del-besked-felt" id="del-besked" placeholder="Add a message to your friends (optional)..."></textarea>
+    <div class="del-modtager-sektion">
+      <div class="del-modtager-label">Send to</div>
+      <div class="del-modtager-liste" id="del-modtager-liste">
+        <div class="del-modtager-chip valgt" id="chip-alle" onclick="toggleAlleChip()">Everyone</div>
+      </div>
+    </div>
+    <button class="gem-knap" id="del-gem-knap" onclick="bekræftDel()">Share with everyone</button>
+    <button class="del-annuller" onclick="lukkDelModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+// ── SUPABASE ─────────────────────────────────────────────
+const SUPABASE_URL = 'https://ctnszohyjljhorwgrabl.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0bnN6b2h5amxqaG9yd2dyYWJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM0OTk3MzEsImV4cCI6MjA4OTA3NTczMX0.kG9E_fWc_zF59o8kmfGoZ8hhaSJO0NwbKsb9Yy1Sb24';
+
+let sb = null;
+let aktivBruger = null;
+let brugernavn = '';
+let _cacheData = null;
+let _cacheTid = 0;
+let søgeord = '';
+let aktivSortering = 'nyeste';
+
+// ── INIT ─────────────────────────────────────────────────
+async function start() {
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  } catch (e) {
+    document.getElementById('login-fejl').textContent = 'Could not start: ' + e.message;
+    return;
+  }
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user) {
+      await indlaesBruger(session.user);
+      visApp();
+    }
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        await indlaesBruger(session.user);
+        visApp();
+      } else if (event === 'SIGNED_OUT') {
+        aktivBruger = null;
+        brugernavn = '';
+        _cacheData = null;
+        document.getElementById('app').style.display = 'none';
+        document.getElementById('auth-skærm').classList.add('vis');
+      }
+    });
+  } catch (e) {
+    document.getElementById('login-fejl').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function indlaesBruger(user) {
+  aktivBruger = user;
+  const { data } = await sb.from('profiles').select('username').eq('id', user.id).single();
+  brugernavn = data?.username ?? user.email.split('@')[0];
+  // Load localStorage cache so home renders instantly for returning users
+  try {
+    const s = localStorage.getItem('cb_v2_' + user.id);
+    if (s) { _cacheData = JSON.parse(s); _cacheTid = 0; }
+  } catch(e) {}
+  opdaterBrugerUI();
+}
+
+function opdaterBrugerUI() {
+  const initial = brugernavn[0]?.toUpperCase() ?? '?';
+  document.getElementById('header-avatar').textContent = initial;
+  document.getElementById('dd-navn').textContent = brugernavn;
+  document.getElementById('dd-email').textContent = aktivBruger?.email ?? '';
+}
+
+function visApp() {
+  document.getElementById('auth-skærm').classList.remove('vis');
+  document.getElementById('app').style.display = 'block';
+  initForm();
+  gengiListe();
+}
+
+// ── AUTH ─────────────────────────────────────────────────
+function skiftFane(fane) {
+  document.getElementById('fane-login').classList.toggle('aktiv', fane === 'login');
+  document.getElementById('fane-opret').classList.toggle('aktiv', fane === 'opret');
+  document.getElementById('login-form').style.display = fane === 'login' ? 'block' : 'none';
+  document.getElementById('opret-form').style.display = fane === 'opret' ? 'block' : 'none';
+  document.getElementById('login-fejl').textContent = '';
+  document.getElementById('opret-fejl').textContent = '';
+}
+
+async function logInd() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const fejlEl = document.getElementById('login-fejl');
+  const knap = document.getElementById('login-knap');
+  fejlEl.textContent = '';
+  if (!email || !password) { fejlEl.textContent = 'Please enter your email and password.'; return; }
+  knap.disabled = true;
+  knap.innerHTML = '<span class="spinner"></span>';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  knap.disabled = false;
+  knap.textContent = 'Sign in';
+  if (error) fejlEl.textContent = 'Incorrect email or password.';
+}
+
+async function opretKonto() {
+  const bNavn = document.getElementById('opret-brugernavn').value.trim();
+  const email = document.getElementById('opret-email').value.trim();
+  const password = document.getElementById('opret-password').value;
+  const fejlEl = document.getElementById('opret-fejl');
+  const knap = document.getElementById('opret-knap');
+  fejlEl.textContent = '';
+  if (!bNavn) { fejlEl.textContent = 'Please choose a username.'; return; }
+  if (bNavn.length < 3) { fejlEl.textContent = 'Username must be at least 3 characters.'; return; }
+  if (!email) { fejlEl.textContent = 'Please enter an email address.'; return; }
+  if (password.length < 6) { fejlEl.textContent = 'Password must be at least 6 characters.'; return; }
+  if (!document.getElementById('vilkaar-check').checked) { fejlEl.textContent = 'You must agree to the Terms of Use to create an account.'; return; }
+
+  const { data: existing } = await sb.from('profiles').select('username').eq('username', bNavn).single();
+  if (existing) { fejlEl.textContent = 'Username is already taken.'; return; }
+
+  knap.disabled = true;
+  knap.innerHTML = '<span class="spinner"></span>';
+  const redirectTo = window.location.href.split('?')[0].split('#')[0];
+  const { data, error } = await sb.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
+  if (error) {
+    knap.disabled = false;
+    knap.textContent = 'Create account';
+    fejlEl.textContent = error.message === 'User already registered' ? 'Email address is already registered.' : 'Something went wrong. Please try again.';
+    return;
+  }
+  if (data.user) {
+    await sb.from('profiles').insert({ id: data.user.id, username: bNavn });
+  }
+  knap.disabled = false;
+  knap.textContent = 'Create account';
+}
+
+async function glemt() {
+  const email = document.getElementById('login-email').value.trim();
+  const fejlEl = document.getElementById('login-fejl');
+  if (!email) { fejlEl.style.color = '#E07070'; fejlEl.textContent = 'Enter your email address above and try again.'; return; }
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.href.split('?')[0].split('#')[0]
+  });
+  fejlEl.style.color = error ? '#E07070' : '#7DBF82';
+  fejlEl.textContent = error ? 'Could not send email.' : 'Reset link sent to ' + email;
+}
+
+async function logUd() {
+  lukkDropdown();
+  await sb.auth.signOut();
+}
+
+// ── USER DROPDOWN ─────────────────────────────────────────
+function toggleDropdown() { document.getElementById('dropdown-overlay').classList.toggle('aaben'); }
+function lukkDropdown()   { document.getElementById('dropdown-overlay').classList.remove('aaben'); }
+
+function åbnRedigerProfil() {
+  lukkDropdown();
+  document.getElementById('rediger-brugernavn').value = brugernavn;
+  document.getElementById('rediger-fejl').textContent = '';
+  document.getElementById('rediger-overlay').classList.add('aaben');
+  setTimeout(() => document.getElementById('rediger-brugernavn').focus(), 50);
+}
+function lukkRedigerProfil(e) {
+  if (!e || e.target === document.getElementById('rediger-overlay'))
+    document.getElementById('rediger-overlay').classList.remove('aaben');
+}
+async function gemProfil() {
+  const nytNavn = document.getElementById('rediger-brugernavn').value.trim();
+  const fejlEl  = document.getElementById('rediger-fejl');
+  const knap    = document.getElementById('rediger-gem-knap');
+  fejlEl.textContent = '';
+  if (!nytNavn) { fejlEl.textContent = 'Please enter a username.'; return; }
+  if (nytNavn.length < 3) { fejlEl.textContent = 'Username must be at least 3 characters.'; return; }
+  if (nytNavn === brugernavn) { lukkRedigerProfil(); return; }
+
+  const { data: existing } = await sb.from('profiles').select('username').eq('username', nytNavn).neq('id', aktivBruger.id).single();
+  if (existing) { fejlEl.textContent = 'Username is already taken.'; return; }
+
+  knap.disabled = true; knap.innerHTML = '<span class="spinner"></span>';
+  const { error } = await sb.from('profiles').update({ username: nytNavn }).eq('id', aktivBruger.id);
+  knap.disabled = false; knap.textContent = 'Save';
+  if (error) { fejlEl.textContent = 'Could not save. Please try again.'; return; }
+  brugernavn = nytNavn;
+  opdaterBrugerUI();
+  document.getElementById('rediger-overlay').classList.remove('aaben');
+}
+
+// ── DATA ─────────────────────────────────────────────────
+async function hentAlleVurderinger(forcefresh = false) {
+  if (!aktivBruger) return [];
+  const nu = Date.now();
+  if (!forcefresh && _cacheData !== null && nu - _cacheTid < 30000) return _cacheData;
+  const { data, error } = await sb
+    .from('coffee_ratings')
+    .select('*')
+    .eq('user_id', aktivBruger.id)
+    .order('dato', { ascending: false });
+  if (error) throw new Error(error.message);
+  _cacheData = data ?? [];
+  _cacheTid = nu;
+  try { localStorage.setItem('cb_v2_' + aktivBruger.id, JSON.stringify(_cacheData)); } catch(e) {}
+  return _cacheData;
+}
+
+function ugyldiggørCache() { _cacheData = null; _cacheTid = 0; }
+
+function medTimeout(promise, ms = 12000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('No response from server — check your connection and try again.')), ms))
+  ]);
+}
+
+async function gemVurderingDB(v) {
+  const row = {
+    id: v.id, user_id: aktivBruger.id, navn: v.navn, oprindelse: v.oprindelse,
+    risteringsgrad: v.risteringsgrad, forarbejdning: v.forarbejdning,
+    boennesort: v.boennesort, brygmetode: v.brygmetode,
+    vurderede_af: brugernavn, smag: v.smag, samlet_score: v.samletScore,
+    noter: v.noter, dato: v.dato,
+    ...(v.imageUrl != null ? { image_url: v.imageUrl } : {}),
+  };
+  const { error } = await medTimeout(sb.from('coffee_ratings').upsert(row, { onConflict: 'id' }));
+  if (error) throw new Error(error.message);
+}
+
+async function sletVurderingDB(id) {
+  // Delete image from storage if it exists
+  await sb.storage.from('coffee-images').remove([`${aktivBruger.id}/${id}.jpg`]);
+  await sb.from('coffee_ratings').delete().eq('id', id).eq('user_id', aktivBruger.id);
+}
+
+// ── FOTO ─────────────────────────────────────────────────
+let _valgFoto = null;         // { file: File, dataUrl: string } | null
+let _eksisterendeFotoUrl = null; // URL when editing a rating that already has a photo
+
+function fotoValgt(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    _valgFoto = { file, dataUrl: ev.target.result };
+    document.getElementById('foto-preview').src = ev.target.result;
+    document.getElementById('foto-preview').style.display = 'block';
+    document.getElementById('foto-placeholder').style.display = 'none';
+    document.getElementById('foto-fjern').style.display = '';
+    /* AI photo analysis disabled */
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function fjernFoto() { nulstilFotoUI(); }
+
+function nulstilFotoUI() {
+  _valgFoto = null;
+  _eksisterendeFotoUrl = null;
+  const preview = document.getElementById('foto-preview');
+  if (preview) { preview.src = ''; preview.style.display = 'none'; }
+  const placeholder = document.getElementById('foto-placeholder');
+  if (placeholder) placeholder.style.display = '';
+  const fjern = document.getElementById('foto-fjern');
+  if (fjern) fjern.style.display = 'none';
+}
+
+// ── AI ANALYSE ────────────────────────────────────────────
+let _aiKey = null;
+async function hentAiKey() {
+  // AI features are switched off on stillwork.dk until the API key lives on a server instead of in the browser.
+  return null;
+}
+
+async function analyserFotoMedAI(dataUrl) {
+  let apiKey;
+  const raekke = document.getElementById('ai-raekke');
+  const tekst = document.getElementById('ai-raekke-tekst');
+  const status = document.getElementById('ai-raekke-status');
+  try {
+    apiKey = await hentAiKey();
+  } catch (e) {
+    raekke.className = 'ai-raekke fejl';
+    tekst.textContent = 'Analysis failed';
+    status.textContent = e.message.length > 40 ? e.message.slice(0, 40) + '…' : e.message;
+    return;
+  }
+  if (!apiKey) {
+    raekke.className = 'ai-raekke fejl';
+    tekst.textContent = 'Analysis failed';
+    status.textContent = 'No API key in app_config';
+    return;
+  }
+
+  raekke.className = 'ai-raekke analyserer';
+  tekst.textContent = 'Analysing image...';
+  status.textContent = '';
+
+  try {
+    const base64 = dataUrl.split(',')[1];
+    const mediaType = dataUrl.split(';')[0].split(':')[1] || 'image/jpeg';
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: `Analyse this coffee bag/packaging image and return ONLY a valid JSON object — no prose, no markdown. Use these exact fields:
+{
+  "navn": "coffee name from label",
+  "oprindelse": "origin country or roastery name",
+  "boennesort": "variety/cultivar if visible, else empty string",
+  "risteringsgrad": "one of exactly: Light, Medium, Dark, Espresso",
+  "forarbejdning": "one of exactly: Washed, Natural, Honey, Anaerobic, Co-ferment, Wet-hulled, Experimental",
+  "brygmetode": "one of exactly: Filter, Espresso, Moka Pot, French Press, Pour Over, AeroPress, Cold Brew, Capsule",
+  "smag": { "syre": 5, "bitterhed": 4, "soedme": 6, "fylde": 5, "aroma": 6, "eftersmag": 5 },
+  "samlet_score": 7,
+  "noter": "2-3 sentences of expected flavour notes based on origin, process and roast"
+}
+All smag values must be integers 1–10. If information is not visible, use a sensible default. Return only the JSON object.` }
+          ]
+        }]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.content?.[0]?.text || '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    const result = JSON.parse(jsonMatch[0]);
+    udfyldFormFraAI(result);
+
+    raekke.className = 'ai-raekke success';
+    tekst.textContent = 'AI filled in the details — review and adjust';
+    status.textContent = '✓';
+  } catch (e) {
+    raekke.className = 'ai-raekke fejl';
+    tekst.textContent = 'Analysis failed';
+    status.textContent = e.message.length > 40 ? e.message.slice(0, 40) + '…' : e.message;
+  }
+}
+
+function udfyldFormFraAI(d) {
+  if (d.navn)       document.getElementById('f-navn').value = d.navn;
+  if (d.oprindelse) document.getElementById('f-oprindelse').value = d.oprindelse;
+  if (d.boennesort) document.getElementById('f-boennesort').value = d.boennesort;
+  if (d.risteringsgrad && RISTERINGSGRADER.includes(d.risteringsgrad)) vaelgRister(d.risteringsgrad);
+  if (d.forarbejdning && FORARBEJDNINGER.includes(d.forarbejdning))    vaelgForarbejdning(d.forarbejdning);
+  if (d.brygmetode && BRYGMETODER.includes(d.brygmetode))              vaelgBryg(d.brygmetode);
+  if (d.smag) {
+    Object.entries(d.smag).forEach(([key, val]) => {
+      const n = Math.min(10, Math.max(1, Math.round(Number(val))));
+      if (!isNaN(n)) saetSmag(key, n);
+    });
+  }
+  if (d.samlet_score) {
+    const s = Math.min(10, Math.max(1, Math.round(Number(d.samlet_score))));
+    if (!isNaN(s)) saetScore(s);
+  }
+  if (d.noter) document.getElementById('f-noter').value = d.noter;
+}
+
+async function komprimer(file, maxWidth = 1200, kvalitet = 0.82) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const ratio = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(b => resolve(b), 'image/jpeg', kvalitet);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadFoto(ratingId, fotoBlob) {
+  const sti = `${aktivBruger.id}/${ratingId}.jpg`;
+  const { error } = await sb.storage.from('coffee-images').upload(sti, fotoBlob, {
+    contentType: 'image/jpeg', upsert: true,
+  });
+  if (error) throw new Error('Photo upload failed: ' + error.message);
+  return sb.storage.from('coffee-images').getPublicUrl(sti).data.publicUrl;
+}
+
+// ── CONSTANTS ────────────────────────────────────────────
+const RISTERINGSGRADER = ['Light','Medium','Dark','Espresso'];
+const RISTER_FARVER = { Light:'#F0E6D2', Medium:'#C4956A', Dark:'#6B4726', Espresso:'#2A1A0E' };
+const RISTER_TEKST  = { Light:'#6B4726', Medium:'#FFF',    Dark:'#FFF',    Espresso:'#F5F1EB' };
+
+const FORARBEJDNINGER = ['Washed','Natural','Honey','Anaerobic','Co-ferment','Wet-hulled','Experimental'];
+
+const BRYGMETODER = ['Filter','Espresso','Moka Pot','French Press','Pour Over','AeroPress','Cold Brew','Capsule'];
+
+const BOENNESORTER = ['Gesha','Bourbon','Typica','Caturra','Catuai','SL28','SL34','Heirloom','Pacamara','Mundo Novo','Yellow Bourbon','Castillo'];
+
+// ── COFFEE RECOMMENDATIONS CATALOG ───────────────────────
+const ANBEFALET_KATALOG = [
+  { navn:'Ethiopia Haro Wachu', risteri:'La Cabra', oprindelse:'Ethiopia', boennesort:'Heirloom', forarbejdning:'Natural',
+    smag:{syre:6,bitterhed:2,soedme:9,fylde:5,aroma:9,eftersmag:8},
+    tekst:'Strawberry, blueberry and dark chocolate. Juicy and sweet with a silky body.',
+    url:'https://lacabra.com/collections' },
+  { navn:'Kenya Kamwangi AA', risteri:'The Coffee Collective', oprindelse:'Kenya', boennesort:'SL28, SL34', forarbejdning:'Washed',
+    smag:{syre:9,bitterhed:3,soedme:6,fylde:6,aroma:8,eftersmag:9},
+    tekst:'Intense blackcurrant, tomato and citrus. Bright and complex with a very long finish.',
+    url:'https://coffeecollective.dk/collections/filter-coffee' },
+  { navn:'Ethiopia Koke', risteri:'Tim Wendelboe', oprindelse:'Ethiopia', boennesort:'Heirloom', forarbejdning:'Washed',
+    smag:{syre:8,bitterhed:2,soedme:7,fylde:4,aroma:9,eftersmag:7},
+    tekst:'Jasmine, bergamot and lemon. Light, tea-like and extraordinarily aromatic.',
+    url:'https://timwendelboe.no/collections/all-products' },
+  { navn:'Colombia El Paraíso Gesha', risteri:'April Coffee', oprindelse:'Colombia', boennesort:'Gesha', forarbejdning:'Washed',
+    smag:{syre:8,bitterhed:2,soedme:8,fylde:5,aroma:10,eftersmag:9},
+    tekst:'Exceptional floral complexity — jasmine, tropical fruit and honey in every cup.',
+    url:'https://www.aprilcoffeeroasters.com/collections/filter-beans' },
+  { navn:'Burundi Heza', risteri:'Drop Coffee', oprindelse:'Burundi', boennesort:'Bourbon', forarbejdning:'Washed',
+    smag:{syre:7,bitterhed:3,soedme:8,fylde:6,aroma:7,eftersmag:7},
+    tekst:'Peach, apricot and caramel. Sweet and winey with a smooth, balanced finish.',
+    url:'https://dropcoffee.se' },
+  { navn:'Panama Gesha Natural', risteri:'Koppi', oprindelse:'Panama', boennesort:'Gesha', forarbejdning:'Natural',
+    smag:{syre:7,bitterhed:1,soedme:9,fylde:5,aroma:10,eftersmag:9},
+    tekst:'The legendary Gesha variety. Bergamot, peach and mango with an intoxicating aroma.',
+    url:'https://koppi.se/shop' },
+  { navn:'Ethiopia Guji Natural', risteri:'Gardelli Specialty Coffees', oprindelse:'Ethiopia', boennesort:'Heirloom', forarbejdning:'Natural',
+    smag:{syre:5,bitterhed:2,soedme:9,fylde:7,aroma:9,eftersmag:8},
+    tekst:'Wild blueberry, dark cherry and milk chocolate. Thick, sweet and intensely aromatic.',
+    url:'https://gardellispecialtycoffees.com' },
+  { navn:'Rwanda Huye Mountain', risteri:'Nomad Coffee', oprindelse:'Rwanda', boennesort:'Bourbon', forarbejdning:'Washed',
+    smag:{syre:8,bitterhed:3,soedme:7,fylde:5,aroma:8,eftersmag:8},
+    tekst:'Red plum, citrus blossom and brown sugar. Clean, bright and elegantly structured.',
+    url:'https://nomadcoffee.es/collections/coffee' },
+  { navn:'Brazil Yellow Bourbon Natural', risteri:'La Cabra', oprindelse:'Brazil', boennesort:'Yellow Bourbon', forarbejdning:'Natural',
+    smag:{syre:3,bitterhed:5,soedme:8,fylde:9,aroma:6,eftersmag:7},
+    tekst:'Peanut brittle, milk chocolate and dried fruit. Full-bodied and sweet with very low acidity.',
+    url:'https://lacabra.com/collections' },
+  { navn:'Colombia Los Naranjos', risteri:'Tim Wendelboe', oprindelse:'Colombia', boennesort:'Caturra', forarbejdning:'Washed',
+    smag:{syre:7,bitterhed:3,soedme:7,fylde:6,aroma:7,eftersmag:7},
+    tekst:'Caramel, red apple and light florals. A classic, balanced and approachable Colombian.',
+    url:'https://timwendelboe.no/collections/all-products' },
+  { navn:'Honduras Santa Barbara Honey', risteri:'Gardelli Specialty Coffees', oprindelse:'Honduras', boennesort:'Pacas', forarbejdning:'Honey',
+    smag:{syre:5,bitterhed:4,soedme:8,fylde:7,aroma:7,eftersmag:7},
+    tekst:'Honey, toffee and nectarine. Sweet and smooth with a rounded, medium body.',
+    url:'https://gardellispecialtycoffees.com' },
+  { navn:'Guatemala Huehuetenango', risteri:'The Coffee Collective', oprindelse:'Guatemala', boennesort:'Bourbon, Caturra', forarbejdning:'Washed',
+    smag:{syre:6,bitterhed:4,soedme:7,fylde:7,aroma:7,eftersmag:7},
+    tekst:'Brown sugar, red apple and milk chocolate. Balanced with a rich, creamy body.',
+    url:'https://coffeecollective.dk/collections/filter-coffee' },
+  { navn:'Yemen Haraazi', risteri:'April Coffee', oprindelse:'Yemen', boennesort:'Heirloom', forarbejdning:'Natural',
+    smag:{syre:5,bitterhed:5,soedme:7,fylde:8,aroma:9,eftersmag:8},
+    tekst:'Dried fruit, dark spice, wine and chocolate. Wild and complex — a truly unique cup.',
+    url:'https://www.aprilcoffeeroasters.com/collections/filter-beans' },
+  { navn:'Ethiopia Nensebo Washed', risteri:'Drop Coffee', oprindelse:'Ethiopia', boennesort:'Heirloom', forarbejdning:'Washed',
+    smag:{syre:9,bitterhed:2,soedme:7,fylde:4,aroma:9,eftersmag:8},
+    tekst:'Peach, bergamot and lemon curd. Light and tea-like with wonderful floral aromas.',
+    url:'https://dropcoffee.se' },
+  { navn:'Sumatra Mandheling', risteri:'The Coffee Collective', oprindelse:'Indonesia', boennesort:'Typica', forarbejdning:'Wet-hulled',
+    smag:{syre:3,bitterhed:7,soedme:4,fylde:9,aroma:6,eftersmag:6},
+    tekst:'Dark chocolate, cedar and earth. Full-bodied and intense with very low acidity.',
+    url:'https://coffeecollective.dk/collections/filter-coffee' },
+];
+
+function genererAnbefalinger(smagsGns) {
+  // Score each catalog coffee by proximity to user's taste profile
+  const scored = ANBEFALET_KATALOG.map(k => {
+    const dist = SMAG_FELTER.reduce((sum, f) => sum + Math.abs(smagsGns[f.key] - k.smag[f.key]), 0);
+    const matchPct = Math.round(100 - (dist / (SMAG_FELTER.length * 9)) * 100);
+    return { ...k, matchPct };
+  }).sort((a,b) => b.matchPct - a.matchPct).slice(0,5);
+
+  // Build personalized reason for each
+  const topDims = [...SMAG_FELTER].sort((a,b) => smagsGns[b.key] - smagsGns[a.key]).slice(0,3);
+  return scored.map(k => {
+    const matchedDims = topDims.filter(f => k.smag[f.key] >= 7).map(f => f.label.toLowerCase());
+    let begrundelse;
+    if (matchedDims.length >= 2) {
+      begrundelse = `Matches your preference for <strong>${matchedDims[0]}</strong> and <strong>${matchedDims[1]}</strong>. ${k.tekst}`;
+    } else if (matchedDims.length === 1) {
+      begrundelse = `Strong on <strong>${matchedDims[0]}</strong>, which you rate highly. ${k.tekst}`;
+    } else {
+      begrundelse = `A close overall match to your taste profile. ${k.tekst}`;
+    }
+    return { ...k, begrundelse };
+  });
+}
+
+const SMAG_FELTER = [
+  { key:'syre',      label:'Acidity',    beskr:'Fresh and vibrant acidity' },
+  { key:'bitterhed', label:'Bitterness', beskr:'Pleasant bitterness' },
+  { key:'soedme',    label:'Sweetness',  beskr:'Natural sweetness' },
+  { key:'fylde',     label:'Body',       beskr:"Coffee's body and mouthfeel" },
+  { key:'aroma',     label:'Aroma',      beskr:'Fragrance and aroma' },
+  { key:'eftersmag', label:'Aftertaste', beskr:'Long and pleasant finish' },
+];
+
+function scorefarve(s) {
+  if (s >= 9) return '#1c1b19';
+  if (s >= 7) return '#b04f33';
+  if (s >= 5) return '#4f5d45';
+  return '#6b675f';
+}
+function scoretekst(s) {
+  if (s >= 9) return 'Outstanding';
+  if (s >= 7) return 'Very Good';
+  if (s >= 5) return 'Good';
+  if (s >= 3) return 'Average';
+  return 'Not my cup';
+}
+function datoTekst(iso) {
+  return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+}
+function gns(arr) { return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
+
+// ── NAVIGATION ───────────────────────────────────────────
+function visSide(side) {
+  ['liste','ny','stats','social'].forEach(s => {
+    document.getElementById('side-'+s).classList.toggle('aktiv', s===side);
+    const navEl = document.getElementById('nav-'+s);
+    if (navEl) navEl.classList.toggle('aktiv', s===side);
+  });
+  if (side === 'liste') gengiListe();
+  if (side === 'stats') gengiStats();
+  if (side === 'social') gengiSocial();
+  window.scrollTo(0,0);
+}
+
+// ── HOME HELPERS ─────────────────────────────────────────
+function renderWelcome() {
+  document.getElementById('home-navn').textContent = brugernavn || '–';
+}
+
+async function hentTrendingMaaned() {
+  // Try RPC first — requires homepage_migration.sql to be run in Supabase
+  const { data, error } = await sb.rpc('top_kaffe_maaned', { limit_n: 5 });
+  if (!error && data?.length) return data;
+
+  // Fallback: show current user's own coffees from the last 30 days
+  if (!aktivBruger) return [];
+  const siden = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const { data: mine } = await sb.from('coffee_ratings')
+    .select('navn, oprindelse, brygmetode, risteringsgrad, samlet_score')
+    .eq('user_id', aktivBruger.id)
+    .gte('dato', siden)
+    .order('samlet_score', { ascending: false })
+    .limit(5);
+  return (mine ?? []).map(r => ({
+    navn: r.navn, oprindelse: r.oprindelse,
+    brygmetode: r.brygmetode, risteringsgrad: r.risteringsgrad,
+    avg_score: r.samlet_score, antal: 1, din_score: r.samlet_score,
+  }));
+}
+
+function renderTrending(data) {
+  const el = document.getElementById('home-trending-indhold');
+  if (!data.length) {
+    el.innerHTML = '<div class="trending-tom">No coffees rated this month yet — be the first!</div>';
+    return;
+  }
+  el.innerHTML = data.map((r, i) => {
+    const meta = [r.oprindelse, r.risteringsgrad].filter(Boolean).join(' · ');
+    const antalTekst = r.antal === 1 ? '1 rating' : `${r.antal} ratings`;
+    const dinBadge = r.din_score != null ? `<div class="trending-din">You: ${r.din_score}</div>` : '';
+    const nrKlasse = i === 0 ? 'trending-nr trending-nr-1' : i === 1 ? 'trending-nr trending-nr-2' : i === 2 ? 'trending-nr trending-nr-3' : 'trending-nr';
+    return `<div class="trending-kaffe">
+      <div class="${nrKlasse}">#${i+1}</div>
+      <div class="trending-info">
+        <div class="trending-navn">${r.navn}</div>
+        ${meta ? `<div class="trending-meta">${meta}</div>` : ''}
+        <div class="trending-antal">${antalTekst}</div>
+      </div>
+      <div class="trending-right">
+        <div class="trending-score">
+          <div class="trending-score-tal">${r.avg_score}</div>
+          <div class="trending-score-lbl">AVG</div>
+        </div>
+        ${dinBadge}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSmagSnapshot(vurderinger) {
+  if (vurderinger.length < 2) return;
+  const risterMap = {}, brygMap = {};
+  vurderinger.forEach(v => {
+    (risterMap[v.risteringsgrad] ??= []).push(v.samlet_score);
+    (brygMap[v.brygmetode] ??= []).push(v.samlet_score);
+  });
+  const bedsteRister = Object.entries(risterMap).sort(([,a],[,b]) => gns(b)-gns(a))[0];
+  const bedsteBryg   = Object.entries(brygMap).sort(([,a],[,b]) => gns(b)-gns(a))[0];
+  document.getElementById('home-smag-indhold').innerHTML = `
+    <div class="home-smag-kort">
+      <div class="home-smag-emoji">🔥</div>
+      <div class="home-smag-label">Best Roast</div>
+      <div class="home-smag-val">${bedsteRister[0]}</div>
+      <div class="home-smag-score">${gns(bedsteRister[1]).toFixed(1)}/10 avg.</div>
+    </div>
+    <div class="home-smag-kort">
+      <div class="home-smag-emoji">☕</div>
+      <div class="home-smag-label">Best Brew</div>
+      <div class="home-smag-val">${bedsteBryg[0]}</div>
+      <div class="home-smag-score">${gns(bedsteBryg[1]).toFixed(1)}/10 avg.</div>
+    </div>`;
+  document.getElementById('home-smag-sektion').style.display = '';
+}
+
+// ── COFFEE LIST ───────────────────────────────────────────
+async function gengiListe() {
+  renderWelcome();
+  const container = document.getElementById('kaffe-liste-container');
+
+  // If we have cached data, render immediately — no spinner
+  if (_cacheData !== null) {
+    renderKaffeData(_cacheData);
+    // Refresh in background; re-render only if data changed
+    hentAlleVurderinger(true)
+      .then(fresh => {
+        if (JSON.stringify(fresh) !== JSON.stringify(_cacheData)) renderKaffeData(fresh);
+      })
+      .catch(() => {});
+  } else {
+    container.innerHTML = '<div class="tom"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:28px;height:28px"></div></div>';
+    const dataResult = await hentAlleVurderinger()
+      .then(d => ({ ok: true, data: d }))
+      .catch(e => ({ ok: false, error: e }));
+    if (!dataResult.ok) {
+      container.innerHTML = `<div class="tom"><div class="tom-titel" style="font-size:16px">Error</div><div class="tom-tekst">${dataResult.error.message}</div></div>`;
+      return;
+    }
+    renderKaffeData(dataResult.data);
+  }
+
+  // Trending loads independently — never blocks the coffee list
+  hentTrendingMaaned().then(renderTrending).catch(() => renderTrending([]));
+}
+
+function renderKaffeData(data) {
+  const container = document.getElementById('kaffe-liste-container');
+
+  document.getElementById('antal-kaffer').textContent = data.length;
+  document.getElementById('gns-score').textContent = data.length ? gns(data.map(v=>v.samlet_score)).toFixed(1) : '–';
+
+  // Update welcome tagline
+  const taglineEl = document.getElementById('home-tagline');
+  if (data.length === 0) {
+    taglineEl.textContent = 'Start adding coffees to build your taste profile.';
+  } else {
+    const totalGns = gns(data.map(v=>v.samlet_score));
+    taglineEl.textContent = `${data.length} coffee${data.length !== 1 ? 's' : ''} rated · avg. ${totalGns.toFixed(1)}/10`;
+  }
+
+  renderSmagSnapshot(data);
+  renderAnbefalinger(data);
+
+  const toolbar = document.getElementById('liste-toolbar');
+  toolbar.style.display = data.length ? '' : 'none';
+
+  if (!data.length) {
+    søgeord = '';
+    container.innerHTML = `<div class="tom">
+      <div class="tom-emoji">☕</div>
+      <div class="tom-titel">No Coffees Yet</div>
+      <div class="tom-tekst">Add your first coffee rating and start mapping your taste profile!</div>
+      <button class="primær-knap" onclick="visSide('ny')">Add First Coffee</button>
+    </div>`;
+    return;
+  }
+
+  ['nyeste','score','navn'].forEach(k => {
+    const btn = document.getElementById('sort-'+k);
+    if (btn) btn.classList.toggle('aktiv', k === aktivSortering);
+  });
+
+  let vis = søgeord
+    ? data.filter(v => v.navn.toLowerCase().includes(søgeord) || (v.oprindelse||'').toLowerCase().includes(søgeord) || (v.boennesort||'').toLowerCase().includes(søgeord))
+    : [...data];
+  if (aktivSortering === 'score') vis.sort((a,b) => b.samlet_score - a.samlet_score);
+  else if (aktivSortering === 'navn') vis.sort((a,b) => a.navn.localeCompare(b.navn, 'en'));
+
+  if (!vis.length) {
+    container.innerHTML = `<div class="tom"><div class="tom-tekst" style="margin-bottom:0">No coffees match your search.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = '<div class="kaffe-liste">' + vis.map(v => `
+    <div class="kaffe-kort" data-id="${v.id}" onclick="visDetalje('${v.id}')">
+      ${v.image_url ? `<img class="kort-foto-banner" src="${v.image_url}" alt="${v.navn}" loading="lazy">` : ''}
+      <div class="kort-indhold"><div class="kort-top">
+        <div style="flex:1;min-width:0">
+          <div class="kort-navn">${v.navn}</div>
+          <div class="kort-meta">${v.oprindelse || 'Unknown origin'}${v.boennesort ? ' · ' + v.boennesort : ''}</div>
+          <div class="kort-tags">
+            <span class="rister-tag" style="background:${RISTER_FARVER[v.risteringsgrad]};color:${RISTER_TEKST[v.risteringsgrad]};border-color:${RISTER_FARVER[v.risteringsgrad]}">${v.risteringsgrad}</span>
+            ${v.forarbejdning ? `<span class="forarbejdning-tag">${v.forarbejdning}</span>` : ''}
+          </div>
+        </div>
+        <div class="score-badge" style="background:${scorefarve(v.samlet_score)}">
+          <span class="score-num">${v.samlet_score}</span>
+          <span class="score-tekst">${scoretekst(v.samlet_score)}</span>
+        </div>
+      </div>
+      <div class="smags-bar">
+        ${SMAG_FELTER.map(f => `
+          <div class="smags-bar-col" title="${f.label}: ${v.smag[f.key]}/10">
+            <div class="smags-bar-fill" style="height:${v.smag[f.key]*10}%;background:var(--accent)"></div>
+          </div>`).join('')}
+      </div>
+      <div class="smags-bar-labels">
+        ${SMAG_FELTER.map(f => `<div class="smags-bar-label">${f.label.substring(0,3)}</div>`).join('')}
+      </div>
+      <div class="kort-bund">
+        <span class="dato">${datoTekst(v.dato)}</span>
+        <button class="del-knap" onclick="event.stopPropagation();åbnDelModal('${v.id}')">Share</button>
+        <button class="slet-knap" data-slet-id="${v.id}" onclick="sletVurdering(event,'${v.id}')">Delete</button>
+      </div>
+      </div></div>`).join('') + '</div>';
+}
+
+function søgOgGengi() {
+  søgeord = document.getElementById('søg-input').value.toLowerCase().trim();
+  gengiListe();
+}
+
+function sætSortering(s) {
+  aktivSortering = s;
+  gengiListe();
+}
+
+// ── DETAIL MODAL ──────────────────────────────────────────
+async function visDetalje(id) {
+  const data = await hentAlleVurderinger();
+  const v = data.find(x => x.id === id);
+  if (!v) return;
+  document.getElementById('modal-indhold').innerHTML = `
+    <button class="modal-luk" onclick="lukModal()">Close</button>
+    ${v.image_url ? `<img class="modal-foto" src="${v.image_url}" alt="${v.navn}">` : ''}
+    <div class="modal-titel">${v.navn}</div>
+    <div class="modal-meta">
+      ${[v.oprindelse, v.boennesort, v.risteringsgrad, v.forarbejdning, v.brygmetode].filter(Boolean).join(' · ')}
+    </div>
+    <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <div class="score-badge" style="background:${scorefarve(v.samlet_score)};padding:12px 24px">
+        <span class="score-num" style="font-size:28px">${v.samlet_score}/10</span>
+        <span class="score-tekst">${scoretekst(v.samlet_score)}</span>
+      </div>
+    </div>
+    ${SMAG_FELTER.map(f => `
+      <div class="bar-container">
+        <div class="bar-label-raekke">
+          <span class="bar-label">${f.label}</span>
+          <span class="bar-vaerdi">${v.smag[f.key]}/10</span>
+        </div>
+        <div class="bar-spor"><div class="bar-fyld" style="width:${v.smag[f.key]*10}%"></div></div>
+      </div>`).join('')}
+    ${v.noter ? `<div style="margin-top:16px;padding:12px;background:var(--baggrund);border-radius:8px;font-size:14px;color:var(--tekst-2);line-height:1.6;border:1px solid var(--border)">${v.noter}</div>` : ''}
+    <div style="margin-top:20px">
+      <button class="gem-knap" onclick="redigerVurdering('${id}')">Edit</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('aaben');
+}
+function lukModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay'))
+    document.getElementById('modal-overlay').classList.remove('aaben');
+}
+
+// ── DELETE ────────────────────────────────────────────────
+async function sletVurdering(evt, id) {
+  evt.stopPropagation();
+  evt.preventDefault();
+  if (!confirm('Are you sure you want to delete this rating?')) return;
+  ugyldiggørCache();
+  await sletVurderingDB(id);
+  gengiListe();
+}
+
+// ── FORM ─────────────────────────────────────────────────
+let redigeringsId = null;
+let valgRister = 'Medium';
+let valgForarbejdning = 'Washed';
+let valgBryg = 'Filter';
+let smagsVaerdier = { syre:5, bitterhed:5, soedme:5, fylde:5, aroma:5, eftersmag:5 };
+let samletScore = null;
+
+function resetForm() {
+  redigeringsId = null;
+  samletScore = null;
+  valgRister = 'Medium'; valgForarbejdning = 'Washed'; valgBryg = 'Filter';
+  smagsVaerdier = { syre:5, bitterhed:5, soedme:5, fylde:5, aroma:5, eftersmag:5 };
+  ['f-navn','f-oprindelse','f-boennesort','f-noter'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  nulstilFotoUI();
+}
+
+function initForm() {
+  document.getElementById('rister-valg').innerHTML = RISTERINGSGRADER.map(r => `
+    <button class="valg-knap${r===valgRister?' aktiv':''}" onclick="vaelgRister('${r}')">${r}</button>`).join('');
+  document.getElementById('forarbejdning-valg').innerHTML = FORARBEJDNINGER.map(f => `
+    <button class="valg-knap${f===valgForarbejdning?' aktiv':''}" onclick="vaelgForarbejdning('${f}')">${f}</button>`).join('');
+  document.getElementById('bryg-valg').innerHTML = BRYGMETODER.map(b => `
+    <button class="valg-knap${b===valgBryg?' aktiv':''}" onclick="vaelgBryg('${b}')">${b}</button>`).join('');
+  document.getElementById('boennesort-forslag').innerHTML = BOENNESORTER.map(s => `
+    <button class="forslag-knap" onclick="vaelgBoennesort('${s}')">${s}</button>`).join('');
+  document.getElementById('smags-slidere').innerHTML = SMAG_FELTER.map(f => `
+    <div class="smags-slider" id="slider-${f.key}">
+      <div class="slider-header">
+        <span class="slider-label">${f.label}</span>
+        <div class="slider-badge" id="badge-${f.key}"><span>${smagsVaerdier[f.key]}</span></div>
+      </div>
+      <div class="slider-beskr">${f.beskr}</div>
+      <div class="skala">
+        ${[1,2,3,4,5,6,7,8,9,10].map(n => `
+          <button class="skala-knap${n<=smagsVaerdier[f.key]?' aktiv':''}" onclick="saetSmag('${f.key}',${n})">${n}</button>`).join('')}
+      </div>
+      <div class="skala-etiketter"><span>Mild</span><span>Intense</span></div>
+    </div>`).join('');
+  document.getElementById('score-knapper').innerHTML = [1,2,3,4,5,6,7,8,9,10].map(n => `
+    <button class="score-knap${n===samletScore?' aktiv':''}" onclick="saetScore(${n})">${n}</button>`).join('');
+  opdaterSamletBadge();
+}
+
+function vaelgRister(r) {
+  valgRister = r;
+  document.querySelectorAll('#rister-valg .valg-knap').forEach(btn => {
+    const er = btn.textContent === r;
+    btn.classList.toggle('aktiv', er);
+    btn.style.background = er ? 'var(--accent)' : '';
+    btn.style.borderColor = er ? 'var(--accent)' : '';
+    btn.style.color = er ? 'white' : '';
+  });
+}
+function vaelgForarbejdning(f) {
+  valgForarbejdning = f;
+  document.querySelectorAll('#forarbejdning-valg .valg-knap').forEach(btn => {
+    const er = btn.textContent === f;
+    btn.classList.toggle('aktiv', er);
+    btn.style.background = er ? 'var(--accent)' : '';
+    btn.style.borderColor = er ? 'var(--accent)' : '';
+    btn.style.color = er ? 'white' : '';
+  });
+}
+function vaelgBryg(b) {
+  valgBryg = b;
+  document.querySelectorAll('#bryg-valg .valg-knap').forEach(btn => {
+    const er = btn.textContent === b;
+    btn.classList.toggle('aktiv', er);
+    btn.style.background = er ? 'var(--accent)' : '';
+    btn.style.borderColor = er ? 'var(--accent)' : '';
+    btn.style.color = er ? 'white' : '';
+  });
+}
+function vaelgBoennesort(s) {
+  document.getElementById('f-boennesort').value = s;
+}
+
+// ── COFFEE NAME AUTOCOMPLETE ──────────────────────────────
+let _navnForslagData = [];
+let _navnTimer = null;
+
+async function søgKaffeNavn(val) {
+  clearTimeout(_navnTimer);
+  const container = document.getElementById('navn-autocomplete');
+  const q = val.trim();
+  if (!q || q.length < 2) { skjulNavnSuggestioner(); return; }
+  _navnTimer = setTimeout(async () => {
+    const { data } = await sb.from('coffee_ratings')
+      .select('navn, oprindelse, risteringsgrad, forarbejdning')
+      .ilike('navn', `%${q}%`)
+      .limit(40);
+    if (!data?.length) { skjulNavnSuggestioner(); return; }
+    // Deduplicate by navn + forarbejdning — same coffee with different
+    // processing (e.g. Washed vs Natural) counts as distinct entries
+    const seen = new Map();
+    data.forEach(r => {
+      const key = r.navn.trim().replace(/\s+/g, ' ').toLowerCase()
+        + '|' + (r.forarbejdning || '').toLowerCase();
+      if (!seen.has(key)) seen.set(key, r);
+    });
+    _navnForslagData = [...seen.values()].slice(0, 6);
+    container.innerHTML = _navnForslagData.map((r, i) => {
+      const tags = [r.forarbejdning, r.risteringsgrad].filter(Boolean).join(' · ');
+      const meta = [r.oprindelse, tags].filter(Boolean).join(' — ');
+      return `<div class="navn-forslag" onmousedown="vaelgKaffeNavn(${i})">
+        <span class="navn-forslag-navn">${r.navn.replace(/</g,'&lt;')}</span>
+        ${meta ? `<span class="navn-forslag-meta">${meta.replace(/</g,'&lt;')}</span>` : ''}
+      </div>`;
+    }).join('');
+    container.style.display = _navnForslagData.length ? '' : 'none';
+  }, 220);
+}
+
+function vaelgKaffeNavn(i) {
+  const r = _navnForslagData[i];
+  if (!r) return;
+  document.getElementById('f-navn').value = r.navn;
+  const opEl = document.getElementById('f-oprindelse');
+  if (r.oprindelse && !opEl.value) opEl.value = r.oprindelse;
+  if (r.forarbejdning) vaelgForarbejdning(r.forarbejdning);
+  if (r.risteringsgrad) vaelgRister(r.risteringsgrad);
+  skjulNavnSuggestioner();
+}
+
+function skjulNavnSuggestioner() {
+  const c = document.getElementById('navn-autocomplete');
+  if (c) { c.style.display = 'none'; c.innerHTML = ''; }
+  _navnForslagData = [];
+}
+function saetSmag(key, val) {
+  smagsVaerdier[key] = val;
+  document.querySelector(`#badge-${key} span`).textContent = val;
+  document.querySelectorAll(`#slider-${key} .skala-knap`).forEach((btn, i) => {
+    const aktiv = i+1 <= val;
+    btn.classList.toggle('aktiv', aktiv);
+    btn.style.background = aktiv ? 'var(--accent)' : '';
+    btn.style.borderColor = aktiv ? 'var(--accent)' : '';
+    btn.style.color = aktiv ? 'white' : '';
+  });
+}
+function saetScore(n) {
+  samletScore = n;
+  document.querySelectorAll('.score-knap').forEach((btn, i) => btn.classList.toggle('aktiv', i+1===n));
+  opdaterSamletBadge();
+}
+function opdaterSamletBadge() {
+  document.getElementById('samlet-badge').innerHTML = samletScore === null
+    ? `<div style="font-size:13px;color:var(--tekst-3);padding:4px 0">Tap a number below ↓</div>`
+    : `<div class="score-badge" style="background:${scorefarve(samletScore)}">
+        <span class="score-num">${samletScore}/10</span>
+        <span class="score-tekst">${scoretekst(samletScore)}</span>
+      </div>`;
+}
+
+// ── SAVE ─────────────────────────────────────────────────
+function visFormFejl(besked) {
+  const el = document.getElementById('form-fejl');
+  el.textContent = besked;
+  el.style.display = besked ? '' : 'none';
+}
+
+async function gemVurdering() {
+  const navn = document.getElementById('f-navn').value.trim().replace(/\s+/g, ' ');
+  if (!navn) { visFormFejl('Please enter the coffee name.'); return; }
+  if (samletScore === null) { visFormFejl('Please give a personal score before saving.'); document.getElementById('score-knapper').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+  visFormFejl('');
+  const knap = document.getElementById('gem-knap');
+  knap.disabled = true;
+  knap.innerHTML = '<span class="spinner"></span>';
+  try {
+    const ratingId = redigeringsId ?? Date.now().toString();
+    let imageUrl = _eksisterendeFotoUrl;
+    if (_valgFoto) {
+      const blob = await komprimer(_valgFoto.file);
+      imageUrl = await uploadFoto(ratingId, blob);
+    }
+    const vurdering = {
+      id: ratingId,
+      navn,
+      oprindelse: document.getElementById('f-oprindelse').value.trim(),
+      boennesort: document.getElementById('f-boennesort').value.trim(),
+      risteringsgrad: valgRister,
+      forarbejdning: valgForarbejdning,
+      brygmetode: valgBryg,
+      smag: { ...smagsVaerdier },
+      samletScore,
+      noter: document.getElementById('f-noter').value.trim(),
+      dato: new Date().toISOString(),
+      imageUrl: imageUrl ?? null,
+    };
+    await gemVurderingDB(vurdering);
+    ugyldiggørCache();
+  } catch (e) {
+    knap.disabled = false;
+    knap.textContent = redigeringsId ? 'Update Rating' : 'Save Rating';
+    visFormFejl('Could not save: ' + e.message);
+    return;
+  }
+  visFormFejl('');
+  resetForm();
+  knap.disabled = false;
+  knap.textContent = 'Save Rating';
+  visSide('liste');
+}
+
+async function redigerVurdering(id) {
+  lukModal();
+  const data = await hentAlleVurderinger();
+  const v = data.find(x => x.id === id);
+  if (!v) return;
+  redigeringsId = id;
+  valgRister = v.risteringsgrad;
+  valgForarbejdning = v.forarbejdning || 'Washed';
+  valgBryg = v.brygmetode;
+  smagsVaerdier = { ...v.smag };
+  samletScore = v.samlet_score;
+  visSide('ny');
+  initForm();
+  document.getElementById('f-navn').value = v.navn;
+  document.getElementById('f-oprindelse').value = v.oprindelse || '';
+  document.getElementById('f-boennesort').value = v.boennesort || '';
+  document.getElementById('f-noter').value = v.noter || '';
+  document.getElementById('gem-knap').textContent = 'Update Rating';
+  document.getElementById('annuller-knap').textContent = 'Cancel Edit';
+  // Load existing photo
+  nulstilFotoUI();
+  if (v.image_url) {
+    _eksisterendeFotoUrl = v.image_url;
+    const preview = document.getElementById('foto-preview');
+    preview.src = v.image_url;
+    preview.style.display = 'block';
+    document.getElementById('foto-placeholder').style.display = 'none';
+    document.getElementById('foto-fjern').style.display = '';
+  }
+}
+
+function annullerForm() {
+  resetForm();
+  visSide('liste');
+}
+
+// ── SOCIAL ────────────────────────────────────────────────
+let _følgerIds = null; // cache: set of IDs we follow
+let _mineFollowing = null; // cache: [{id, username}] of people I follow
+let _delValgte = new Set(); // selected recipients in share modal (empty = everyone)
+
+async function hentFølgerIds(force = false) {
+  if (!force && _følgerIds !== null) return _følgerIds;
+  const { data } = await sb.from('follows').select('following_id').eq('follower_id', aktivBruger.id);
+  _følgerIds = new Set((data ?? []).map(r => r.following_id));
+  return _følgerIds;
+}
+
+async function hentMineFollowing(force = false) {
+  if (!force && _mineFollowing !== null) return _mineFollowing;
+  const { data } = await sb.from('follows')
+    .select('following_id, profiles!follows_following_id_fkey(username)')
+    .eq('follower_id', aktivBruger.id);
+  _mineFollowing = (data ?? []).map(r => ({ id: r.following_id, username: r.profiles?.username ?? r.following_id }));
+  return _mineFollowing;
+}
+
+// ── FOLLOWING LIST ───────────────────────────────────────
+const SMAG_LABELS = {
+  syre: 'Acidic', bitterhed: 'Bitter', soedme: 'Sweet',
+  fylde: 'Full-bodied', aroma: 'Aromatic', eftersmag: 'Long finish'
+};
+
+function beregnSmagsProfil(smagSum, count) {
+  if (!count || !smagSum || !Object.keys(smagSum).length) return null;
+  const sorted = Object.entries(smagSum)
+    .map(([k, v]) => [k, v / count])
+    .filter(([k]) => SMAG_LABELS[k])
+    .sort(([, a], [, b]) => b - a);
+  // Show top traits with score >= 6, max 3
+  const top = sorted.filter(([, v]) => v >= 6).slice(0, 3).map(([k]) => SMAG_LABELS[k]);
+  return top.length ? top : null;
+}
+
+async function gengiFollowingListe(kaffer) {
+  const el = document.getElementById('following-liste-indhold');
+  const sektion = document.getElementById('following-sektion');
+  if (!el || !sektion) return;
+
+  const følgerIds = await hentFølgerIds();
+  if (!følgerIds.size) { sektion.style.display = 'none'; return; }
+
+  // Fetch profiles for all followed users
+  const { data: profilData } = await sb.from('profiles').select('id, username').in('id', [...følgerIds]);
+  const userMap = {}; // id -> username
+  const idMap = {};  // username -> id
+  (profilData ?? []).forEach(p => { userMap[p.id] = p.username; idMap[p.username] = p.id; });
+
+  // Aggregate stats from coffee ratings feed data
+  const stats = {};
+  [...følgerIds].forEach(id => { stats[id] = { count: 0, smagSum: {}, scoreSum: 0 }; });
+  (kaffer ?? []).forEach(k => {
+    const uid = idMap[k.username];
+    const s = stats[uid];
+    if (!s) return;
+    s.count++;
+    s.scoreSum += k.samlet_score ?? 0;
+    if (k.smag && typeof k.smag === 'object')
+      Object.entries(k.smag).forEach(([key, v]) => { s.smagSum[key] = (s.smagSum[key] || 0) + v; });
+  });
+
+  el.innerHTML = [...følgerIds].map(id => {
+    const username = userMap[id] ?? id.substring(0, 8) + '…';
+    const st = stats[id];
+    const avgScore = st.count ? (st.scoreSum / st.count).toFixed(1) : null;
+    const chips = beregnSmagsProfil(st.smagSum, st.count);
+    const chipsHtml = chips
+      ? `<div class="following-smag">${chips.map(c => `<span class="smag-chip">${c}</span>`).join('')}</div>`
+      : '';
+    const statsLinje = st.count
+      ? `${st.count} vurdering${st.count !== 1 ? 'er' : ''}${avgScore ? ` · gns. ${avgScore}/10` : ''}`
+      : 'Ingen vurderinger endnu';
+    return `<div class="following-kort">
+      <div class="following-avatar">${username[0].toUpperCase()}</div>
+      <div class="following-info">
+        <div class="following-navn">${username}</div>
+        <div class="following-stats">${statsLinje}</div>
+        ${chipsHtml}
+      </div>
+      <button class="følg-knap følger" onclick="toggleFølg('${id}', this, '${username}')">Following</button>
+    </div>`;
+  }).join('');
+
+  sektion.style.display = '';
+}
+
+async function populerModtagerListe() {
+  const liste = document.getElementById('del-modtager-liste');
+  const following = await hentMineFollowing();
+  if (!following.length) {
+    liste.innerHTML = '<span style="color:var(--tekst-3);font-size:13px;padding:4px 0">Follow people to send direct shares</span>';
+    return;
+  }
+  liste.innerHTML = `<div class="del-modtager-chip valgt" id="chip-alle" onclick="toggleAlleChip()">Everyone</div>` +
+    following.map(f => `<div class="del-modtager-chip" id="chip-${f.id}" onclick="toggleModtager('${f.id}')"><div class="chip-avatar">${f.username[0].toUpperCase()}</div><span>${f.username}</span></div>`).join('');
+}
+
+function toggleAlleChip() {
+  _delValgte.clear();
+  document.querySelectorAll('#del-modtager-liste .del-modtager-chip').forEach(c => c.classList.remove('valgt'));
+  document.getElementById('chip-alle')?.classList.add('valgt');
+  opdaterDelKnap();
+}
+
+function toggleModtager(uid) {
+  document.getElementById('chip-alle')?.classList.remove('valgt');
+  if (_delValgte.has(uid)) {
+    _delValgte.delete(uid);
+    document.getElementById(`chip-${uid}`)?.classList.remove('valgt');
+    if (_delValgte.size === 0) toggleAlleChip();
+  } else {
+    _delValgte.add(uid);
+    document.getElementById(`chip-${uid}`)?.classList.add('valgt');
+  }
+  opdaterDelKnap();
+}
+
+function opdaterDelKnap() {
+  const knap = document.getElementById('del-gem-knap');
+  if (!knap) return;
+  if (_delValgte.size === 0) knap.textContent = 'Share with everyone';
+  else if (_delValgte.size === 1) knap.textContent = 'Send to 1 person';
+  else knap.textContent = `Send to ${_delValgte.size} people`;
+}
+
+async function følg(uid) {
+  await sb.from('follows').insert({ follower_id: aktivBruger.id, following_id: uid });
+  _følgerIds = null;
+  _mineFollowing = null;
+}
+
+async function afFølg(uid) {
+  await sb.from('follows').delete().eq('follower_id', aktivBruger.id).eq('following_id', uid);
+  _følgerIds = null;
+  _mineFollowing = null;
+}
+
+async function søgBrugere() {
+  const q = document.getElementById('social-søg-input').value.trim();
+  const container = document.getElementById('social-søg-resultater');
+  if (!q) { container.innerHTML = ''; return; }
+  container.innerHTML = '<div style="font-size:13px;color:var(--tekst-3);padding:8px 0">Searching...</div>';
+  const { data: resultater } = await sb.from('profiles').select('id, username').ilike('username', `%${q}%`).neq('id', aktivBruger.id).limit(8);
+  if (!resultater?.length) { container.innerHTML = '<div style="font-size:13px;color:var(--tekst-3);padding:8px 0">No users found.</div>'; return; }
+  const følgerIds = await hentFølgerIds();
+  container.innerHTML = resultater.map(u => {
+    const følger = følgerIds.has(u.id);
+    return `<div class="bruger-raekke">
+      <div class="bruger-mini-avatar">${u.username[0].toUpperCase()}</div>
+      <div class="bruger-info">
+        <div class="bruger-navn-tekst">${u.username}</div>
+      </div>
+      <button class="følg-knap ${følger ? 'følger' : ''}" onclick="toggleFølg('${u.id}', this, '${u.username}')">${følger ? 'Following' : 'Follow'}</button>
+    </div>`;
+  }).join('');
+}
+
+async function toggleFølg(uid, knap, navn) {
+  const følger = knap.classList.contains('følger');
+  knap.disabled = true;
+  if (følger) {
+    await afFølg(uid);
+    knap.classList.remove('følger');
+    knap.textContent = 'Follow';
+  } else {
+    await følg(uid);
+    knap.classList.add('følger');
+    knap.textContent = 'Following';
+  }
+  knap.disabled = false;
+  gengiSocial(); // refresh feed
+}
+
+async function gengiHighscore() {
+  const el = document.getElementById('social-highscore-indhold');
+  if (!el) return;
+  const { data, error } = await sb.rpc('top_kaffe_highscore', { limit_n: 10 });
+  if (error || !data?.length) {
+    el.innerHTML = '<div style="color:var(--tekst-3);font-size:13px;padding:4px 0">No ratings yet</div>';
+    return;
+  }
+  el.innerHTML = data.map((r, i) => {
+    const meta = [r.oprindelse, r.risteringsgrad, r.brygmetode].filter(Boolean).join(' · ');
+    const antal = r.antal == 1 ? '1 person' : `${r.antal} people`;
+    const dinBadge = r.din_score != null ? `<div class="highscore-din">You: ${r.din_score}</div>` : '';
+    return `<div class="highscore-raekke">
+      <div class="highscore-nr">#${i + 1}</div>
+      <div class="highscore-info">
+        <div class="highscore-navn">${r.navn}</div>
+        <div class="highscore-meta">${[meta, antal].filter(Boolean).join(' · ')}</div>
+      </div>
+      ${dinBadge}
+      <div class="highscore-score">
+        <div class="highscore-score-tal">${r.avg_score}</div>
+        <div class="highscore-score-lbl">AVG</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function gengiMineKafferPåSocial() {
+  const el = document.getElementById('mine-kaffer-indhold');
+  const under = document.getElementById('mine-kaffer-under');
+  if (!el) return;
+  const data = await hentAlleVurderinger().catch(() => []);
+  if (!data.length) {
+    under.textContent = 'No ratings yet';
+    el.innerHTML = '<div style="color:var(--tekst-3);font-size:13px;padding:4px 0">Add your first coffee to see it here.</div>';
+    return;
+  }
+  under.textContent = `${data.length} rating${data.length !== 1 ? 's' : ''} · avg. ${gns(data.map(v => v.samlet_score)).toFixed(1)}/10`;
+  const top = [...data].sort((a, b) => b.samlet_score - a.samlet_score).slice(0, 5);
+  el.innerHTML = top.map((v, i) => `
+    <div class="top-kaffe-raekke" style="cursor:pointer" onclick="visDetalje('${v.id}')">
+      <div class="top-nr">#${i + 1}</div>
+      <div class="top-info">
+        <div class="top-navn">${v.navn}</div>
+        <div class="top-meta">${[v.oprindelse, v.boennesort, v.risteringsgrad, v.brygmetode].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="top-score" style="background:${scorefarve(v.samlet_score)}">
+        <span>${v.samlet_score}</span>
+      </div>
+    </div>`).join('') +
+    (data.length > 5 ? `<div style="font-size:12px;color:var(--tekst-3);padding:10px 0 2px;text-align:center">+${data.length - 5} more on the Coffees tab</div>` : '');
+}
+
+async function gengiSocial() {
+  const feedEl = document.getElementById('social-feed-indhold');
+  if (!feedEl) return;
+  gengiMineKafferPåSocial();
+  feedEl.innerHTML = '<div class="tom"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:28px;height:28px"></div></div>';
+
+  gengiHighscore();
+
+  const følgerIds = await hentFølgerIds();
+  document.getElementById('social-undertitel').textContent = `Following ${følgerIds.size} ${følgerIds.size === 1 ? 'person' : 'people'}`;
+
+  if (følgerIds.size === 0) {
+    gengiFollowingListe([]);
+    feedEl.innerHTML = `<div class="tom">
+      <div class="tom-emoji">◈</div>
+      <div class="tom-titel">Ingen følger endnu</div>
+      <div class="tom-tekst">Søg efter venner ovenfor og følg dem for at se deres kaffevurderinger her.</div>
+    </div>`;
+    return;
+  }
+
+  // Hent alle kaffevurderinger fra brugere du følger
+  const { data: kaffer, error } = await sb.rpc('hent_foelgers_kaffer', { limit_n: 50 });
+
+  gengiFollowingListe(kaffer);
+
+  if (error || !kaffer?.length) {
+    feedEl.innerHTML = `<div class="tom">
+      <div class="tom-emoji">☕</div>
+      <div class="tom-titel">Ingen vurderinger endnu</div>
+      <div class="tom-tekst">De du følger har ikke vurderet nogen kaffe endnu.</div>
+    </div>`;
+    return;
+  }
+
+  feedEl.innerHTML = `<div class="sektion">` + kaffer.map(k => {
+    const u = k.username ?? 'Unknown';
+    const meta = [k.oprindelse, k.risteringsgrad, k.brygmetode].filter(Boolean).join(' · ');
+    const tidSiden = relativTid(k.dato);
+    return `<div class="feed-post">
+      <div class="feed-top">
+        <div class="feed-avatar">${u[0].toUpperCase()}</div>
+        <div class="feed-meta">
+          <div class="feed-navn">${u}</div>
+          <div class="feed-tid">${tidSiden}</div>
+        </div>
+        <div class="feed-kaffe-score" style="background:${scorefarve(k.samlet_score)}">
+          <span>${k.samlet_score}</span>
+        </div>
+      </div>
+      <div class="feed-kaffe-kort">
+        <div class="feed-kaffe-info">
+          <div class="feed-kaffe-navn">${k.navn}</div>
+          ${meta ? `<div class="feed-kaffe-meta">${meta}</div>` : ''}
+        </div>
+      </div>
+      ${k.noter ? `<div class="feed-besked">${k.noter}</div>` : ''}
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function relativTid(iso) {
+  const sek = Math.floor((Date.now() - new Date(iso)) / 1000);
+  if (sek < 60) return 'Just now';
+  if (sek < 3600) return `${Math.floor(sek/60)}m ago`;
+  if (sek < 86400) return `${Math.floor(sek/3600)}h ago`;
+  return `${Math.floor(sek/86400)}d ago`;
+}
+
+// Share modal
+let _delRatingId = null;
+let _delType = 'recommend';
+
+function åbnDelModal(ratingId) {
+  _delRatingId = ratingId;
+  _delType = 'recommend';
+  _delValgte = new Set();
+  document.getElementById('del-type-anbefal').className = 'del-type-knap aktiv-anbefal';
+  document.getElementById('del-type-advarsel').className = 'del-type-knap';
+  document.getElementById('del-besked').value = '';
+  document.getElementById('del-gem-knap').textContent = 'Share with everyone';
+  populerModtagerListe();
+  document.getElementById('del-modal-overlay').classList.add('aaben');
+}
+
+function lukkDelModal(e) {
+  if (!e || e.target === document.getElementById('del-modal-overlay'))
+    document.getElementById('del-modal-overlay').classList.remove('aaben');
+}
+
+function vælgDelType(type) {
+  _delType = type;
+  document.getElementById('del-type-anbefal').className = 'del-type-knap' + (type === 'recommend' ? ' aktiv-anbefal' : '');
+  document.getElementById('del-type-advarsel').className = 'del-type-knap' + (type === 'warn' ? ' aktiv-advarsel' : '');
+}
+
+async function bekræftDel() {
+  const knap = document.getElementById('del-gem-knap');
+  const besked = document.getElementById('del-besked').value.trim();
+  knap.disabled = true;
+  knap.innerHTML = '<span class="spinner"></span>';
+  const base = { from_user_id: aktivBruger.id, rating_id: _delRatingId, type: _delType, besked: besked || null };
+  let error;
+  if (_delValgte.size === 0) {
+    // Broadcast: do NOT include to_user_id so this works both before and after v2 migration
+    ({ error } = await sb.from('shared_ratings').insert(base));
+  } else {
+    ({ error } = await sb.from('shared_ratings').insert([..._delValgte].map(uid => ({ ...base, to_user_id: uid }))));
+  }
+  knap.disabled = false;
+  opdaterDelKnap();
+  if (error) {
+    if (error.code === '23505') {
+      // Unique constraint — already shared this coffee, treat as success
+      document.getElementById('del-modal-overlay').classList.remove('aaben');
+      return;
+    }
+    if (error.code === '42703') {
+      // to_user_id column missing — v2 migration not yet applied
+      alert('Database needs updating. Please run social_v2_migration.sql in Supabase.');
+      return;
+    }
+    alert('Could not share. Please try again.');
+    return;
+  }
+  document.getElementById('del-modal-overlay').classList.remove('aaben');
+}
+
+// ── PROFILE / STATS ───────────────────────────────────────
+function statsHeaderHTML(undertitel) {
+  return `
+    <div class="profil-signout">
+      <div class="profil-bruger">
+        <div class="profil-avatar">${brugernavn[0]?.toUpperCase() ?? '?'}</div>
+        <div><div class="profil-navn">${brugernavn}</div><div class="profil-email">${aktivBruger?.email ?? ''}</div></div>
+      </div>
+      <button class="signout-knap" onclick="logUd()">Sign out</button>
+    </div>
+    <div class="stats-titel">Your Taste Profile</div>
+    ${undertitel ? `<div class="stats-under">${undertitel}</div>` : ''}`;
+}
+
+async function gengiStats() {
+  document.getElementById('stats-header').innerHTML = statsHeaderHTML('');
+  document.getElementById('stats-indhold').innerHTML = '<div class="tom"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:28px;height:28px"></div></div>';
+  let data;
+  try {
+    data = await hentAlleVurderinger();
+  } catch(e) {
+    document.getElementById('stats-indhold').innerHTML = `<div class="tom"><div class="tom-tekst">${e.message}</div></div>`;
+    return;
+  }
+  if (!data.length) {
+    document.getElementById('stats-header').innerHTML = statsHeaderHTML('No data yet');
+    document.getElementById('stats-indhold').innerHTML = '';
+    return;
+  }
+  const smagsGns = {};
+  SMAG_FELTER.forEach(f => { smagsGns[f.key] = gns(data.map(v => v.smag[f.key])); });
+  const sorteret = [...SMAG_FELTER].sort((a,b) => smagsGns[b.key] - smagsGns[a.key]);
+  const top = sorteret[0], anden = sorteret[1];
+
+  document.getElementById('stats-header').innerHTML = statsHeaderHTML(`Based on ${data.length} rating${data.length!==1?'s':''}`) + `
+    <div class="profil-boks" style="margin-top:12px"><div class="profil-tekst">
+      You prefer coffee with <strong>${top.label.toLowerCase()} (${smagsGns[top.key].toFixed(1)}/10)</strong>
+      and <strong>${anden.label.toLowerCase()} (${smagsGns[anden.key].toFixed(1)}/10)</strong> as prominent characteristics.
+    </div></div>`;
+
+  const risterMap = {}, brygMap = {}, forarbMap = {};
+  data.forEach(v => {
+    (risterMap[v.risteringsgrad] ??= []).push(v.samlet_score);
+    (brygMap[v.brygmetode] ??= []).push(v.samlet_score);
+    if (v.forarbejdning) (forarbMap[v.forarbejdning] ??= []).push(v.samlet_score);
+  });
+  const bedsteRister = Object.entries(risterMap).sort(([,a],[,b]) => gns(b)-gns(a))[0];
+  const bedsteBryg   = Object.entries(brygMap).sort(([,a],[,b]) => gns(b)-gns(a))[0];
+  const bedsteForarb = Object.entries(forarbMap).sort(([,a],[,b]) => gns(b)-gns(a))[0];
+  const topKaffer    = [...data].sort((a,b) => b.samlet_score - a.samlet_score).slice(0,5);
+  const totalGns     = gns(data.map(v=>v.samlet_score));
+
+  document.getElementById('stats-indhold').innerHTML = `
+    <div class="sektion">
+      <div class="sektion-titel">Average Taste Profile</div>
+      ${SMAG_FELTER.map(f => `
+        <div class="bar-container">
+          <div class="bar-label-raekke"><span class="bar-label">${f.label}</span><span class="bar-vaerdi">${smagsGns[f.key].toFixed(1)}</span></div>
+          <div class="bar-spor"><div class="bar-fyld" style="width:${smagsGns[f.key]*10}%"></div></div>
+        </div>`).join('')}
+    </div>
+    <div class="sektion">
+      <div class="sektion-titel">Your Preferences</div>
+      <div class="praef-raekke">
+        <div class="praef-kort">
+          <div class="praef-emoji">🔥</div>
+          <div class="praef-label">Best Roast</div>
+          <div class="praef-vaerdi">${bedsteRister[0]}</div>
+          <div class="praef-score">${gns(bedsteRister[1]).toFixed(1)}/10 avg.</div>
+        </div>
+        <div class="praef-kort">
+          <div class="praef-emoji">☕</div>
+          <div class="praef-label">Best Brew Method</div>
+          <div class="praef-vaerdi">${bedsteBryg[0]}</div>
+          <div class="praef-score">${gns(bedsteBryg[1]).toFixed(1)}/10 avg.</div>
+        </div>
+      </div>
+      ${bedsteForarb ? `
+      <div class="praef-raekke">
+        <div class="praef-kort praef-fuld" style="display:flex">
+          <div class="praef-emoji">💧</div>
+          <div><div class="praef-label">Best Processing</div><div class="praef-vaerdi">${bedsteForarb[0]}</div><div class="praef-score">${gns(bedsteForarb[1]).toFixed(1)}/10 avg.</div></div>
+        </div>
+      </div>` : ''}
+      <div class="praef-raekke">
+        <div class="praef-kort praef-fuld" style="display:flex">
+          <div class="praef-emoji">⭐</div>
+          <div><div class="praef-label">Overall Average Score</div><div class="praef-vaerdi">${totalGns.toFixed(1)}/10</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="sektion">
+      <div class="sektion-titel">Your Best Coffees</div>
+      ${topKaffer.map((v,i) => `
+        <div class="top-kaffe-raekke">
+          <div class="top-nr">#${i+1}</div>
+          <div class="top-info">
+            <div class="top-navn">${v.navn}</div>
+            <div class="top-meta">${[v.oprindelse, v.boennesort, v.brygmetode].filter(Boolean).join(' · ')}</div>
+          </div>
+          <div class="top-score" style="background:${scorefarve(v.samlet_score)}">
+            <span>${v.samlet_score}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="sektion">
+      <div class="sektion-titel">Recommended for You</div>
+      ${genererAnbefalinger(smagsGns).map(k => `
+        <div class="anbefalet-kort">
+          <div class="anbefalet-top">
+            <div class="anbefalet-navn">${k.navn}</div>
+            <div class="anbefalet-match">${k.matchPct}% match</div>
+          </div>
+          <div class="anbefalet-risteri">${k.risteri}</div>
+          <div class="anbefalet-meta">${[k.oprindelse, k.boennesort, k.forarbejdning].filter(Boolean).join(' · ')}</div>
+          <div class="anbefalet-begrundelse">${k.begrundelse}</div>
+          <a class="anbefalet-koeb" href="${k.url}" target="_blank" rel="noopener">Buy online</a>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ── AI TASTE ANALYSIS ─────────────────────────────────────
+async function analyserSmagMedAI() {
+  const knap = document.getElementById('ai-anbefaling-knap');
+  const indhold = document.getElementById('home-anbefaling-indhold');
+  if (!indhold) return;
+
+  // Session cache per user
+  const cacheKey = 'ai_analyse_' + (aktivBruger?.id || '');
+  const cached = sessionStorage.getItem(cacheKey);
+  if (cached) {
+    try { visAiAnbefalinger(JSON.parse(cached)); if (knap) { knap.textContent = '✦ Refresh'; knap.disabled = false; } return; } catch(e) {}
+  }
+
+  if (knap) { knap.disabled = true; knap.textContent = '…'; }
+  indhold.innerHTML = '<div style="text-align:center;padding:28px 0"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);width:28px;height:28px;margin:0 auto 12px"></div><div style="font-size:13px;color:var(--tekst-3)">AI is analysing your taste profile…</div></div>';
+
+  try {
+    const apiKey = await hentAiKey();
+    if (!apiKey) throw new Error('No API key configured');
+
+    const data = (_cacheData && _cacheData.length > 0) ? _cacheData : await hentAlleVurderinger();
+    if (!data || data.length < 2) {
+      indhold.innerHTML = '<div style="font-size:13px;color:var(--tekst-3);padding:8px 0">Rate at least 2 coffees to get AI recommendations.</div>';
+      if (knap) { knap.disabled = false; knap.textContent = '✦ AI Analysis'; }
+      return;
+    }
+
+    const smagsGns = {};
+    SMAG_FELTER.forEach(f => { smagsGns[f.key] = gns(data.map(v => v.smag[f.key])); });
+
+    const top3 = [...data].sort((a,b) => (b.samlet_score ?? 0) - (a.samlet_score ?? 0)).slice(0,3);
+    const brygCount = {};
+    data.forEach(v => { brygCount[v.brygmetode] = (brygCount[v.brygmetode]||0) + 1; });
+    const topBryg = Object.entries(brygCount).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
+    const risterCount = {};
+    data.forEach(v => { risterCount[v.risteringsgrad] = (risterCount[v.risteringsgrad]||0) + 1; });
+    const topRister = Object.entries(risterCount).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
+    const avgScore = gns(data.map(v => v.samlet_score ?? 0)).toFixed(1);
+
+    const desc = k => k >= 7 ? 'high' : k <= 4 ? 'low' : 'medium';
+    const prompt = `You are a specialty coffee expert. A user has rated ${data.length} coffees. Analyse their taste data and recommend 4 specific coffees to buy online.
+
+TASTE AVERAGES (1–10 scale):
+Acidity: ${smagsGns.syre.toFixed(1)} (${desc(smagsGns.syre)})
+Bitterness: ${smagsGns.bitterhed.toFixed(1)} (${desc(smagsGns.bitterhed)})
+Sweetness: ${smagsGns.soedme.toFixed(1)} (${desc(smagsGns.soedme)})
+Body: ${smagsGns.fylde.toFixed(1)} (${desc(smagsGns.fylde)})
+Aroma: ${smagsGns.aroma.toFixed(1)} (${desc(smagsGns.aroma)})
+Aftertaste: ${smagsGns.eftersmag.toFixed(1)} (${desc(smagsGns.eftersmag)})
+Average overall score given: ${avgScore}/10
+Top-rated coffees: ${top3.map(v => `"${v.navn}" ${(v.samlet_score ?? v.samletScore ?? '?')}/10 (${v.oprindelse||'unknown'})`).join(', ')}
+Brew methods: ${topBryg.join(', ')}
+Roast preference: ${topRister.join(', ')}
+
+Respond ONLY with a valid JSON object, no prose, no markdown:
+{
+  "profil": "2–3 sentences: a specific, insightful personal taste profile that references their actual numbers",
+  "anbefalinger": [
+    {
+      "navn": "exact coffee name",
+      "risteri": "real roastery name",
+      "oprindelse": "origin country",
+      "boennesort": "cultivar or variety",
+      "forarbejdning": "processing method",
+      "smagsnote": "3–5 specific flavor descriptors",
+      "begrundelse": "1–2 sentences explaining why this matches their profile",
+      "url": "real product or collection URL from the roastery webshop"
+    }
+  ]
+}
+
+Use only real, active specialty roasteries with real webshops. Prefer Scandinavian/European: La Cabra (lacabra.dk), The Coffee Collective (coffeecollective.dk), Tim Wendelboe (timwendelboe.no), Drop Coffee (dropcoffee.com), Gardelli (gardellicoffee.com), Calendar Coffee (calendarcoffee.com), Koppi (koppi.se), Five Elephant (fiveelephant.com), The Barn (thebarn.de). URLs must be real. Return exactly 4 recommendations.`;
+
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 45000);
+    let resp;
+    try {
+      resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2048,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+    } finally {
+      clearTimeout(tid);
+    }
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${resp.status}`);
+    }
+
+    const result = await resp.json();
+    const raw = result.content?.[0]?.text || '';
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Unexpected AI response format');
+    const analyse = JSON.parse(jsonMatch[0]);
+
+    try { sessionStorage.setItem(cacheKey, JSON.stringify(analyse)); } catch(e) {}
+    visAiAnbefalinger(analyse);
+    if (knap) { knap.textContent = '✦ Refresh'; knap.disabled = false; }
+  } catch(e) {
+    const msg = e?.name === 'AbortError' ? 'Request timed out — try again' : String(e?.message || e).slice(0, 80);
+    indhold.innerHTML = `<div style="font-size:13px;color:var(--roed);padding:8px 0">AI analysis failed: ${msg}</div>`;
+    if (knap) { knap.disabled = false; knap.textContent = '✦ Retry'; }
+  }
+}
+
+function visAiAnbefalinger(analyse) {
+  const indhold = document.getElementById('home-anbefaling-indhold');
+  if (!indhold) return;
+  let html = '';
+  if (analyse.profil) {
+    html += `<div class="ai-profil-kort">${analyse.profil}</div>`;
+  }
+  if (Array.isArray(analyse.anbefalinger)) {
+    html += analyse.anbefalinger.map(k => `
+    <div class="anbefalet-kort">
+      <div class="anbefalet-top">
+        <div class="anbefalet-navn">${k.navn}</div>
+        <div class="anbefalet-match ai-badge">✦ AI Pick</div>
+      </div>
+      <div class="anbefalet-risteri">${k.risteri}</div>
+      <div class="anbefalet-meta">${[k.oprindelse, k.boennesort, k.forarbejdning].filter(Boolean).join(' · ')}</div>
+      ${k.smagsnote ? `<div class="anbefalet-meta" style="font-style:italic;margin-top:-4px;margin-bottom:8px">${k.smagsnote}</div>` : ''}
+      <div class="anbefalet-begrundelse">${k.begrundelse}</div>
+      <a class="anbefalet-koeb" href="${k.url}" target="_blank" rel="noopener">Buy online →</a>
+    </div>`).join('');
+  }
+  indhold.innerHTML = html;
+}
+
+// ── RECOMMENDATIONS ON HOME ───────────────────────────────
+function renderAnbefalinger(data) {
+  const sektion = document.getElementById('home-anbefaling-sektion');
+  const indhold = document.getElementById('home-anbefaling-indhold');
+  if (!sektion || !indhold || data.length < 2) return;
+  const smagsGns = {};
+  SMAG_FELTER.forEach(f => { smagsGns[f.key] = gns(data.map(v => v.smag[f.key])); });
+  const anbefalinger = genererAnbefalinger(smagsGns).slice(0, 3);
+  indhold.innerHTML = anbefalinger.map(k => `
+    <div class="anbefalet-kort">
+      <div class="anbefalet-top">
+        <div class="anbefalet-navn">${k.navn}</div>
+        <div class="anbefalet-match">${k.matchPct}% match</div>
+      </div>
+      <div class="anbefalet-risteri">${k.risteri}</div>
+      <div class="anbefalet-meta">${[k.oprindelse, k.boennesort, k.forarbejdning].filter(Boolean).join(' · ')}</div>
+      <div class="anbefalet-begrundelse">${k.begrundelse}</div>
+      <a class="anbefalet-koeb" href="${k.url}" target="_blank" rel="noopener">Buy online →</a>
+    </div>`).join('');
+  sektion.style.display = '';
+}
+
+// ── NAV ADD BUTTON ────────────────────────────────────────
+function aabneNyKaffe() {
+  resetForm();
+  document.getElementById('gem-knap').textContent = 'Save Rating';
+  document.getElementById('annuller-knap').textContent = 'Cancel';
+  initForm();
+  visSide('ny');
+}
+
+// ── BOOT ──────────────────────────────────────────────────
+// patch visSide: when navigating to 'ny' without edit mode, reset form
+(function() {
+  const orig = visSide;
+  visSide = async function(side) {
+    if (side === 'ny' && !redigeringsId) {
+      document.getElementById('gem-knap').textContent = 'Save Rating';
+      document.getElementById('annuller-knap').textContent = 'Cancel';
+      nulstilFotoUI();
+      initForm();
+    }
+    return orig(side);
+  };
+})();
+
+// ── TERMS OF USE ──────────────────────────────────────────
+function visVilkaar() {
+  document.getElementById('vilkaar-overlay').classList.add('aaben');
+}
+function lukVilkaar(e) {
+  if (e && e.target !== document.getElementById('vilkaar-overlay')) return;
+  document.getElementById('vilkaar-overlay').classList.remove('aaben');
+}
+
+document.addEventListener('DOMContentLoaded', start);
+</script>
+
+<!-- TERMS OF USE MODAL -->
+<div class="vilkaar-overlay" id="vilkaar-overlay" onclick="lukVilkaar(event)">
+  <div class="vilkaar-boks" onclick="event.stopPropagation()">
+    <div class="vilkaar-header">
+      <div class="vilkaar-titel">Terms of Use &amp; Privacy Policy</div>
+      <button class="vilkaar-luk" onclick="lukVilkaar()">Close</button>
+    </div>
+    <div class="vilkaar-indhold">
+
+      <h3>1. About CoffeeBuddies</h3>
+      <p>CoffeeBuddies ("the App", "the Service") is a personal, non-commercial hobby project operated by a private individual ("the Operator"). The App is provided free of charge on an entirely voluntary basis. The Operator is under no obligation to maintain, update, or continue operating the Service at any time.</p>
+
+      <h3>2. Acceptance of Terms</h3>
+      <p>By creating an account or using CoffeeBuddies in any way, you confirm that you are at least 13 years of age and that you agree to these Terms of Use. If you do not agree, you must not use the Service.</p>
+
+      <h3>3. No Warranty — Service Provided "As Is"</h3>
+      <p>The App is provided <strong>"as is"</strong> and <strong>"as available"</strong> without any warranty of any kind, either express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement. The Operator makes no guarantee that the Service will be available, error-free, secure, or uninterrupted at any time.</p>
+
+      <h3>4. Limitation of Liability</h3>
+      <p>To the maximum extent permitted by applicable law, the Operator shall not be liable for any direct, indirect, incidental, special, consequential, or exemplary damages, including but not limited to: loss of data, loss of revenue, personal injury, or any other loss arising from your use of — or inability to use — the App, even if the Operator has been advised of the possibility of such damages.</p>
+      <p>This includes, without limitation, any harm arising from reliance on coffee ratings, taste descriptions, or purchase recommendations generated by or displayed within the App.</p>
+
+      <h3>5. AI-Generated Content</h3>
+      <p>CoffeeBuddies uses artificial intelligence (the Anthropic Claude API) to generate taste profile analyses, coffee descriptions, and purchase recommendations. All AI-generated content is produced automatically and has not been reviewed, verified, or endorsed by the Operator.</p>
+      <p>AI-generated recommendations are for personal entertainment and inspiration only. They do not constitute professional advice of any kind. Purchase links suggested by the AI may be inaccurate, outdated, or lead to products no longer available. The Operator is not responsible for any purchases you make, any costs incurred, or any dissatisfaction with products obtained through links displayed in the App.</p>
+      <p>The Operator has no commercial relationship, affiliate agreement, or sponsorship with any coffee roastery or retailer mentioned in AI-generated content.</p>
+
+      <h3>6. User-Generated Content</h3>
+      <p>You retain ownership of the coffee ratings, notes, and photos you submit ("Your Content"). By submitting content to the App, you grant the Operator a non-exclusive, royalty-free licence to store and display Your Content solely for the purpose of operating the Service. You are solely responsible for Your Content and warrant that it does not violate any applicable law or third-party rights.</p>
+
+      <h3>7. Data Storage &amp; Privacy (GDPR)</h3>
+      <p>Your account data (email address, username, coffee ratings, and uploaded photos) is stored using Supabase, a third-party infrastructure provider, on servers which may be located within the European Economic Area. By using the App you consent to this storage.</p>
+      <p>The Operator does not sell, rent, or share your personal data with third parties for marketing purposes. Your email address is used solely for authentication and account recovery.</p>
+      <p>Under the General Data Protection Regulation (GDPR), if you are located in the EU/EEA, you have the right to access, correct, or request deletion of your personal data. To exercise these rights, contact the Operator using the email address associated with your account, or delete your account directly within the App. Upon account deletion, all associated data will be removed within 30 days.</p>
+
+      <h3>8. Health &amp; Allergen Disclaimer</h3>
+      <p>The App does not provide allergen information, health advice, or dietary guidance. Coffee and coffee products may cause adverse reactions in some individuals. You consume any coffee product entirely at your own risk. The Operator accepts no liability for any health-related consequences arising from coffee consumption.</p>
+
+      <h3>9. Service Changes &amp; Termination</h3>
+      <p>The Operator reserves the right to modify, suspend, or permanently discontinue the Service at any time and without prior notice. The Operator may also terminate or suspend individual user accounts at their sole discretion. Upon discontinuation, user data may be permanently deleted.</p>
+
+      <h3>10. Governing Law</h3>
+      <p>These Terms are governed by the laws of Denmark. Any dispute arising from these Terms or your use of the Service shall be subject to the exclusive jurisdiction of the Danish courts.</p>
+
+      <h3>11. Changes to These Terms</h3>
+      <p>The Operator may update these Terms from time to time. Continued use of the App after changes are posted constitutes acceptance of the revised Terms. It is your responsibility to review these Terms periodically.</p>
+
+      <div class="vilkaar-dato">Last updated: March 2026 &nbsp;·&nbsp; CoffeeBuddies is a private, non-commercial project.</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
