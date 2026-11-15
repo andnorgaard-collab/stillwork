@@ -17,10 +17,11 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
-.hero { padding: clamp(48px, 11vh, 120px) 0 0; }
-.hero h1 { margin-top: 28px; }
+main { display: flex; align-items: center; }
+.hero { padding: clamp(32px, 8vh, 96px) 0; }
 .hero .lead { margin-top: 48px; }
-.cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 36px; }
+.site-foot { margin-top: 0; padding: 24px 0 28px; }
+.site-foot .foot-base { margin-top: 0; }
 </style>
 </head>
 <body>
@@ -32,27 +33,13 @@
 </header>
 <main class="wrap">
   <section class="hero rise">
-    <a class="pill" href="/sitefellow/"><span class="pulse"></span><span>Now building <b>Sitefellow</b></span><span class="arrow" aria-hidden="true">→</span></a>
     <h1>Useful things,<br><em class="hand">made quietly.<svg viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15C40 9 90 8 140 11C180 13 210 12 236 8"/></svg></em></h1>
     <p class="lead">I'm Anders. I build small, practical digital tools and try out ideas on the side. This is where they live.</p>
-    <div class="cta"><a class="btn" href="/work/">See the work <span class="arrow" aria-hidden="true">→</span></a><a class="btn ghost" href="/about/">About me</a></div>
-  </section>
-  <section class="block">
-    <div class="block-head"><h2 class="label">Selected work</h2><a href="/work/">All projects <span class="arrow" aria-hidden="true">→</span></a></div>
-    <ul class="rows">
-      <li><a class="row" href="/sitefellow/"><span class="n">01</span><b>Sitefellow</b><span class="desc">One timeline for people who build together.</span><span class="status">Beta</span><span class="arrow" aria-hidden="true">→</span></a></li>
-      <li><a class="row" href="/coffeebuddies/"><span class="n">02</span><b>CoffeeBuddies</b><span class="desc">Rate coffees, find your taste profile, see what friends brew.</span><span class="status">Live</span><span class="arrow" aria-hidden="true">→</span></a></li>
-      <li><a class="row" href="/eagles/"><span class="n">03</span><b>Dragør Eagles</b><span class="desc">Check-in board for a Tuesday basketball crew. Loud on purpose.</span><span class="status">Live</span><span class="arrow" aria-hidden="true">→</span></a></li>
-    </ul>
   </section>
 </main>
 <footer class="site-foot">
   <div class="wrap">
-    <div class="foot-top">
-      <a class="foot-mark" href="/" style="text-decoration:none"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><circle cx="33" cy="33" r="8" fill="var(--ember)"/></svg><span>Useful things, <em>made quietly.</em></span></a>
-      <nav class="foot-links" aria-label="Footer"><a href="/about/">About</a><a href="/work/">Work</a><a href="/contact/">Contact</a><a href="/brand/">Identity</a><a href="https://www.linkedin.com/in/anders-norgaard-carlsen" rel="me noopener">LinkedIn ↗</a></nav>
-    </div>
-    <div class="foot-base"><span>© <span data-year>2026</span> Anders Nørgaard-Carlsen</span><span>Even though it's fun, it's still work.</span><span>Copenhagen, Denmark</span></div>
+    <div class="foot-base"><span>© <span data-year>2026</span> Anders Nørgaard-Carlsen</span><span>Even though it's fun, it's still work.</span><a href="https://www.linkedin.com/in/anders-norgaard-carlsen" rel="me noopener">LinkedIn ↗</a></div>
   </div>
 </footer>
 <script src="/site.js" defer></script>
