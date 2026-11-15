@@ -36,18 +36,29 @@
     font-family: var(--body);
     color: var(--white);
     background-color: var(--purple-deep);
-    background-image:
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 40l22-14 14 26z' fill='%2312c8b6' stroke='%23111014'/%3E%3Cpath d='M140 24c10-12 20 12 30 0s20 12 30 0' stroke='%23ffc22e'/%3E%3Cpath d='M150 150l26 6-18 20z' fill='%23ff2e4d' stroke='%23111014'/%3E%3Cpath d='M30 160c10-12 20 12 30 0s20 12 30 0' stroke='%2312c8b6'/%3E%3Ccircle cx='96' cy='96' r='7' fill='%23ffc22e' stroke='%23111014'/%3E%3Cpath d='M190 90l8 8M198 90l-8 8' stroke='%23ff2e4d'/%3E%3Cpath d='M60 110l6 6M66 110l-6 6' stroke='%23c9c6d6'/%3E%3C/g%3E%3C/svg%3E"),
-      linear-gradient(160deg, #4a1786 0%, #2b0f4c 55%, #1b0a33 100%);
-    background-attachment: fixed;
+    background: linear-gradient(160deg, #4a1786 0%, #2b0f4c 55%, #1b0a33 100%) fixed;
     padding-bottom: env(safe-area-inset-bottom);
   }
   button, input, select { font: inherit; color: inherit; }
   .wrap { max-width: 920px; margin: 0 auto; padding: 0 18px; }
 
+
+  /* Background: jersey bands, halftone and scattered 90s shapes */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .band { position: absolute; left: -30%; width: 160%; transform: rotate(-14deg); }
+  .band.b1 { top: 18%; height: 70px; background: var(--teal); box-shadow: 0 0 0 6px var(--black); opacity: .9; }
+  .band.b2 { top: calc(18% + 86px); height: 18px; background: var(--red); box-shadow: 0 0 0 4px var(--black); opacity: .9; }
+  .band.b3 { top: 74%; height: 34px; background: var(--gold); box-shadow: 0 0 0 5px var(--black); transform: rotate(9deg); opacity: .85; }
+  .halftone { position: absolute; width: 70vmax; height: 70vmax; right: -20vmax; bottom: -22vmax; background: radial-gradient(circle, rgba(255,46,77,.55) 2.6px, transparent 3px) 0 0 / 16px 16px; -webkit-mask: radial-gradient(circle, #000 0%, transparent 68%); mask: radial-gradient(circle, #000 0%, transparent 68%); }
+  .halftone.h2 { right: auto; bottom: auto; left: -26vmax; top: -24vmax; background: radial-gradient(circle, rgba(18,200,182,.5) 2.4px, transparent 2.8px) 0 0 / 14px 14px; }
+  .shape { position: absolute; animation: float var(--d, 14s) ease-in-out var(--delay, 0s) infinite alternate; }
+  .shape svg { display: block; width: 100%; height: auto; overflow: visible; }
+  @keyframes float { from { transform: translate(0, 0) rotate(var(--r, 0deg)); } to { transform: translate(var(--dx, 12px), var(--dy, -18px)) rotate(calc(var(--r, 0deg) + var(--spin, 20deg))); } }
+  @media (prefers-reduced-motion: reduce) { .shape { animation: none; transform: rotate(var(--r, 0deg)); } }
+
   /* Hero */
   .hero { position: relative; padding: 28px 0 8px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
-  .crest { width: 132px; height: 132px; filter: drop-shadow(6px 6px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
+  .crest { width: 160px; height: 155px; filter: drop-shadow(6px 6px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
   @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
   .title { font-family: var(--shade); font-size: clamp(38px, 9vw, 84px); line-height: .9; color: var(--gold); text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--black); letter-spacing: .01em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
   .title small { display: block; font-family: var(--display); font-size: .5em; color: var(--teal); text-shadow: 3px 3px 0 var(--black); margin-top: 6px; }
@@ -55,7 +66,7 @@
   .sticker { font-family: var(--display); font-size: 14px; padding: 6px 12px; background: var(--red); color: var(--white); border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--black); transform: rotate(-2deg); }
   .sticker:nth-child(2) { background: var(--teal); color: var(--black); transform: rotate(1.5deg); }
   .sticker:nth-child(3) { background: var(--gold); color: var(--black); transform: rotate(-1deg); }
-  @media (max-width: 560px) { .crest { width: 92px; height: 92px; } }
+  @media (max-width: 560px) { .crest { width: 132px; height: 128px; } }
 
   /* Panels */
   .panel { position: relative; margin-top: 30px; background: var(--white); color: var(--black); border: 4px solid var(--black); box-shadow: 10px 10px 0 var(--black), 10px 10px 0 4px var(--teal); padding: 22px 20px 24px; }
@@ -138,24 +149,35 @@
 </style>
 </head>
 <body>
+<div class="bg" id="bg" aria-hidden="true"><div class="halftone"></div><div class="halftone h2"></div><div class="band b1"></div><div class="band b2"></div><div class="band b3"></div></div>
 <div class="wrap">
   <header class="hero">
-    <svg class="crest" viewBox="0 0 200 200" role="img" aria-label="Dragør Eagles crest">
-  <circle cx="100" cy="104" r="88" fill="#ff7a1a" stroke="#111014" stroke-width="6"/>
-  <path d="M12 104h176M100 16v176M48 34c34 36 34 104 0 140M152 34c-34 36-34 104 0 140" fill="none" stroke="#111014" stroke-width="5"/>
-  <path d="M34 196 L48 162 L30 168 L54 134 L34 136 L64 104 L86 120 L104 150 L118 196 Z" fill="#4a230f" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M66 104 L32 100 L56 88 L26 74 L58 68 L36 48 L72 54 L64 30 L92 42 C104 34 120 32 134 34 C150 36 162 44 170 54 L176 64 L152 72 L158 90 L142 104 L130 128 L110 132 L104 150 L86 120 Z" fill="#fffaf0" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M146 56 C168 46 194 54 200 74 C204 90 198 104 186 112 C186 100 180 92 170 88 L148 86 Z" fill="#ffc22e" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M148 86 L170 88 L184 100 L160 98 Z" fill="#b8001f" stroke="#111014" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M148 86 L160 98 L182 104 C172 118 156 122 140 116 Z" fill="#e8a314" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
-  <path d="M166 62 C176 62 184 66 190 74" fill="none" stroke="#111014" stroke-width="3" stroke-linecap="round"/>
-  <path d="M118 70 L148 62 L140 72 L124 76 Z" fill="#ff2e4d" stroke="#111014" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M134 66 L140 64 L138 72 L132 73 Z" fill="#111014"/>
-  <path d="M100 58 L160 44 L154 60 L120 68 L104 70 Z" fill="#111014"/>
-  <path d="M108 82 L122 100 M117 80 L131 98" stroke="#ff2e4d" stroke-width="4" stroke-linecap="round"/>
-  <path d="M80 76 L98 72 M76 92 L94 89 M96 112 L110 109" stroke="#c9c6d6" stroke-width="4" stroke-linecap="round"/>
+    <svg class="crest" viewBox="-4 -8 248 240" role="img" aria-label="Dragør Eagles crest: an angry eagle with a basketball in its talons">
+ <polygon points="120,0 139,30 169,11 172,46 208,42 196,76 229,87 204,112 229,137 196,148 208,182 172,178 169,213 139,194 120,224 101,194 71,213 68,178 32,182 44,148 11,137 36,112 11,87 44,76 32,42 68,46 71,11 101,30" fill="#12c8b6" stroke="#111014" stroke-width="5" stroke-linejoin="round"/>
+ <g stroke="#111014" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+  <path d="M104 100 L64 78 L18 40 L38 42 L10 16 L44 26 L30 2 L64 26 L66 6 L88 40 L96 22 L114 82 Z" fill="#4a230f"/>
+  <path d="M 136 100 L 176 78 L 222 40 L 202 42 L 230 16 L 196 26 L 210 2 L 176 26 L 174 6 L 152 40 L 144 22 L 126 82 Z" fill="#4a230f"/>
+  <path d="M100 92 L66 68 L40 46 L70 56 L92 70 Z" fill="#12c8b6" stroke-width="3.5"/>
+  <path d="M 140 92 L 174 68 L 200 46 L 170 56 L 148 70 Z" fill="#12c8b6" stroke-width="3.5"/>
+  <path d="M54 52 L84 68 M40 30 L76 54 M186 52 L156 68 M200 30 L164 54" fill="none" stroke="#7a3c1c" stroke-width="3"/>
+  <path d="M104 150 L90 206 L108 194 L120 212 L132 194 L150 206 L136 150 Z" fill="#fffaf0"/>
+  <path d="M98 96 C92 122 98 142 108 152 L132 152 C142 142 148 122 142 96 C134 86 106 86 98 96 Z" fill="#4a230f"/>
+  <path d="M106 106 L114 112 M126 112 L134 106 M110 124 L118 130 M122 130 L130 124" stroke="#7a3c1c" stroke-width="3"/>
+  <circle cx="120" cy="178" r="34" fill="#ff7a1a"/>
+  <path d="M86 178 H154 M120 144 V212 M98 152 C110 166 110 190 98 204 M142 152 C130 166 130 190 142 204" fill="none" stroke-width="4"/>
+  <path d="M104 146 L102 156 L112 156 L112 146 Z M128 146 L128 156 L138 156 L136 146 Z" fill="#ffc22e" stroke-width="4"/>
+  <path d="M104 152 C94 156 90 166 92 174" fill="none" stroke="#111014" stroke-width="10"/><path d="M108 154 C104 162 104 170 106 178" fill="none" stroke="#111014" stroke-width="10"/><path d="M112 154 C116 162 116 168 114 174" fill="none" stroke="#111014" stroke-width="10"/><path d="M136 152 C146 156 150 166 148 174" fill="none" stroke="#111014" stroke-width="10"/><path d="M132 154 C136 162 136 170 134 178" fill="none" stroke="#111014" stroke-width="10"/><path d="M128 154 C124 162 124 168 126 174" fill="none" stroke="#111014" stroke-width="10"/><path d="M104 152 C94 156 90 166 92 174" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M108 154 C104 162 104 170 106 178" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M112 154 C116 162 116 168 114 174" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M136 152 C146 156 150 166 148 174" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M132 154 C136 162 136 170 134 178" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M128 154 C124 162 124 168 126 174" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M88 174 L90 182 L96 174 Z" fill="#111014" stroke-width="2"/><path d="M102 178 L106 186 L110 178 Z" fill="#111014" stroke-width="2"/><path d="M110 174 L116 181 L118 174 Z" fill="#111014" stroke-width="2"/><path d="M144 174 L150 182 L152 174 Z" fill="#111014" stroke-width="2"/><path d="M130 178 L134 186 L138 178 Z" fill="#111014" stroke-width="2"/><path d="M122 174 L124 181 L130 174 Z" fill="#111014" stroke-width="2"/>
+  <g transform="translate(128 70) scale(1.12) translate(-130 -76)"><path d="M100 90 L82 80 L96 74 L78 64 L98 62 L90 48 L108 54 C114 46 124 42 134 44 C146 46 154 54 158 62 L150 88 C144 98 134 102 124 102 C112 102 104 98 100 90 Z" fill="#fffaf0"/>
+  <path d="M150 58 C166 52 184 58 190 72 C194 84 190 94 182 100 C180 90 174 86 166 84 L150 84 Z" fill="#ffc22e"/>
+  <path d="M150 84 L166 84 L178 94 L158 94 Z" fill="#b8001f" stroke-width="3.5"/>
+  <path d="M150 84 L158 94 L176 98 C168 108 154 110 144 104 Z" fill="#e8a314" stroke-width="4"/>
+  <path d="M124 66 L146 60 L140 70 L128 72 Z" fill="#ff2e4d" stroke-width="3.5"/>
+  <path d="M136 63 L141 62 L139 69 L135 70 Z" fill="#111014" stroke="none"/>
+  <path d="M112 60 L158 48 L152 60 L126 66 L114 66 Z" fill="#111014"/>
+ </g>
+ </g>
 </svg>
-    <h1 class="title">Dragør<br>Eagles<small>Tuesday Hoops</small></h1>
+        <h1 class="title">Dragør<br>Eagles<small>Tuesday Hoops</small></h1>
     <div class="tagline"><span class="sticker">Tuesdays · 20:00</span><span class="sticker">Check in or check out</span><span class="sticker">No ghosts</span></div>
   </header>
 
@@ -189,6 +211,36 @@
 
   <footer><span>Dragør Eagles Basketball</span><span>Built by <a href="/work/">stillwork</a></span></footer>
 </div>
+<script>
+(() => {
+  // Scatter a fresh mix of 90s shapes on every visit, so the pattern never repeats.
+  const bg = document.getElementById('bg'); if (!bg) return;
+  const C = ['#12c8b6', '#ff2e4d', '#ffc22e', '#fffaf0', '#ff7a1a', '#c9c6d6'];
+  const K = '#111014';
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const R = (a, b) => a + Math.random() * (b - a);
+  const shapes = [
+    c => `<svg viewBox="0 0 60 60"><path d="M6 52L30 6L54 52Z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/></svg>`,
+    c => `<svg viewBox="0 0 120 30"><path d="M5 15c12-18 24 18 36 0s24 18 36 0 24 18 36 0" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M5 15c12-18 24 18 36 0s24 18 36 0 24 18 36 0" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="${c}" stroke="${K}" stroke-width="5"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="none" stroke="${c}" stroke-width="8"/></svg>`,
+    c => `<svg viewBox="0 0 120 40"><path d="M4 32L24 8L44 32L64 8L84 32L104 8L116 22" fill="none" stroke="${K}" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><path d="M4 32L24 8L44 32L64 8L84 32L104 8L116 22" fill="none" stroke="${c}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 40 40"><path d="M8 8L32 32M32 8L8 32" stroke="${c}" stroke-width="7" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><rect x="10" y="10" width="40" height="40" fill="${c}" stroke="${K}" stroke-width="5"/></svg>`,
+    c => `<svg viewBox="0 0 80 80"><path d="M40 4l9 25 27 2-21 17 7 27-22-15-22 15 7-27L4 31l27-2z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/></svg>`,
+    c => `<svg viewBox="0 0 70 70"><path d="M10 60L60 10" stroke="${c}" stroke-width="10" stroke-linecap="round"/><path d="M26 64L64 26" stroke="${c}" stroke-width="5" stroke-linecap="round"/></svg>`,
+    () => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="#ff7a1a" stroke="${K}" stroke-width="4"/><path d="M6 30h48M30 6v48M14 13c9 9 9 25 0 34M46 13c-9 9-9 25 0 34" fill="none" stroke="${K}" stroke-width="3"/></svg>`
+  ];
+  const n = Math.round(Math.min(34, Math.max(16, innerWidth * innerHeight / 38000)));
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const big = Math.random() < .18;
+    const w = big ? R(90, 170) : R(22, 70);
+    html += `<div class="shape" style="left:${R(-4, 96)}%;top:${R(-4, 96)}%;width:${w}px;opacity:${big ? .55 : R(.6, 1)};--r:${R(-40, 40)}deg;--spin:${R(-30, 30)}deg;--dx:${R(-24, 24)}px;--dy:${R(-30, 30)}px;--d:${R(9, 22)}s;--delay:${R(-20, 0)}s">${pick(shapes)(pick(C))}</div>`;
+  }
+  bg.insertAdjacentHTML('beforeend', html);
+})();
+</script>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
