@@ -58,15 +58,18 @@
 
   /* Hero */
   .hero { position: relative; padding: 28px 0 8px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
-  .crest { width: 180px; height: 173px; filter: drop-shadow(6px 6px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
+  .crest { width: 250px; height: 250px; overflow: visible; filter: drop-shadow(7px 7px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
+  .crest .burst { transform-box: fill-box; transform-origin: center; animation: spin 40s linear infinite; }
   @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .crest, .crest .burst { animation: none; } }
   .title { font-family: var(--shade); font-size: clamp(38px, 9vw, 84px); line-height: .9; color: var(--gold); text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--black); letter-spacing: .01em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
   .title small { display: block; font-family: var(--display); font-size: .5em; color: var(--teal); text-shadow: 3px 3px 0 var(--black); margin-top: 6px; }
   .tagline { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
   .sticker { font-family: var(--display); font-size: 14px; padding: 6px 12px; background: var(--red); color: var(--white); border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--black); transform: rotate(-2deg); }
   .sticker:nth-child(2) { background: var(--teal); color: var(--black); transform: rotate(1.5deg); }
   .sticker:nth-child(3) { background: var(--gold); color: var(--black); transform: rotate(-1deg); }
-  @media (max-width: 560px) { .crest { width: 140px; height: 135px; } }
+  @media (max-width: 560px) { .crest { width: 126px; height: 126px; } .hero { gap: 6px 12px; } .title { font-size: clamp(30px, 8.6vw, 44px); } }
 
   /* Panels */
   .panel { position: relative; margin-top: 30px; background: var(--white); color: var(--black); border: 4px solid var(--black); box-shadow: 10px 10px 0 var(--black), 10px 10px 0 4px var(--teal); padding: 22px 20px 24px; }
@@ -152,32 +155,31 @@
 <div class="bg" id="bg" aria-hidden="true"><div class="halftone"></div><div class="halftone h2"></div><div class="band b1"></div><div class="band b2"></div><div class="band b3"></div></div>
 <div class="wrap">
   <header class="hero">
-    <svg class="crest" viewBox="-6 -12 256 246" role="img" aria-label="Dragør Eagles crest: an angry eagle flying with a basketball in its talons">
-<g stroke="#111014" stroke-width="22" stroke-linejoin="round" fill="#111014"><path d="M118 96 L96 54 L72 20 L60 2 L60 28 L40 14 L44 40 L22 32 L34 56 L12 56 L34 76 L18 84 L48 90 L42 102 L82 100 Z"/><path d="M70 148 L22 150 L38 160 L14 172 L42 172 L30 188 L76 164 Z"/><path d="M134 108 L148 62 L170 28 L196 4 L192 32 L214 18 L206 46 L232 40 L214 64 L240 68 L212 82 L228 94 L196 94 L198 108 L166 106 Z"/><path d="M62 152 C80 122 128 104 166 110 C184 116 188 136 178 150 C152 168 100 170 62 152 Z"/><path d="M126 152 L142 162 L152 156 L140 146 Z"/><path d="M150 122 L136 110 L152 108 L140 96 L160 98 L154 82 C164 74 182 74 192 82 C200 88 204 96 205 104 L188 128 C180 138 166 140 156 134 Z"/><path d="M196 88 C212 82 230 90 234 104 C237 116 232 126 223 130 C223 120 217 113 207 111 L195 111 Z"/><path d="M195 111 L207 111 C205 121 197 125 188 123 Z"/><circle cx="150" cy="188" r="30"/></g>
-<g stroke="#ffc22e" stroke-width="14" stroke-linejoin="round" fill="#ffc22e"><path d="M118 96 L96 54 L72 20 L60 2 L60 28 L40 14 L44 40 L22 32 L34 56 L12 56 L34 76 L18 84 L48 90 L42 102 L82 100 Z"/><path d="M70 148 L22 150 L38 160 L14 172 L42 172 L30 188 L76 164 Z"/><path d="M134 108 L148 62 L170 28 L196 4 L192 32 L214 18 L206 46 L232 40 L214 64 L240 68 L212 82 L228 94 L196 94 L198 108 L166 106 Z"/><path d="M62 152 C80 122 128 104 166 110 C184 116 188 136 178 150 C152 168 100 170 62 152 Z"/><path d="M126 152 L142 162 L152 156 L140 146 Z"/><path d="M150 122 L136 110 L152 108 L140 96 L160 98 L154 82 C164 74 182 74 192 82 C200 88 204 96 205 104 L188 128 C180 138 166 140 156 134 Z"/><path d="M196 88 C212 82 230 90 234 104 C237 116 232 126 223 130 C223 120 217 113 207 111 L195 111 Z"/><path d="M195 111 L207 111 C205 121 197 125 188 123 Z"/><circle cx="150" cy="188" r="30"/></g>
-<g stroke="#111014" stroke-width="4.5" stroke-linejoin="round" stroke-linecap="round">
-<path d="M118 96 L96 54 L72 20 L60 2 L60 28 L40 14 L44 40 L22 32 L34 56 L12 56 L34 76 L18 84 L48 90 L42 102 L82 100 Z" fill="#3a1c0c"/>
-<path d="M112 92 L92 60 L76 40 L70 62 L56 60 L66 78 L90 90 Z" fill="#6b3418" stroke="none"/>
-<path d="M104 90 L58 66 M100 80 L50 46 M96 68 L62 26" fill="none" stroke="#fffaf0" stroke-width="3"/>
-<path d="M70 148 L22 150 L38 160 L14 172 L42 172 L30 188 L76 164 Z" fill="#fffaf0"/>
-<path d="M62 152 C80 122 128 104 166 110 C184 116 188 136 178 150 C152 168 100 170 62 152 Z" fill="#3a1c0c"/>
-<path d="M90 150 C110 136 140 128 164 130" fill="none" stroke="#6b3418" stroke-width="7"/>
-<circle cx="150" cy="188" r="30" fill="#ff7a1a"/>
-<path d="M120 188 H180 M150 158 V218 M130 164 C140 176 140 200 130 212 M170 164 C160 176 160 200 170 212" fill="none" stroke-width="3.5"/>
-<path d="M134 108 L148 62 L170 28 L196 4 L192 32 L214 18 L206 46 L232 40 L214 64 L240 68 L212 82 L228 94 L196 94 L198 108 L166 106 Z" fill="#3a1c0c"/>
-<path d="M142 104 L156 66 L176 40 L182 64 L200 58 L196 78 L166 98 Z" fill="#6b3418" stroke="none"/>
-<path d="M148 100 L204 50 M152 104 L214 72 M146 92 L186 34" fill="none" stroke="#fffaf0" stroke-width="3"/>
-<path d="M126 152 L142 162 L152 156 L140 146 Z" fill="#ffc22e"/>
-<path d="M144 160 C134 164 130 174 132 182" fill="none" stroke="#111014" stroke-width="10"/><path d="M150 160 C150 168 151 174 153 181" fill="none" stroke="#111014" stroke-width="10"/><path d="M156 157 C166 159 172 167 172 176" fill="none" stroke="#111014" stroke-width="10"/><path d="M144 160 C134 164 130 174 132 182" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M150 160 C150 168 151 174 153 181" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M156 157 C166 159 172 167 172 176" fill="none" stroke="#ffc22e" stroke-width="5"/><path d="M128 180 L128 191 L136 181 Z" fill="#fffaf0" stroke-width="2.5"/><path d="M149 179 L153 190 L157 180 Z" fill="#fffaf0" stroke-width="2.5"/><path d="M168 174 L176 185 L176 175 Z" fill="#fffaf0" stroke-width="2.5"/>
-<path d="M150 122 L136 110 L152 108 L140 96 L160 98 L154 82 C164 74 182 74 192 82 C200 88 204 96 205 104 L188 128 C180 138 166 140 156 134 Z" fill="#fffaf0"/>
-<path d="M160 120 L176 116 M156 110 L170 108" fill="none" stroke="#c9c6d6" stroke-width="3"/>
-<path d="M196 88 C212 82 230 90 234 104 C237 116 232 126 223 130 C223 120 217 113 207 111 L195 111 Z" fill="#ffc22e"/>
-<path d="M195 111 L207 111 C205 121 197 125 188 123 Z" fill="#e39a12"/>
-<path d="M195 111 L207 111 L216 120 L200 118 Z" fill="#b8001f" stroke-width="2.5"/>
-<path d="M212 96 C220 96 226 100 229 106" fill="none" stroke-width="3"/>
-<path d="M175 97 L201 91 L194 104 L179 105 Z" fill="#ff2e4d" stroke-width="3"/>
-<path d="M187 96 L193 95 L190 103 L185 103 Z" fill="#111014" stroke="none"/>
-<path d="M162 88 L208 80 L203 89 L178 95 L166 94 Z" fill="#111014"/>
+    <svg class="crest" viewBox="0 0 400 400" role="img" aria-label="Dragør Eagles crest: a screaming eagle bursting out of a basketball">
+<g class="burst"><path d="M200 4 L226 62 L276 20 L280 86 L344 68 L322 130 L388 140 L342 188 L396 228 L332 246 L362 306 L296 298 L300 364 L244 328 L222 392 L186 336 L142 386 L132 320 L68 346 L84 282 L18 280 L60 228 L6 190 L66 166 L32 108 L98 110 L92 44 L150 76 Z" fill="#12c8b6" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
+<path d="M200 44 L220 92 L262 62 L264 112 L314 100 L298 148 L346 158 L312 194 L350 224 L302 238 L324 284 L274 278 L276 326 L234 300 L216 348 L190 306 L156 342 L150 294 L102 312 L114 264 L66 262 L96 224 L58 194 L102 176 L78 132 L126 134 L122 86 L164 108 Z" fill="#ffc22e" stroke="#111014" stroke-width="4" stroke-linejoin="round"/></g>
+<g transform="translate(30 6) scale(.9)" stroke="#111014" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="214" cy="262" r="112" fill="#ff7a1a" stroke-width="7"/>
+<path d="M102 262 H326 M214 150 V374 M136 182 C180 222 180 302 136 342 M292 182 C248 222 248 302 292 342" fill="none" stroke-width="5"/>
+<path d="M262 118 C236 84 196 74 160 86 L60 22 L118 100 L14 66 L100 134 L-4 140 L94 172 L8 222 L104 210 L36 286 L124 248 L92 334 L160 272 L160 352 L206 282 L240 334 L248 252 Z" fill="#ff2e4d" stroke-width="7"/>
+<path d="M262 122 C240 92 200 82 168 92 L104 58 L140 114 L66 100 L124 144 L50 152 L116 178 L58 208 L122 212 L80 254 L138 244 L118 296 L170 266 L176 314 L208 274 L230 300 L240 250 C236 232 240 214 250 200 L256 160 Z" fill="#fffaf0" stroke-width="6"/>
+<path d="M240 250 C236 232 240 214 250 200 L210 192 L172 232 L118 296 L170 266 L176 314 L208 274 L230 300 Z" fill="#c9c6d6" stroke="none"/>
+<path d="M146 116 L186 126 M116 158 L170 164 M110 204 L166 198 M130 242 L176 224" fill="none" stroke="#c9c6d6" stroke-width="5"/>
+<path d="M244 196 C284 186 318 188 330 206 L318 236 C312 252 306 268 300 284 C288 244 270 220 242 206 Z" fill="#8f0019" stroke-width="5"/>
+<path d="M254 206 C276 208 294 226 300 262 C286 240 270 226 252 216 Z" fill="#ff2e4d" stroke-width="3"/>
+<path d="M242 206 C270 220 290 246 300 286 C272 284 246 264 234 238 Z" fill="#e39a12" stroke-width="5.5"/>
+<path d="M254 118 L324 124 C352 136 366 166 366 204 C366 232 358 252 344 272 L326 206 C312 190 284 188 244 196 L250 160 Z" fill="#ffc22e" stroke-width="6"/>
+<path d="M326 206 C312 190 284 188 244 196 L247 182 C286 176 318 182 334 220 Z" fill="#e39a12" stroke="none"/>
+<path d="M272 132 L314 134 C334 140 346 158 350 180" fill="none" stroke="#fff3c4" stroke-width="5"/>
+<path d="M286 150 L304 156 L290 162 Z" fill="#111014" stroke="none"/>
+<path d="M254 118 L250 160 L244 196" fill="none" stroke-width="5"/>
+<path d="M184 112 L266 134 L262 150 L254 170 L226 168 L204 146 Z" fill="#111014" stroke-width="4"/>
+<path d="M212 143 L256 153 L250 166 L229 164 Z" fill="#ffc22e" stroke="none"/>
+<path d="M234 148 L246 151 L243 165 L233 164 Z" fill="#ff2e4d" stroke="none"/>
+<circle cx="239" cy="157" r="3" fill="#111014" stroke="none"/>
+<path d="M172 100 L262 126" fill="none" stroke="#fffaf0" stroke-width="7"/>
+<path d="M190 186 L226 192 M206 204 L228 206" fill="none" stroke-width="4"/>
+<g transform="translate(64 300) rotate(-8)"><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#111014" stroke-width="16" fill="none"/><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#fffaf0" stroke-width="8" fill="none"/></g>
 </g>
 </svg>
         <h1 class="title">Dragør<br>Eagles<small>Tuesday Hoops</small></h1>
