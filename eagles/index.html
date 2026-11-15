@@ -63,8 +63,8 @@
   @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
   @keyframes spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .crest, .crest .burst { animation: none; } }
-  .title { font-family: var(--shade); font-size: clamp(38px, 9vw, 84px); line-height: .9; color: var(--gold); text-shadow: 4px 4px 0 var(--red), 8px 8px 0 var(--black); letter-spacing: .01em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
-  .title small { display: block; font-family: var(--display); font-size: .5em; color: var(--teal); text-shadow: 3px 3px 0 var(--black); margin-top: 6px; }
+  .title { font-family: var(--display); font-size: clamp(38px, 8.4vw, 80px); line-height: .92; color: var(--gold); -webkit-text-stroke: .09em var(--black); paint-order: stroke fill; text-shadow: .06em .06em 0 var(--black), .12em .12em 0 var(--red), .16em .16em 0 var(--black); letter-spacing: .02em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
+  .title small { display: block; font-size: .46em; color: var(--teal); text-shadow: .08em .08em 0 var(--black); letter-spacing: .04em; margin-top: 10px; }
   .tagline { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
   .sticker { font-family: var(--display); font-size: 14px; padding: 6px 12px; background: var(--red); color: var(--white); border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--black); transform: rotate(-2deg); }
   .sticker:nth-child(2) { background: var(--teal); color: var(--black); transform: rotate(1.5deg); }
