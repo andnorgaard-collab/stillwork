@@ -113,6 +113,10 @@
   .badge { border: 4px solid var(--black); padding: 14px; box-shadow: 6px 6px 0 var(--black); }
   .badge.mvp { background: var(--gold); transform: rotate(-1.5deg); }
   .badge.ghost { background: var(--purple); color: var(--white); transform: rotate(1.5deg); }
+  .badge.hot { background: var(--red); color: var(--white); transform: rotate(1deg); }
+  .badge.rec { background: var(--teal); transform: rotate(-1deg); }
+  .board td.n, .board th.n { padding-left: 4px; padding-right: 6px; }
+  @media (max-width: 420px) { .board td { font-size: 15px; padding: 9px 5px; } .board th { font-size: 11px; padding: 7px 5px; } }
   .badge .k { font-family: var(--display); font-size: 14px; }
   .badge .who { font-family: var(--shade); font-size: 30px; line-height: 1; margin: 8px 0 6px; word-break: break-word; }
   .badge .why { font-family: var(--narrow); font-weight: 700; }
@@ -283,7 +287,8 @@
       const missed = possible.filter(d => statusFor(p.id, d) !== 'in').length;
       const silent = possible.filter(d => !statusFor(p.id, d)).length;
       let streak = 0; for (let i = possible.length - 1; i >= 0 && statusFor(p.id, possible[i]) === 'in'; i--) streak++;
-      return { ...p, possible: possible.length, played, missed, silent, streak, rate: possible.length ? played / possible.length : null };
+      let best = 0, run = 0; possible.forEach(d => { run = statusFor(p.id, d) === 'in' ? run + 1 : 0; best = Math.max(best, run); });
+      return { ...p, possible: possible.length, played, missed, silent, streak, best, rate: possible.length ? played / possible.length : null };
     });
   }
 
@@ -291,15 +296,19 @@
     const st = stats().sort((a, b) => b.played - a.played || (b.rate ?? -1) - (a.rate ?? -1) || a.name.localeCompare(b.name));
     if (!st.length) { $('#board').innerHTML = ''; $('#badges').innerHTML = '<p class="empty">The board fills up after the first Tuesday.</p>'; return; }
     const ranked = st.filter(s => s.possible > 0);
-    const mvp = ranked[0];
+    const top = (key) => [...ranked].sort((a, b) => b[key] - a[key] || b.played - a.played)[0];
+    const mvp = top('played'), hot = top('streak'), rec = top('best');
     const ghosts = ranked.filter(s => s.possible >= 2).sort((a, b) => a.rate - b.rate || b.missed - a.missed);
     const ghost = ghosts[0] && ghosts[0] !== mvp && ghosts[0].rate < 0.5 ? ghosts[0] : null;
+    const card = (cls, k, who, why) => `<div class="badge ${cls}"><div class="k">${k}</div><div class="who">${esc(who)}</div><div class="why">${why}</div></div>`;
     $('#badges').innerHTML =
-      (mvp && mvp.played ? `<div class="badge mvp"><div class="k">🏆 Iron Eagle</div><div class="who">${esc(mvp.name)}</div><div class="why">${mvp.played} runs${mvp.streak > 1 ? ` · ${mvp.streak} in a row` : ''}</div></div>` : '') +
-      (ghost ? `<div class="badge ghost"><div class="k">👻 Ghost of the court</div><div class="who">${esc(ghost.name)}</div><div class="why">Showed up ${ghost.played} of ${ghost.possible} Tuesdays</div></div>` : '');
-    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Missed</th><th class="n">Rate</th></tr></thead><tbody>` +
-      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}${s.streak > 2 ? ' 🔥' : ''}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
-        <td class="n">${s.played}</td><td class="n">${s.missed}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td></tr>`).join('') + '</tbody>';
+      (mvp && mvp.played ? card('mvp', '🏆 High score · most runs', mvp.name, `${mvp.played} runs all time`) : '') +
+      (hot && hot.streak > 1 ? card('hot', '🔥 On fire · current streak', hot.name, `${hot.streak} Tuesdays in a row and counting`) : '') +
+      (rec && rec.best > 1 && !(hot && rec.id === hot.id && rec.best === hot.streak) ? card('rec', '⚡ Record streak', rec.name, `${rec.best} Tuesdays in a row`) : '') +
+      (ghost ? card('ghost', '👻 Ghost of the court', ghost.name, `Showed up ${ghost.played} of ${ghost.possible} Tuesdays`) : '');
+    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th></tr></thead><tbody>` +
+      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
+        <td class="n">${s.played}</td><td class="n">${s.streak ? s.streak + (s.streak > 2 ? '🔥' : '') : '·'}</td><td class="n">${s.best || '·'}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td></tr>`).join('') + '</tbody>';
   }
 
   function renderHistory() {
