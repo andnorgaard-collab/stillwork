@@ -42,6 +42,10 @@ a.card:hover .card-head b .arrow { opacity: 1; }
 .t-tbl { fill: var(--paper); stroke: var(--ink); stroke-width: 2.5; }
 .t-plate { fill: none; stroke: var(--ember); stroke-width: 2.5; }
 .t-head { fill: var(--ink); }
+.t-line { fill: none; stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.t-line-thin { fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.t-ember-line { fill: none; stroke: var(--ember); stroke-width: 3; }
+.t-ember-fill { fill: var(--ember); }
 </style>
 </head>
 <body>
@@ -93,44 +97,36 @@ a.card:hover .card-head b .arrow { opacity: 1; }
     </a>
     <a class="card" href="/eagles/">
       <div class="thumb"><svg viewBox="0 0 400 300" aria-hidden="true">
-  <defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a1786"/><stop offset="1" stop-color="#1b0a33"/></linearGradient></defs>
-  <rect width="400" height="300" fill="url(#eg)"/>
-  <g transform="rotate(-14 200 150)"><rect x="-80" y="150" width="560" height="44" fill="#12c8b6" stroke="#111014" stroke-width="5"/><rect x="-80" y="206" width="560" height="12" fill="#ff2e4d" stroke="#111014" stroke-width="4"/></g>
-  <path d="M34 44l26-14 12 28z" fill="#ffc22e" stroke="#111014" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M318 40c10-12 20 12 30 0s20 12 30 0" fill="none" stroke="#ffc22e" stroke-width="5" stroke-linecap="round"/>
-  <circle cx="356" cy="250" r="12" fill="none" stroke="#ff2e4d" stroke-width="6"/>
-  <svg x="78" y="28" width="244" height="244" viewBox="0 0 400 400" overflow="visible"><g transform="translate(12 12)" opacity=".9"><path d="M200 4 L226 62 L276 20 L280 86 L344 68 L322 130 L388 140 L342 188 L396 228 L332 246 L362 306 L296 298 L300 364 L244 328 L222 392 L186 336 L142 386 L132 320 L68 346 L84 282 L18 280 L60 228 L6 190 L66 166 L32 108 L98 110 L92 44 L150 76 Z" fill="#111014"/></g>
-<g><path d="M200 4 L226 62 L276 20 L280 86 L344 68 L322 130 L388 140 L342 188 L396 228 L332 246 L362 306 L296 298 L300 364 L244 328 L222 392 L186 336 L142 386 L132 320 L68 346 L84 282 L18 280 L60 228 L6 190 L66 166 L32 108 L98 110 L92 44 L150 76 Z" fill="#12c8b6" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
-<path d="M200 44 L220 92 L262 62 L264 112 L314 100 L298 148 L346 158 L312 194 L350 224 L302 238 L324 284 L274 278 L276 326 L234 300 L216 348 L190 306 L156 342 L150 294 L102 312 L114 264 L66 262 L96 224 L58 194 L102 176 L78 132 L126 134 L122 86 L164 108 Z" fill="#ffc22e" stroke="#111014" stroke-width="4" stroke-linejoin="round"/></g>
-<g transform="translate(30 6) scale(.9)" stroke="#111014" stroke-linejoin="round" stroke-linecap="round">
-<circle cx="214" cy="262" r="112" fill="#ff7a1a" stroke-width="7"/>
-<path d="M102 262 H326 M214 150 V374 M136 182 C180 222 180 302 136 342 M292 182 C248 222 248 302 292 342" fill="none" stroke-width="5"/>
-<path d="M262 118 C236 84 196 74 160 86 L60 22 L118 100 L14 66 L100 134 L-4 140 L94 172 L8 222 L104 210 L36 286 L124 248 L92 334 L160 272 L160 352 L206 282 L240 334 L248 252 Z" fill="#ff2e4d" stroke-width="7"/>
-<path d="M262 122 C240 92 200 82 168 92 L104 58 L140 114 L66 100 L124 144 L50 152 L116 178 L58 208 L122 212 L80 254 L138 244 L118 296 L170 266 L176 314 L208 274 L230 300 L240 250 C236 232 240 214 250 200 L256 160 Z" fill="#fffaf0" stroke-width="6"/>
-<path d="M240 250 C236 232 240 214 250 200 L210 192 L172 232 L118 296 L170 266 L176 314 L208 274 L230 300 Z" fill="#c9c6d6" stroke="none"/>
-<path d="M146 116 L186 126 M116 158 L170 164 M110 204 L166 198 M130 242 L176 224" fill="none" stroke="#c9c6d6" stroke-width="5"/>
-<path d="M244 196 C284 186 318 188 330 206 L318 236 C312 252 306 268 300 284 C288 244 270 220 242 206 Z" fill="#8f0019" stroke-width="5"/>
-<path d="M254 206 C276 208 294 226 300 262 C286 240 270 226 252 216 Z" fill="#ff2e4d" stroke-width="3"/>
-<path d="M242 206 C270 220 290 246 300 286 C272 284 246 264 234 238 Z" fill="#e39a12" stroke-width="5.5"/>
-<path d="M254 118 L324 124 C352 136 366 166 366 204 C366 232 358 252 344 272 L326 206 C312 190 284 188 244 196 L250 160 Z" fill="#ffc22e" stroke-width="6"/>
-<path d="M326 206 C312 190 284 188 244 196 L247 182 C286 176 318 182 334 220 Z" fill="#e39a12" stroke="none"/>
-<path d="M272 132 L314 134 C334 140 346 158 350 180" fill="none" stroke="#fff3c4" stroke-width="5"/>
-<path d="M286 150 L304 156 L290 162 Z" fill="#111014" stroke="none"/>
-<path d="M254 118 L250 160 L244 196" fill="none" stroke-width="5"/>
-<path d="M184 112 L266 134 L262 150 L254 170 L226 168 L204 146 Z" fill="#111014" stroke-width="4"/>
-<path d="M212 143 L256 153 L250 166 L229 164 Z" fill="#ffc22e" stroke="none"/>
-<path d="M234 148 L246 151 L243 165 L233 164 Z" fill="#ff2e4d" stroke="none"/>
-<circle cx="239" cy="157" r="3" fill="#111014" stroke="none"/>
-<path d="M172 100 L262 126" fill="none" stroke="#fffaf0" stroke-width="7"/>
-<path d="M190 186 L226 192 M206 204 L228 206" fill="none" stroke-width="4"/>
-<g transform="translate(64 300) rotate(-8)"><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#111014" stroke-width="16" fill="none"/><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#fffaf0" stroke-width="8" fill="none"/></g>
-</g></svg>
+  <path class="t-sketch" d="M96 214C120 120 200 70 262 104"/>
+  <rect class="t-line" x="250" y="58" width="96" height="66" rx="3"/>
+  <rect class="t-line-thin" x="282" y="86" width="32" height="24"/>
+  <path class="t-line" d="M298 124V136"/>
+  <ellipse class="t-ember-line" cx="298" cy="140" rx="28" ry="6"/>
+  <path class="t-line-thin" d="M272 142L282 182M286 145L290 184M298 146V185M310 145L306 184M324 142L314 182M276 158H320M280 172H316"/>
+  <circle class="t-out" cx="96" cy="214" r="34"/>
+  <path class="t-line" d="M62 214H130M96 180V248M72 190C88 204 88 224 72 238M120 190C104 204 104 224 120 238"/>
+  <circle class="t-dot" cx="182" cy="96" r="4"/>
 </svg></div>
       <div class="card-head"><b>Dragør Eagles <span class="arrow" aria-hidden="true">→</span></b><span class="status">Live</span></div>
       <p>Check-in and attendance board for my Tuesday basketball crew. Loud on purpose.</p>
     </a>
     <a class="card" href="/madtruck/">
-      <div class="thumb"><img src="/madtruck/img/thumb.jpg?v=2" width="1000" height="750" loading="lazy" alt="A hand with a small brush painting the red bar of the MAD TRUCK logo onto the black van."></div>
+      <div class="thumb"><svg viewBox="0 0 400 300" aria-hidden="true">
+  <path class="t-sketch" d="M264 92C258 78 270 70 264 56C258 42 272 36 266 22"/>
+  <path class="t-line" d="M86 214V112C86 104 92 98 100 98H252C258 98 262 102 262 108V214"/>
+  <path class="t-line" d="M262 132H296C304 132 310 136 314 144L328 176V214"/>
+  <path class="t-line" d="M276 144H300L314 172H276Z"/>
+  <path class="t-line" d="M70 214H340"/>
+  <rect class="t-line" x="150" y="120" width="86" height="52" rx="3"/>
+  <path class="t-line" d="M142 120L150 108H236L244 120"/>
+  <rect class="t-ember-fill" x="102" y="124" width="34" height="5"/>
+  <rect class="t-ember-fill" x="102" y="150" width="34" height="5"/>
+  <path class="t-line-thin" d="M108 135H130M108 142H126"/>
+  <path class="t-line-thin" d="M98 98C130 110 170 110 200 98C228 110 252 108 262 100"/>
+  <circle class="t-dot" cx="120" cy="104" r="3"/><circle class="t-dot" cx="160" cy="106" r="3"/><circle class="t-dot" cx="232" cy="105" r="3"/>
+  <circle class="t-out" cx="128" cy="216" r="20"/><circle class="t-out" cx="128" cy="216" r="7"/>
+  <circle class="t-out" cx="290" cy="216" r="20"/><circle class="t-out" cx="290" cy="216" r="7"/>
+</svg></div>
       <div class="card-head"><b>MAD TRUCK <span class="arrow" aria-hidden="true">→</span></b><span class="status soon">2015 to 2017</span></div>
       <p>The food truck I built from an old German postal van, with a 2,200-litre smoker in tow.</p>
     </a>
