@@ -120,7 +120,7 @@ h2 {
 
 /* Brush: the loud moment. Cobalt only, at most one per page, text on it in paper. */
 .brush { position: relative; display: inline-block; isolation: isolate; color: var(--paper); padding: 0 .12em 0 .16em; margin-top: .1em; }
-.brush svg { position: absolute; left: -.04em; top: -.1em; width: calc(100% + .62em); height: 1.2em; max-width: none; z-index: -1; transform: rotate(-1.6deg); transform-origin: left center; }
+.brush svg { position: absolute; left: -.04em; top: -.1em; width: calc(138% + .3em); height: 1.2em; max-width: none; z-index: -1; transform: rotate(-1.6deg); transform-origin: left center; }
 .brush svg path, .spark path { fill: var(--cobalt); }
 .spark { display: inline-block; width: .5em; height: .5em; vertical-align: .52em; margin-left: .02em; transform: rotate(8deg); }
 
