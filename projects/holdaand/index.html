@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holdånd · From soil to table · Stillwork</title>
+<meta name="description" content="Holdånd: how a class of new gastronomy students went from a field to a dinner service together, with Mette Søberg and Jonathan Knoll.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121210" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Contact · Stillwork">
+<meta property="og:description" content="Got an idea for a useful tool? Message Anders on LinkedIn and build it together.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Stillwork">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+.intro { max-width: 900px; }
+.back { font-size: 15px; color: var(--graphite); text-decoration: none; }
+.back:hover { color: var(--ink); }
+.route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 40px; list-style: none; font-family: var(--mono); font-size: 13px; line-height: 20px; color: var(--graphite); }
+.route li { display: flex; align-items: center; gap: 10px; }
+.route a { padding: 5px 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--surface); text-decoration: none; transition: border-color .2s, color .2s; }
+.route a:hover { border-color: var(--ink); color: var(--ink); }
+.route li + li::before { content: "→"; color: var(--ember); }
+.course { margin-top: clamp(80px, 13vh, 130px); scroll-margin-top: 90px; }
+.course-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 16px 48px; align-items: end; margin-bottom: 28px; }
+.course-head .num { font-family: var(--serif); font-style: italic; font-size: clamp(72px, 12vw, 132px); line-height: .8; color: var(--pencil); letter-spacing: -.03em; }
+.course-head h2 { margin-top: 12px; }
+.course-head p { color: var(--graphite); font-size: 18px; line-height: 29px; max-width: 32em; }
+@media (max-width: 760px) { .course-head { grid-template-columns: 1fr; } }
+.collage { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: clamp(110px, 15vw, 180px); gap: 14px; }
+.collage figure { position: relative; margin: 0; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--paper-deep); }
+.collage img, .collage video { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s var(--ease); }
+.collage figure:hover img { transform: scale(1.03); }
+.collage figcaption { position: absolute; left: 10px; bottom: 10px; max-width: calc(100% - 20px); padding: 4px 11px; border-radius: 999px; background: color-mix(in srgb, var(--paper) 90%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-family: var(--mono); font-size: 11px; line-height: 16px; letter-spacing: .02em; color: var(--ink); }
+.c2 { grid-column: span 2; } .c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c6 { grid-column: span 6; }
+.r1 { grid-row: span 1; } .r2 { grid-row: span 2; } .r3 { grid-row: span 3; }
+@media (max-width: 640px) {
+  .collage { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 150px; gap: 10px; }
+  .c3, .c4, .c6 { grid-column: span 2; } .c2 { grid-column: span 1; }
+  .r3 { grid-row: span 2; }
+}
+.closing { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px 56px; align-items: center; margin-top: clamp(80px, 13vh, 130px); }
+.closing p { font-size: 18px; line-height: 29px; }
+.closing p + p { margin-top: 16px; }
+.closing .small { color: var(--graphite); font-size: 16px; line-height: 26px; }
+.closing figure { margin: 0; }
+.closing figure img { width: 100%; height: auto; display: block; border-radius: var(--radius); border: 1px solid var(--rule); }
+.closing figcaption { font-family: var(--mono); font-size: 12px; line-height: 18px; color: var(--graphite); margin-top: 10px; }
+@media (max-width: 760px) { .closing { grid-template-columns: 1fr; } .closing figure { max-width: 420px; } }
+.next { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<header class="site-head">
+  <div class="wrap head-in">
+    <a href="/" aria-label="stillwork, home"><svg class="wordmark" role="img" aria-label="stillwork" xmlns="http://www.w3.org/2000/svg" viewBox="-30 -770 3064 809"><g transform="scale(1,-1)" fill="currentColor"><path transform="translate(0,0)" d="M131 -9Q108 -9 82.0 -3.5Q56 2 40 10Q31 15 31 27L28 139Q28 156 41 156Q52 156 56 140Q73 69 97.5 43.0Q122 17 157 17Q186 17 205.0 39.5Q224 62 224 102Q224 142 202.0 173.0Q180 204 128 241Q76 276 52.0 311.5Q28 347 28 389Q28 446 68.0 481.0Q108 516 174 516Q194 516 213.0 511.5Q232 507 247 497Q256 491 256 481L258 371Q258 356 246 356Q239 356 236.0 360.5Q233 365 231 372Q211 437 191.0 462.5Q171 488 142 488Q116 488 99.0 470.0Q82 452 82 425Q82 390 103.0 364.0Q124 338 179 300Q229 264 254.5 222.5Q280 181 280 132Q280 68 239.0 29.5Q198 -9 131 -9Z"/><path transform="translate(308,0)" d="M147 -9Q112 -9 89.5 15.5Q67 40 67 96V470Q67 482 55 482H26Q10 482 10 494Q10 502 19 508Q52 531 72.0 557.5Q92 584 107 630Q114 651 124 651Q135 651 135 635V524Q135 510 149 510H214Q230 510 230 496Q230 482 214 482H149Q135 482 135 468V95Q135 73 142.0 60.5Q149 48 168 48Q189 48 202.5 69.0Q216 90 220 137Q222 151 233 151Q245 151 245 136Q242 59 213.5 25.0Q185 -9 147 -9Z"/><path transform="translate(567,0)" d="M30 0Q15 0 15 11Q15 20 28 23L40 25Q65 29 72.0 37.5Q79 46 79 67V403Q79 421 73.5 427.5Q68 434 54 436L33 439Q20 440 20 450Q20 458 36 461Q67 466 86.0 477.0Q105 488 123 504Q132 513 138 513Q147 513 147 501V67Q147 46 153.0 37.0Q159 28 176 26L201 23Q212 21 212 12Q212 0 197 0Z"/><path transform="translate(790,0)" d="M20 0Q8 0 8 11Q8 21 19 23L33 25Q54 28 64.0 37.0Q74 46 74 67V640Q74 658 68.5 665.0Q63 672 49 673L26 676Q15 678 15 688Q15 698 26 700Q54 706 74.0 714.0Q94 722 107 730Q123 740 131 740Q142 740 142 724V67Q142 46 148.5 37.5Q155 29 176 26L199 23Q210 21 210 11Q210 0 198 0Z"/><path transform="translate(1010,0)" d="M20 0Q8 0 8 11Q8 21 19 23L33 25Q54 28 64.0 37.0Q74 46 74 67V640Q74 658 68.5 665.0Q63 672 49 673L26 676Q15 678 15 688Q15 698 26 700Q54 706 74.0 714.0Q94 722 107 730Q123 740 131 740Q142 740 142 724V67Q142 46 148.5 37.5Q155 29 176 26L199 23Q210 21 210 11Q210 0 198 0Z"/><path transform="translate(1230,0)" d="M187 -9Q174 -9 169 11L48 443Q41 467 34.5 474.0Q28 481 14 484L-1 487Q-14 490 -14 500Q-14 510 0 510H162Q176 510 176 500Q176 489 163 487L147 485Q123 482 117.0 473.5Q111 465 117 443L196 152Q199 142 205.5 142.0Q212 142 215 152L283 411Q285 419 285.5 427.0Q286 435 283 444Q276 468 269.5 474.5Q263 481 249 484L234 487Q221 490 221 500Q221 510 235 510H397Q411 510 411 500Q411 489 398 487L382 485Q358 482 353.0 473.5Q348 465 352 443L416 154Q418 144 424.5 144.0Q431 144 434 154L510 425Q518 452 514.5 465.5Q511 479 486 483L465 487Q452 490 452 500Q452 510 466 510H591Q605 510 605 499Q605 489 593 485L584 482Q569 477 558.0 464.0Q547 451 538 419L424 11Q419 -9 405 -9Q393 -9 388 11L310 331Q307 342 300.5 342.5Q294 343 291 331L205 11Q200 -9 187 -9Z"/><path transform="translate(1827,0)" d="M203 -9Q152 -9 111.5 25.5Q71 60 47.0 120.0Q23 180 23 254Q23 328 47.0 387.0Q71 446 112.0 481.0Q153 516 203 516Q254 516 294.5 481.0Q335 446 359.0 387.0Q383 328 383 254Q383 180 359.5 120.0Q336 60 295.0 25.5Q254 -9 203 -9ZM203 16Q307 16 307 254Q307 491 203 491Q99 491 99 254Q99 16 203 16Z"/><path transform="translate(2235,0)" d="M154 446Q195 516 253 516Q286 516 302.0 496.5Q318 477 318 453Q318 434 308.5 422.0Q299 410 279 410Q263 410 255.5 417.5Q248 425 243.5 435.0Q239 445 233.0 452.5Q227 460 213 460Q195 460 179.0 438.5Q163 417 152.5 381.0Q142 345 142 299V67Q142 46 148.5 37.0Q155 28 176 26L203 23Q214 21 214 12Q214 0 199 0H30Q15 0 15 11Q15 20 28 23L40 25Q61 29 67.5 37.5Q74 46 74 67V403Q74 421 68.5 427.5Q63 434 49 436L28 439Q15 440 15 450Q15 458 31 461Q62 466 78.5 477.0Q95 488 113 504Q122 513 128 513Q137 513 137 501V447Q137 440 143.0 438.5Q149 437 154 446Z"/><path transform="translate(2553,0)" d="M27 0Q15 0 15 11Q15 21 26 23L40 25Q61 28 67.5 37.0Q74 46 74 67V640Q74 658 68.5 664.5Q63 671 49 673L28 676Q17 678 17 688Q17 698 28 700Q56 706 75.0 714.0Q94 722 107 730Q123 740 131 740Q142 740 142 724V305Q142 295 150.5 292.5Q159 290 167 299L284 425Q305 448 301.5 463.5Q298 479 278 483L255 487Q242 490 242 500Q242 510 256 510H428Q442 510 442 499Q442 488 429 487L420 486Q397 484 374.0 468.5Q351 453 319 420L257 354Q236 331 247 309L373 67Q384 47 397.0 38.0Q410 29 429 25L439 23Q451 20 451 11Q451 0 437 0H263Q249 0 249 11Q249 21 262 23L279 25Q317 30 295 74L200 259Q195 269 185.5 270.0Q176 271 168 263L157 252Q148 243 145.0 234.0Q142 225 142 214V67Q142 46 148.5 37.0Q155 28 176 26L203 23Q214 21 214 11Q214 0 202 0Z"/></g><circle cx="680" cy="-663" r="58" class="dot"/></svg></a>
+    <nav class="site-nav" aria-label="Main"><a href="/about/">About</a><a href="/work/" aria-current="page">Work</a><a href="/contact/">Contact</a></nav>
+  </div>
+</header>
+<main class="wrap">
+  <section class="intro rise">
+    <div class="label"><a class="back" href="/projects/">Project lead</a> · Holdånd · a story in four courses</div>
+    <h1>From soil <em>to <span class="brush"><svg viewBox="0 0 220 120" preserveAspectRatio="none" aria-hidden="true"><path d="M26.8 18.2L33.0 22.6L39.0 22.2L45.0 21.8L51.1 21.5L57.1 21.2L63.1 20.9L69.1 20.6L75.1 20.1L81.0 19.5L87.0 19.0L92.9 18.5L98.8 18.2L104.8 18.0L110.7 18.0L116.6 18.1L122.6 18.2L128.5 18.3L134.5 17.9L140.5 16.9L146.5 16.0L152.5 15.1L158.5 14.4L158.6 13.3L152.6 12.2L146.6 10.9L140.7 9.6L134.7 8.2L128.7 7.6L122.6 7.6L116.6 7.7L110.5 7.9L104.5 8.2L98.4 8.5L92.4 8.7L86.4 8.9L80.3 9.2L74.3 9.5L68.3 9.9L62.3 10.5L56.3 11.1L50.4 11.7L44.4 12.2L38.5 12.5L32.5 12.7L26.8 17.7ZM19.0 25.4L27.6 29.3L35.9 28.7L44.2 28.3L52.5 27.7L60.8 27.0L69.0 26.3L77.2 25.6L85.4 25.1L93.6 25.1L101.8 25.2L110.0 25.3L118.3 25.4L126.5 25.4L134.8 25.4L143.1 25.5L151.4 25.8L159.8 26.0L168.1 26.1L176.4 25.8L184.7 24.3L192.9 23.0L201.2 21.9L201.2 19.0L192.9 18.1L184.6 17.1L176.3 15.9L168.0 15.7L159.8 15.8L151.5 15.9L143.3 16.0L135.0 15.8L126.8 15.4L118.5 15.0L110.1 14.9L101.8 15.0L93.4 15.3L85.1 15.7L76.7 16.0L68.3 16.2L60.0 16.7L51.7 17.3L43.4 18.2L35.2 19.1L26.9 19.8L19.0 24.9ZM11.6 32.4L20.2 36.2L28.5 35.6L36.8 35.1L45.0 34.4L53.2 33.7L61.4 33.0L69.6 32.6L77.8 32.6L86.1 32.7L94.3 32.8L102.6 32.8L110.8 32.7L119.1 32.6L127.4 32.6L135.7 32.7L144.0 32.8L152.4 32.7L160.6 31.8L168.9 30.7L177.1 29.7L185.4 29.0L193.6 28.3L193.6 25.4L185.3 24.9L177.0 24.4L168.7 23.8L160.4 23.1L152.1 22.6L143.9 22.8L135.7 23.1L127.4 23.3L119.2 23.3L110.9 23.0L102.6 22.8L94.3 22.7L86.0 22.8L77.7 23.1L69.3 23.4L61.0 23.7L52.6 23.9L44.3 24.3L36.0 25.0L27.7 25.9L19.4 26.8L11.5 31.9ZM14.3 39.6L20.8 44.2L26.9 43.8L32.9 43.3L39.0 42.8L45.0 42.3L51.1 42.0L57.2 41.9L63.3 41.9L69.3 42.0L75.4 42.1L81.5 42.1L87.7 42.0L93.8 41.8L99.9 41.6L106.1 41.4L112.2 41.3L118.3 41.3L124.5 41.2L130.6 41.1L136.7 39.7L142.8 38.3L148.8 36.8L148.7 33.7L142.6 32.6L136.4 31.6L130.3 30.7L124.2 31.0L118.1 31.3L112.0 31.6L105.9 31.7L99.8 31.6L93.7 31.5L87.6 31.4L81.5 31.3L75.4 31.4L69.2 31.6L63.1 31.9L56.9 32.1L50.8 32.3L44.6 32.4L38.4 32.5L32.3 32.7L26.1 33.1L20.0 33.6L14.2 39.1ZM8.3 46.4L17.5 50.6L26.5 50.0L35.5 49.5L44.5 49.4L53.5 49.5L62.5 49.5L71.6 49.4L80.7 48.9L89.7 48.5L98.8 48.1L107.9 47.9L116.9 47.7L126.0 47.2L135.0 46.7L143.9 46.2L152.9 45.9L161.8 46.1L170.8 46.5L179.8 46.3L188.8 45.6L197.9 45.0L207.0 44.6L207.1 41.8L198.1 40.4L189.2 38.8L180.1 37.4L171.0 36.6L161.9 36.6L152.8 36.8L143.7 36.9L134.6 37.0L125.5 37.2L116.4 37.7L107.4 38.3L98.4 38.9L89.4 39.3L80.4 39.4L71.4 39.3L62.4 39.5L53.4 39.8L44.3 40.1L35.2 40.4L26.1 40.5L17.0 40.7L8.2 45.9ZM5.3 55.3L14.2 59.2L23.0 58.9L31.9 58.8L40.7 58.9L49.6 58.8L58.5 58.5L67.4 57.9L76.3 57.3L85.1 56.8L94.0 56.4L102.9 56.1L111.7 55.6L120.4 55.0L129.2 54.5L138.0 54.3L146.7 54.5L155.5 54.8L164.3 54.5L173.2 54.2L182.1 53.8L190.9 53.6L199.8 53.4L199.9 50.7L191.1 49.8L182.3 48.7L173.5 47.5L164.6 46.4L155.8 45.6L146.8 45.5L137.9 45.6L129.0 45.7L120.1 45.7L111.2 46.0L102.3 46.5L93.4 47.2L84.6 48.0L75.8 48.5L67.0 48.8L58.2 49.0L49.4 49.2L40.5 49.5L31.7 49.9L22.9 50.2L14.0 50.3L5.3 54.8ZM7.4 63.0L16.8 67.2L26.0 67.2L35.3 67.0L44.6 66.4L53.8 65.7L63.1 64.9L72.3 64.3L81.6 63.9L90.7 63.4L99.9 62.8L109.0 62.2L118.2 61.8L127.3 61.9L136.5 62.2L145.6 62.6L154.8 62.8L164.1 62.3L173.4 61.8L182.6 61.4L191.9 61.0L201.1 60.4L210.3 59.7L210.3 58.5L201.1 57.9L191.9 57.3L182.7 56.5L173.5 55.6L164.4 54.5L155.2 53.3L145.9 52.8L136.7 52.7L127.4 52.8L118.1 52.9L108.7 52.9L99.4 53.1L90.1 53.5L80.9 54.3L71.7 55.2L62.5 56.0L53.3 56.5L44.1 56.8L34.9 57.1L25.7 57.5L16.5 58.0L7.4 62.5ZM12.4 69.1L19.6 73.8L26.6 73.3L33.5 72.7L40.4 72.0L47.4 71.3L54.3 70.8L61.2 70.4L68.1 70.0L75.0 69.6L81.8 69.2L88.7 68.8L95.5 68.4L102.3 68.1L109.2 68.1L116.1 68.3L122.9 68.5L129.8 68.0L136.8 67.4L143.7 66.8L150.6 66.1L157.6 65.5L164.5 64.9L164.5 63.8L157.6 63.1L150.7 62.2L143.8 61.3L137.0 60.3L130.1 59.3L123.1 58.5L116.2 58.5L109.2 58.6L102.2 58.6L95.3 58.6L88.3 58.7L81.3 58.8L74.3 59.2L67.4 59.8L60.4 60.5L53.5 61.2L46.6 61.9L39.7 62.3L32.8 62.7L25.9 63.0L19.1 63.3L12.4 68.6ZM8.1 77.5L16.9 81.3L25.4 80.4L33.8 79.6L42.3 79.0L50.7 78.5L59.1 78.1L67.5 77.6L75.9 77.1L84.3 76.7L92.7 76.6L101.1 76.8L109.5 77.1L118.0 77.3L126.5 77.3L135.0 77.1L143.4 77.0L151.9 76.9L160.4 77.0L168.9 76.5L177.3 75.4L185.8 74.1L194.2 73.0L194.2 70.3L185.7 69.4L177.2 68.5L168.7 67.7L160.3 67.6L151.8 67.9L143.4 68.0L135.0 67.9L126.5 67.6L118.1 67.5L109.6 67.4L101.2 67.6L92.7 67.7L84.1 67.7L75.6 67.7L67.1 67.9L58.5 68.3L50.0 69.0L41.5 69.9L33.1 70.7L24.6 71.4L16.1 71.9L8.0 77.0ZM12.7 84.8L19.5 88.5L26.0 88.0L32.4 87.7L38.9 87.4L45.3 87.1L51.7 86.8L58.1 86.4L64.5 86.1L70.9 85.9L77.4 85.8L83.8 85.9L90.3 86.1L96.8 86.2L103.3 86.3L109.8 86.1L116.2 85.9L122.7 85.3L129.2 84.3L135.7 83.4L142.1 82.5L148.6 81.6L155.0 80.7L155.0 79.5L148.5 79.0L142.0 78.5L135.5 78.0L129.0 77.4L122.6 76.8L116.1 76.4L109.7 76.3L103.2 76.3L96.8 76.4L90.3 76.5L83.8 76.7L77.3 76.8L70.8 76.8L64.3 76.8L57.8 76.8L51.3 76.9L44.8 77.2L38.2 77.6L31.7 78.2L25.2 78.9L18.8 79.5L12.7 84.3ZM14.7 89.5L23.3 93.8L31.6 93.5L39.9 93.1L48.2 92.7L56.5 92.4L64.8 92.4L73.2 92.5L81.6 92.6L90.0 92.4L98.4 92.0L106.7 91.5L115.1 91.0L123.5 90.7L131.8 90.6L140.2 90.4L148.5 90.1L156.7 89.8L165.0 89.6L173.3 89.4L181.6 88.7L190.0 88.1L198.4 87.5L198.5 84.4L190.2 83.0L181.9 81.7L173.5 80.5L165.1 80.1L156.6 80.0L148.2 79.9L139.8 80.2L131.4 80.7L123.0 81.3L114.7 81.8L106.4 82.0L98.0 82.1L89.7 82.2L81.4 82.4L73.1 82.7L64.7 83.0L56.4 83.2L48.0 83.1L39.6 83.1L31.1 83.3L22.7 83.8L14.6 89.0ZM12.5 98.9L19.5 103.9L26.3 103.6L33.2 103.3L40.0 103.0L46.8 102.9L53.7 102.8L60.6 102.9L67.5 102.8L74.4 102.5L81.2 102.1L88.1 101.5L95.0 101.0L101.8 100.5L108.6 100.2L115.5 100.0L122.3 99.9L129.1 99.7L135.8 99.4L142.6 98.0L149.4 96.7L156.2 95.7L163.1 94.9L163.1 93.7L156.3 92.5L149.5 91.2L142.6 90.0L135.6 88.7L128.7 88.8L121.8 89.1L114.9 89.6L108.1 90.2L101.2 90.7L94.4 91.1L87.5 91.3L80.7 91.5L73.9 91.7L67.1 92.0L60.3 92.3L53.5 92.7L46.7 93.0L39.8 93.1L33.0 93.1L26.1 93.0L19.2 93.0L12.5 98.4ZM28.6 106.8L34.5 111.2L40.2 111.1L45.9 111.0L51.7 110.9L57.4 110.6L63.2 110.2L68.9 109.7L74.6 109.1L80.3 108.6L86.0 108.2L91.7 107.8L97.4 107.6L103.1 107.4L108.7 107.3L114.4 107.1L120.0 106.9L125.6 106.1L131.3 105.2L137.0 104.4L142.7 103.8L148.4 103.2L154.1 102.8L154.2 101.6L148.5 100.8L142.8 99.9L137.1 99.0L131.3 98.1L125.6 97.2L119.8 96.5L114.0 96.6L108.3 96.8L102.5 97.2L96.8 97.7L91.1 98.2L85.3 98.6L79.6 99.0L73.9 99.3L68.2 99.5L62.5 99.8L56.8 100.1L51.2 100.4L45.5 100.8L39.8 101.2L34.2 101.5L28.6 106.3Z"/></svg>table.</span></em></h1>
+    <p class="lead">Take a class of new gastronomy students who hardly know each other. Give them a field, a kitchen and two of the best chefs in Copenhagen. Ask for one dinner. What you get back is a team.</p>
+    <ol class="route" aria-label="The four courses">
+      <li><a href="#field">The field</a></li><li><a href="#fire">The fire</a></li><li><a href="#pass">The pass</a></li><li><a href="#table">The table</a></li>
+    </ol>
+  </section>
+
+  <section class="course" id="field">
+    <div class="course-head">
+      <div><div class="num" aria-hidden="true">01</div><h2>Dirt <em>first.</em></h2></div>
+      <p>Before anyone touched a knife, we went to the field. Pumpkins under the leaves, potatoes in the ground, kale up to the knees and a grower with a lot to tell. It is hard to stay a stranger to someone you have dug potatoes with.</p>
+    </div>
+    <div class="collage">
+      <figure class="c4 r2"><img src="/projects/img/holdaand/the-grower.jpg" width="1400" height="1050" loading="lazy" alt="A group of students standing in a tall green field around a grower who is explaining something, under a blue sky."><figcaption>Listening to the grower.</figcaption></figure>
+      <figure class="c2 r2"><img src="/projects/img/holdaand/pumpkins.jpg" width="1400" height="1050" loading="lazy" alt="Two bright orange pumpkins half hidden under big green leaves."><figcaption>Pumpkins, hiding.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand/potatoes.jpg" width="1400" height="1050" loading="lazy" alt="Students bent over in a green field pulling up potatoes by hand, with a crate of potatoes in the corner."><figcaption>Digging in. Literally.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand/kale-field.jpg" width="1400" height="1050" loading="lazy" alt="Students walking through a field of purple and green kale under a big sky."><figcaption>Kale as far as you can see.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="course" id="fire">
+    <div class="course-head">
+      <div><div class="num" aria-hidden="true">02</div><h2>Then <em>fire.</em></h2></div>
+      <p>Back in the kitchen, Mette Søberg and Jonathan Knoll took over. Charcoal, koji and a lot of patience. They showed the students what a few good techniques can do with what we had just pulled out of the ground.</p>
+    </div>
+    <div class="collage">
+      <figure class="c4 r2"><img src="/projects/img/holdaand/chefs-at-the-stove.jpg" width="1400" height="788" loading="lazy" alt="Two chefs at a large professional stove with brass rails, produce laid out in front of them."><figcaption>Mette Søberg and Jonathan Knoll at the stove.</figcaption></figure>
+      <figure class="c2 r1"><img src="/projects/img/holdaand/koji-oil.jpg" width="1400" height="1050" loading="lazy" alt="A plastic container of pale yellow oil with a hand-written label that says koji oil."><figcaption>Koji oil, in progress.</figcaption></figure>
+      <figure class="c2 r1"><img src="/projects/img/holdaand/on-the-grill.jpg" width="1400" height="1050" loading="lazy" alt="Two pale pieces of food on a small charcoal grill with glowing embers underneath."><figcaption>On the grill.</figcaption></figure>
+      <figure class="c2 r2"><img src="/projects/img/holdaand/charcoal.jpg" width="1400" height="1050" loading="lazy" alt="A pile of glowing charcoal on a grate next to small bowls of spices, oils and dried vegetables."><figcaption>Charcoal, ready.</figcaption></figure>
+      <figure class="c2 r2"><img src="/projects/img/holdaand-grill.jpg" width="1600" height="1200" loading="lazy" alt="Mette Søberg explains grilling over charcoal at a small table grill."><figcaption>Mette on cooking over charcoal.</figcaption></figure>
+      <figure class="c2 r2"><img src="/projects/img/holdaand-demo.jpg" width="1600" height="1200" loading="lazy" alt="Jonathan Knoll at the stove with squash, apricots and a finished dish in front of him."><figcaption>Jonathan, from produce to plate.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="course" id="pass">
+    <div class="course-head">
+      <div><div class="num" aria-hidden="true">03</div><h2>Many hands, <em>one pass.</em></h2></div>
+      <p>Plating is a team sport. Every bowl goes through several pairs of hands, and nothing leaves the counter until everyone's part is on it. Students and chefs side by side, same counter, same deadline.</p>
+    </div>
+    <div class="collage">
+      <figure class="c6 r2"><video class="clip" muted loop playsinline preload="none" poster="/projects/img/plating-poster.jpg" aria-label="Short silent clip: students and chefs plating small dishes side by side along a long counter."><source src="/projects/video/plating.mp4" type="video/mp4"></video><figcaption>Plating together.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand-plating.jpg" width="1600" height="1200" loading="lazy" alt="Chefs and students in white jackets filling small pastry cases at a long counter, rows of dark bowls ready."><figcaption>Service is close.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand/salad-boxes.jpg" width="1049" height="1400" loading="lazy" alt="Rows of small containers, each filled with basil, strawberries, edible flowers and chanterelles."><figcaption>Mise en place, times twelve.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="course" id="table">
+    <div class="course-head">
+      <div><div class="num" aria-hidden="true">04</div><h2>And then <em>the table.</em></h2></div>
+      <p>The day ended where it should: at the table, with food the students had harvested, cooked and served themselves. Proud is the right word.</p>
+    </div>
+    <div class="collage">
+      <figure class="c3 r3"><img src="/projects/img/holdaand/dish-fish-salad.jpg" width="1049" height="1400" loading="lazy" alt="From above: a green bowl of salad with strawberries and flowers, and a piece of fish with a golden crust on a nasturtium leaf."><figcaption>Fish on a nasturtium leaf, and a summer salad.</figcaption></figure>
+      <figure class="c3 r3"><img src="/projects/img/holdaand/tartlet.jpg" width="1049" height="1400" loading="lazy" alt="A small golden tartlet topped with a creamy filling, thin radish slices and crisp fish skin, on a dark plate."><figcaption>A crisp tartlet with radish and fish skin.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand/dessert-plates.jpg" width="1400" height="1050" loading="lazy" alt="Several plates of a dessert with yellow cream, cake, thin squash ribbons, seed brittle and marigold flowers."><figcaption>Squash, seed brittle and marigold.</figcaption></figure>
+      <figure class="c3 r2"><img src="/projects/img/holdaand/dessert-blue.jpg" width="1400" height="1050" loading="lazy" alt="A close-up of the dessert on a blue-grey plate, with shards of pumpkin seed brittle and orange flowers."><figcaption>Plate after plate.</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div>
+      <div class="label">Behind it</div>
+      <h2 style="margin:16px 0 24px">People together, <em>around a purpose.</em></h2>
+      <p>Holdånd is Danish for team spirit. New students drop out when they feel alone, so the idea was to give them a reason to belong in their very first weeks: a shared job, from the soil to the table.</p>
+      <p class="small">I had the idea and ran the project, with EU funding, a lot of phone calls and very generous partners. The rest was the students.</p>
+      <div class="next"><a class="btn" href="/projects/">All four projects <span class="arrow" aria-hidden="true">→</span></a><a class="btn ghost" href="/contact/">Work with me</a></div>
+    </div>
+    <figure>
+      <img src="/projects/img/holdaand/the-teachers.jpg" width="1049" height="1400" loading="lazy" alt="Three chefs in aprons standing side by side in front of large white-framed windows.">
+      <figcaption>The teachers for the day.</figcaption>
+    </figure>
+  </section>
+</main>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <a class="foot-mark" href="/" style="text-decoration:none"><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M50 18C42 9 22 9 14 22C6 35 12 52 30 55C46 58 57 46 55 31C54 24 50 19 44 16" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/><circle cx="33" cy="33" r="8" fill="var(--ember)"/></svg><span>Useful things, <em>made quietly.</em></span></a>
+      <nav class="foot-links" aria-label="Footer"><a href="/about/">About</a><a href="/work/">Work</a><a href="/contact/">Contact</a><a href="/brand/">Identity</a><a href="https://www.linkedin.com/in/anders-norgaard-carlsen" rel="me noopener">LinkedIn ↗</a></nav>
+    </div>
+    <div class="foot-base"><span>© <span data-year>2026</span> Anders Nørgaard-Carlsen</span><span>Even though it's fun, it's still work.</span><span>Copenhagen, Denmark</span></div>
+  </div>
+</footer>
+<script>
+(function () {
+  var clips = document.querySelectorAll('.clip');
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) { clips.forEach(function (v) { v.controls = true; }); return; }
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { var p = e.target.play(); if (p && p.catch) p.catch(function () { e.target.controls = true; }); } else e.target.pause(); }); }, { threshold: .35 });
+  clips.forEach(function (v) { io.observe(v); });
+})();
+</script>
+<script src="/site.js" defer></script>
+</body>
+</html>

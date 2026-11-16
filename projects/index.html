@@ -38,13 +38,13 @@ section.block h2 { margin: 16px 0 24px; }
 .how b { display: block; font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.15; margin-bottom: 10px; }
 .how span { color: var(--graphite); font-size: 16px; line-height: 25px; }
 .intro h1 .brush svg { width: calc(108% + .2em); }
-.gallery { display: grid; grid-template-columns: repeat(6, 1fr); gap: 28px 16px; margin-top: 8px; }
-.gallery figure { grid-column: span 3; margin: 0; }
-.gallery figure.wide { grid-column: 1 / -1; }
-.gallery img, .gallery video { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; display: block; border-radius: var(--radius); border: 1px solid var(--rule); background: var(--paper-deep); }
-.gallery .wide video { aspect-ratio: 16 / 9; }
-.gallery figcaption { font-family: var(--mono); font-size: 12px; line-height: 18px; letter-spacing: .04em; color: var(--graphite); margin-top: 10px; }
-@media (max-width: 640px) { .gallery { grid-template-columns: 1fr; } .gallery figure { grid-column: 1 / -1; } }
+.teaser { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: var(--surface); text-decoration: none; transition: border-color .3s, transform .45s var(--ease); }
+.teaser:hover { border-color: var(--pencil); transform: translateY(-3px); }
+.teaser img { width: 100%; height: 100%; min-height: 280px; object-fit: cover; display: block; }
+.teaser-txt { padding: clamp(24px, 4vw, 44px); display: flex; flex-direction: column; justify-content: center; gap: 14px; }
+.teaser-txt p { color: var(--graphite); }
+.teaser-txt .btn { align-self: flex-start; margin-top: 6px; }
+@media (max-width: 760px) { .teaser { grid-template-columns: 1fr; } .teaser img { min-height: 0; aspect-ratio: 4 / 3; } }
 .next { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 </style>
 </head>
@@ -93,21 +93,16 @@ section.block h2 { margin: 16px 0 24px; }
       <li>
         <span class="n">04</span>
         <div><h3>Holdånd</h3><span class="tag label">EU-funded · team spirit for new students</span></div>
-        <div><p>New gastronomy students drop out when they feel alone. With EU funding I built programmes that gave them a team and a reason to stay. Holdånd is Danish for team spirit, and that was the whole point.</p><p>Some of the best in the industry stepped in, led by <b>Mette Søberg</b>, then sous chef at <b>Noma</b>, and <b>Jonathan Knoll</b> from <b>Baka d' Busk</b>, with good people from <b>Fiskerikajen</b> backing them up. It ended in a dinner the students cooked and will not forget.</p></div>
+        <div><p>New gastronomy students drop out when they feel alone. With EU funding I built programmes that gave them a team and a reason to stay. Holdånd is Danish for team spirit, and that was the whole point.</p><p>Some of the best in the industry stepped in, led by <b>Mette Søberg</b>, then sous chef at <b>Noma</b>, and <b>Jonathan Knoll</b> from <b>Baka d' Busk</b>, with good people from <b>Fiskerikajen</b> backing them up. It ended in a dinner the students cooked and will not forget. <a href="/projects/holdaand/">Read the story →</a></p></div>
       </li>
     </ol>
   </section>
 
   <section class="block">
-    <div class="label">What came out of it</div>
-    <h2>Real kitchens, <em>real guests.</em></h2>
-    <div class="gallery">
-      <figure class="wide"><video class="clip" muted loop playsinline preload="none" poster="img/plating-poster.jpg" aria-label="Short silent clip: chefs and students plating small dishes side by side along a long kitchen counter."><source src="video/plating.mp4" type="video/mp4"></video><figcaption>Holdånd: students plating the dinner with Mette Søberg and Jonathan Knoll.</figcaption></figure>
-      <figure><img src="img/holdaand-grill.jpg" width="1600" height="1200" loading="lazy" alt="Mette Søberg in an apron explains grilling over charcoal on a small table grill, while Jonathan Knoll listens in the background."><figcaption>Holdånd: Mette Søberg on cooking over charcoal.</figcaption></figure>
-      <figure><img src="img/holdaand-demo.jpg" width="1600" height="1200" loading="lazy" alt="Jonathan Knoll in whites and a cap at a professional stove, with squash, apricots and a finished dish laid out in front of him."><figcaption>Holdånd: Jonathan Knoll, from produce to plate.</figcaption></figure>
-      <figure><img src="img/holdaand-plating.jpg" width="1600" height="1200" loading="lazy" alt="Chefs in white jackets filling small pastry cases at a long counter, with rows of dark bowls ready for service."><figcaption>Holdånd: service is close.</figcaption></figure>
-      <figure><img src="img/tingbjerg.jpg" width="800" height="600" loading="lazy" alt="A table outdoors with bags of food being packed, paper carrier bags underneath."><figcaption>Virketrang in Tingbjerg: food bags packed for the neighbourhood.</figcaption></figure>
-    </div>
+    <a class="teaser" href="/projects/holdaand/">
+      <img src="/projects/img/holdaand/the-grower.jpg" width="1400" height="1050" loading="lazy" alt="Students in a tall green field gathered around a grower, under a blue sky.">
+      <div class="teaser-txt"><div class="label">The Holdånd story</div><h2>From soil <em>to table.</em></h2><p>A class of new students, a field, a kitchen, two great chefs and one dinner. Four courses, told in pictures.</p><span class="btn">Read the story <span class="arrow" aria-hidden="true">→</span></span></div>
+    </a>
   </section>
 
   <section class="block">
