@@ -189,3 +189,17 @@ section.block { margin-top: clamp(72px, 12vh, 120px); }
   @keyframes draw { to { clip-path: inset(-30% -5% -30% -5%); } }
 }
 @media (prefers-reduced-motion: reduce) { .pulse::after { animation: none; } * { transition: none !important; } }
+
+/* The slogan. Always ends on "still work", always with the brush behind it. */
+.slogan { font-family: var(--serif); font-weight: 400; }
+.slogan .pre { display: block; font-size: clamp(24px, 3.4vw, 34px); line-height: 1.22; letter-spacing: -.005em; color: var(--graphite); max-width: 23em; text-wrap: balance; }
+.slogan .big { display: block; margin-top: .3em; font-size: clamp(60px, 12.5vw, 128px); line-height: .98; letter-spacing: -.025em; color: var(--ink); }
+.sw.brush { padding-right: .1em; }
+.sw.brush svg { width: calc(132% + .3em); left: -.14em; top: .04em; height: 1.06em; transform: rotate(-1.4deg); }
+.site-foot .foot-slogan + .foot-base { margin-top: 32px; }
+.foot-slogan { font-family: var(--serif); font-size: clamp(19px, 2.2vw, 23px); line-height: 1.4; color: var(--graphite); max-width: 36em; margin-top: 32px; text-wrap: balance; }
+.foot-slogan .brush { color: var(--paper); }
+.foot-slogan { margin-bottom: 0; }
+.foot-slogan:first-child { margin-top: 0; }
+.foot-slogan .sw.brush { margin-top: 0; vertical-align: baseline; }
+.foot-slogan .sw.brush svg { top: .12em; height: 1.12em; }
