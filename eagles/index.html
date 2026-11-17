@@ -353,15 +353,18 @@
     const st = stats().sort((a, b) => b.played - a.played || (b.rate ?? -1) - (a.rate ?? -1) || a.name.localeCompare(b.name));
     if (!st.length) { $('#board').innerHTML = ''; $('#badges').innerHTML = '<p class="empty">The board fills up after the first Tuesday.</p>'; return; }
     const ranked = st.filter(s => s.possible > 0);
-    const top = (key) => [...ranked].sort((a, b) => b[key] - a[key] || b.played - a.played)[0];
-    const mvp = top('played'), hot = top('streak'), rec = top('best');
+    const leaders = (key) => { const m = Math.max(0, ...ranked.map(s => s[key])); return m ? ranked.filter(s => s[key] === m).sort((a, b) => a.name.localeCompare(b.name)) : []; };
+    const names = (arr) => arr.length < 2 ? arr[0].name : arr.slice(0, -1).map(s => s.name).join(', ') + ' & ' + arr[arr.length - 1].name;
+    const tie = (arr) => arr.length > 1 ? ` · ${arr.length}-way tie` : '';
+    const mvps = leaders('played'), hots = leaders('streak'), recs = leaders('best');
+    const same = (a, b) => a.length === b.length && a.every((s, i) => s.id === b[i].id);
     const ghosts = ranked.filter(s => s.possible >= 2).sort((a, b) => a.rate - b.rate || b.missed - a.missed);
-    const ghost = ghosts[0] && ghosts[0] !== mvp && ghosts[0].rate < 0.5 ? ghosts[0] : null;
+    const ghost = ghosts[0] && !mvps.includes(ghosts[0]) && ghosts[0].rate < 0.5 ? ghosts[0] : null;
     const card = (cls, k, who, why) => `<div class="badge ${cls}"><div class="k">${k}</div><div class="who">${esc(who)}</div><div class="why">${why}</div></div>`;
     $('#badges').innerHTML =
-      (mvp && mvp.played ? card('mvp', '🏆 High score · most runs', mvp.name, `${mvp.played} runs all time`) : '') +
-      (hot && hot.streak > 1 ? card('hot', '🔥 On fire · current streak', hot.name, `${hot.streak} Tuesdays in a row and counting`) : '') +
-      (rec && rec.best > 1 && !(hot && rec.id === hot.id && rec.best === hot.streak) ? card('rec', '⚡ Record streak', rec.name, `${rec.best} Tuesdays in a row`) : '') +
+      (mvps.length ? card('mvp', '🏆 High score · most runs' + tie(mvps), names(mvps), `${mvps[0].played} run${mvps[0].played === 1 ? "" : "s"} ${mvps.length > 1 ? "each" : "all time"}`) : '') +
+      (hots.length && hots[0].streak > 1 ? card('hot', '🔥 On fire · current streak' + tie(hots), names(hots), `${hots[0].streak} Tuesdays in a row and counting`) : '') +
+      (recs.length && recs[0].best > 1 && !(same(recs, hots) && recs[0].best === hots[0].streak) ? card('rec', '⚡ Record streak' + tie(recs), names(recs), `${recs[0].best} Tuesdays in a row`) : '') +
       (ghost ? card('ghost', '👻 Ghost of the court', ghost.name, `Showed up ${ghost.played} of ${ghost.possible} Tuesdays`) : '');
     $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th></tr></thead><tbody>` +
       st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
