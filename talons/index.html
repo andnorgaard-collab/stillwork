@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thursday Talons · Pick-up Hoops</title>
+<meta name="description" content="Thursday Talons: a demo check-in board for pick-up basketball. Thursdays at 20:00. Check in, show up, climb the board.">
+<meta name="theme-color" content="#2b0f4c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Talons">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232b0f4c'/%3E%3Ccircle cx='32' cy='32' r='20' fill='%23ff7a1a' stroke='%23111' stroke-width='3'/%3E%3Cpath d='M12 32h40M32 12v40M18 18c8 8 8 20 0 28M46 18c-8 8-8 20 0 28' fill='none' stroke='%23111' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&family=Archivo:wght@500;700;900&family=Archivo+Narrow:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>
+  :root {
+    --purple: #3d1470;
+    --purple-deep: #2b0f4c;
+    --teal: #12c8b6;
+    --red: #ff2e4d;
+    --gold: #ffc22e;
+    --orange: #ff7a1a;
+    --black: #111014;
+    --white: #fffaf0;
+    --silver: #c9c6d6;
+    --display: "Bungee", "Archivo", Impact, sans-serif;
+    --shade: "Bungee Shade", "Bungee", Impact, sans-serif;
+    --body: "Archivo", system-ui, sans-serif;
+    --narrow: "Archivo Narrow", "Archivo", sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
+  body {
+    min-height: 100vh;
+    font-family: var(--body);
+    color: var(--white);
+    background-color: var(--purple-deep);
+    background: linear-gradient(160deg, #4a1786 0%, #2b0f4c 55%, #1b0a33 100%) fixed;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  button, input, select { font: inherit; color: inherit; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 18px; }
+
+
+  /* Background: jersey bands, halftone and scattered 90s shapes */
+  .bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .band { position: absolute; left: -30%; width: 160%; transform: rotate(-14deg); }
+  .band.b1 { top: 18%; height: 70px; background: var(--teal); box-shadow: 0 0 0 6px var(--black); opacity: .9; }
+  .band.b2 { top: calc(18% + 86px); height: 18px; background: var(--red); box-shadow: 0 0 0 4px var(--black); opacity: .9; }
+  .band.b3 { top: 74%; height: 34px; background: var(--gold); box-shadow: 0 0 0 5px var(--black); transform: rotate(9deg); opacity: .85; }
+  .halftone { position: absolute; width: 70vmax; height: 70vmax; right: -20vmax; bottom: -22vmax; background: radial-gradient(circle, rgba(255,46,77,.55) 2.6px, transparent 3px) 0 0 / 16px 16px; -webkit-mask: radial-gradient(circle, #000 0%, transparent 68%); mask: radial-gradient(circle, #000 0%, transparent 68%); }
+  .halftone.h2 { right: auto; bottom: auto; left: -26vmax; top: -24vmax; background: radial-gradient(circle, rgba(18,200,182,.5) 2.4px, transparent 2.8px) 0 0 / 14px 14px; }
+  .shape { position: absolute; animation: float var(--d, 14s) ease-in-out var(--delay, 0s) infinite alternate; }
+  .shape svg { display: block; width: 100%; height: auto; overflow: visible; }
+  @keyframes float { from { transform: translate(0, 0) rotate(var(--r, 0deg)); } to { transform: translate(var(--dx, 12px), var(--dy, -18px)) rotate(calc(var(--r, 0deg) + var(--spin, 20deg))); } }
+  @media (prefers-reduced-motion: reduce) { .shape { animation: none; transform: rotate(var(--r, 0deg)); } }
+
+  /* Hero */
+  .hero { position: relative; padding: 28px 0 8px; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; align-items: center; }
+  .crest { width: 250px; height: 250px; overflow: visible; filter: drop-shadow(7px 7px 0 var(--black)); animation: bob 3.2s ease-in-out infinite; }
+  .crest .burst { transform-box: fill-box; transform-origin: center; animation: spin 40s linear infinite; }
+  @keyframes bob { 50% { transform: translateY(-6px) rotate(-2deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .crest, .crest .burst { animation: none; } }
+  .title { font-family: var(--display); font-size: clamp(38px, 8.4vw, 80px); line-height: .92; color: var(--gold); -webkit-text-stroke: .09em var(--black); paint-order: stroke fill; text-shadow: .06em .06em 0 var(--black), .12em .12em 0 var(--red), .16em .16em 0 var(--black); letter-spacing: .02em; transform: skew(-6deg) rotate(-3deg); transform-origin: left; }
+  .title small { display: block; font-size: .46em; color: var(--teal); text-shadow: .08em .08em 0 var(--black); letter-spacing: .04em; margin-top: 10px; }
+  .tagline { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+  .sticker { font-family: var(--display); font-size: 14px; padding: 6px 12px; background: var(--red); color: var(--white); border: 3px solid var(--black); box-shadow: 4px 4px 0 var(--black); transform: rotate(-2deg); }
+  .sticker:nth-child(2) { background: var(--teal); color: var(--black); transform: rotate(1.5deg); }
+  .sticker:nth-child(3) { background: var(--gold); color: var(--black); transform: rotate(-1deg); }
+  @media (max-width: 560px) { .crest { width: 126px; height: 126px; } .hero { gap: 6px 12px; } .title { font-size: clamp(30px, 8.6vw, 44px); } }
+
+  /* Panels */
+  .panel { position: relative; margin-top: 30px; background: var(--white); color: var(--black); border: 4px solid var(--black); box-shadow: 10px 10px 0 var(--black), 10px 10px 0 4px var(--teal); padding: 22px 20px 24px; }
+  .panel.teal { background: var(--teal); }
+  .panel.stripes { background-image: repeating-linear-gradient(90deg, transparent 0 22px, rgba(61,20,112,.09) 22px 25px); }
+  .panel h2 { font-family: var(--display); font-size: clamp(24px, 5vw, 36px); line-height: 1; color: var(--purple); text-transform: uppercase; }
+  .panel h2 .hot { color: var(--red); }
+  .kicker { font-family: var(--narrow); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--purple); margin-bottom: 8px; }
+  .claw { position: absolute; top: -26px; right: 18px; width: 86px; height: 60px; }
+
+  /* Next game */
+  .game { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; }
+  .date { font-family: var(--display); font-size: clamp(30px, 8vw, 56px); line-height: .95; color: var(--black); }
+  .date span { color: var(--red); }
+  .meter { text-align: center; background: var(--purple); color: var(--gold); border: 4px solid var(--black); padding: 8px 14px 10px; transform: rotate(3deg); box-shadow: 5px 5px 0 var(--black); min-width: 108px; }
+  .meter b { display: block; font-family: var(--display); font-size: 52px; line-height: 1; }
+  .meter i { font-style: normal; font-family: var(--narrow); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--white); }
+  .verdict { margin-top: 14px; font-family: var(--display); font-size: 18px; padding: 8px 12px; display: inline-block; border: 3px solid var(--black); }
+  .verdict.on { background: var(--teal); }
+  .verdict.close { background: var(--gold); }
+  .verdict.off { background: var(--red); color: var(--white); }
+
+  .me { margin-top: 20px; padding-top: 18px; border-top: 4px dashed var(--purple); }
+  .me-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .me select, .me input { border: 3px solid var(--black); background: var(--white); padding: 10px 12px; font-weight: 700; min-width: 0; flex: 1; border-radius: 0; }
+  .me select:focus, .me input:focus { outline: 3px solid var(--teal); outline-offset: 0; }
+  .btn { font-family: var(--display); font-size: 18px; padding: 12px 18px; border: 4px solid var(--black); cursor: pointer; box-shadow: 5px 5px 0 var(--black); transition: transform .08s, box-shadow .08s; background: var(--gold); color: var(--black); text-transform: uppercase; touch-action: manipulation; }
+  .btn:active { transform: translate(4px, 4px); box-shadow: 1px 1px 0 var(--black); }
+  .btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  .btn.in { background: var(--teal); }
+  .btn.out { background: var(--red); color: var(--white); }
+  .btn.small { font-size: 14px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--black); }
+  .btn[aria-pressed="true"] { outline: 4px solid var(--purple); outline-offset: 3px; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .choice .btn { font-size: clamp(20px, 5vw, 28px); padding: 16px 10px; }
+  .hello { font-family: var(--narrow); font-weight: 700; font-size: 16px; }
+  .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-weight: 700; color: var(--purple); }
+
+  .roster { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { font-family: var(--narrow); font-weight: 700; font-size: 15px; padding: 5px 10px; border: 3px solid var(--black); background: var(--white); }
+  .chip.in { background: var(--teal); }
+  .chip.out { background: var(--black); color: var(--silver); text-decoration: line-through; }
+  .chip.unknown { background: transparent; border-style: dashed; color: #6c6780; }
+
+  /* Board */
+  .board { width: 100%; border-collapse: collapse; margin-top: 14px; font-family: var(--narrow); font-weight: 700; }
+  .board th { font-family: var(--display); font-size: 13px; text-align: left; background: var(--purple); color: var(--gold); padding: 8px 10px; font-weight: 400; }
+  .board th.n, .board td.n { text-align: right; }
+  .board td { padding: 10px; border-bottom: 3px solid var(--black); font-size: 17px; }
+  .board tr:nth-child(odd) td { background: rgba(18,200,182,.12); }
+  .rank { font-family: var(--display); color: var(--red); width: 42px; }
+  .bar { height: 10px; background: #e3dff0; border: 2px solid var(--black); margin-top: 4px; }
+  .bar i { display: block; height: 100%; background: var(--red); }
+  .badges { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; margin-top: 18px; }
+  .badge { border: 4px solid var(--black); padding: 14px; box-shadow: 6px 6px 0 var(--black); }
+  .badge.mvp { background: var(--gold); transform: rotate(-1.5deg); }
+  .badge.ghost { background: var(--purple); color: var(--white); transform: rotate(1.5deg); }
+  .badge.hot { background: var(--red); color: var(--white); transform: rotate(1deg); }
+  .badge.rec { background: var(--teal); transform: rotate(-1deg); }
+  .board td.n, .board th.n { padding-left: 4px; padding-right: 6px; }
+  @media (max-width: 420px) { .board td { font-size: 15px; padding: 9px 5px; } .board th { font-size: 11px; padding: 7px 5px; } }
+  .badge .k { font-family: var(--display); font-size: 14px; }
+  .badge .who { font-family: var(--shade); font-size: 30px; line-height: 1; margin: 8px 0 6px; word-break: break-word; }
+  .badge .why { font-family: var(--narrow); font-weight: 700; }
+
+  .history { list-style: none; margin-top: 12px; }
+  .history li { display: grid; grid-template-columns: 112px 52px 1fr; gap: 10px; padding: 9px 0; border-bottom: 3px solid var(--black); font-family: var(--narrow); font-weight: 700; align-items: baseline; }
+  .history .d { font-family: var(--display); font-size: 14px; color: var(--purple); }
+  .history .c { font-family: var(--display); font-size: 18px; color: var(--red); }
+
+  .empty { font-family: var(--narrow); font-weight: 700; font-size: 17px; padding: 8px 0; }
+  .notice { margin-top: 30px; background: var(--red); color: var(--white); border: 4px solid var(--black); padding: 16px; font-family: var(--narrow); font-weight: 700; box-shadow: 8px 8px 0 var(--black); }
+  .notice code { background: var(--black); padding: 1px 6px; }
+  footer { margin: 44px 0 30px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; font-family: var(--narrow); font-weight: 700; font-size: 14px; color: var(--silver); }
+  footer a { color: var(--gold); }
+  .demo { margin-top: 26px; background: var(--gold); color: var(--black); border: 3px solid var(--black); box-shadow: 5px 5px 0 var(--black); padding: 10px 14px; font-family: var(--narrow); font-weight: 700; font-size: 15px; transform: rotate(-.6deg); }
+  .demo a { color: var(--purple); }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) rotate(-2deg) scale(.6); opacity: 0; background: var(--gold); color: var(--black); border: 4px solid var(--black); box-shadow: 6px 6px 0 var(--black); font-family: var(--display); font-size: 22px; padding: 12px 18px; transition: all .25s cubic-bezier(.2,1.6,.4,1); pointer-events: none; z-index: 9; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateX(-50%) rotate(-2deg) scale(1); }
+  @media (prefers-reduced-motion: reduce) { .crest { animation: none; } .toast { transition: none; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+</style>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"><div class="halftone"></div><div class="halftone h2"></div><div class="band b1"></div><div class="band b2"></div><div class="band b3"></div></div>
+<div class="wrap">
+  <header class="hero">
+    <svg class="crest" viewBox="0 0 400 400" role="img" aria-label="Thursday Talons crest: a screaming eagle bursting out of a basketball">
+<g class="burst"><path d="M200 4 L226 62 L276 20 L280 86 L344 68 L322 130 L388 140 L342 188 L396 228 L332 246 L362 306 L296 298 L300 364 L244 328 L222 392 L186 336 L142 386 L132 320 L68 346 L84 282 L18 280 L60 228 L6 190 L66 166 L32 108 L98 110 L92 44 L150 76 Z" fill="#12c8b6" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
+<path d="M200 44 L220 92 L262 62 L264 112 L314 100 L298 148 L346 158 L312 194 L350 224 L302 238 L324 284 L274 278 L276 326 L234 300 L216 348 L190 306 L156 342 L150 294 L102 312 L114 264 L66 262 L96 224 L58 194 L102 176 L78 132 L126 134 L122 86 L164 108 Z" fill="#ffc22e" stroke="#111014" stroke-width="4" stroke-linejoin="round"/></g>
+<g transform="translate(30 6) scale(.9)" stroke="#111014" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="214" cy="262" r="112" fill="#ff7a1a" stroke-width="7"/>
+<path d="M102 262 H326 M214 150 V374 M136 182 C180 222 180 302 136 342 M292 182 C248 222 248 302 292 342" fill="none" stroke-width="5"/>
+<path d="M262 118 C236 84 196 74 160 86 L60 22 L118 100 L14 66 L100 134 L-4 140 L94 172 L8 222 L104 210 L36 286 L124 248 L92 334 L160 272 L160 352 L206 282 L240 334 L248 252 Z" fill="#ff2e4d" stroke-width="7"/>
+<path d="M262 122 C240 92 200 82 168 92 L104 58 L140 114 L66 100 L124 144 L50 152 L116 178 L58 208 L122 212 L80 254 L138 244 L118 296 L170 266 L176 314 L208 274 L230 300 L240 250 C236 232 240 214 250 200 L256 160 Z" fill="#fffaf0" stroke-width="6"/>
+<path d="M240 250 C236 232 240 214 250 200 L210 192 L172 232 L118 296 L170 266 L176 314 L208 274 L230 300 Z" fill="#c9c6d6" stroke="none"/>
+<path d="M146 116 L186 126 M116 158 L170 164 M110 204 L166 198 M130 242 L176 224" fill="none" stroke="#c9c6d6" stroke-width="5"/>
+<path d="M244 196 C284 186 318 188 330 206 L318 236 C312 252 306 268 300 284 C288 244 270 220 242 206 Z" fill="#8f0019" stroke-width="5"/>
+<path d="M254 206 C276 208 294 226 300 262 C286 240 270 226 252 216 Z" fill="#ff2e4d" stroke-width="3"/>
+<path d="M242 206 C270 220 290 246 300 286 C272 284 246 264 234 238 Z" fill="#e39a12" stroke-width="5.5"/>
+<path d="M254 118 L324 124 C352 136 366 166 366 204 C366 232 358 252 344 272 L326 206 C312 190 284 188 244 196 L250 160 Z" fill="#ffc22e" stroke-width="6"/>
+<path d="M326 206 C312 190 284 188 244 196 L247 182 C286 176 318 182 334 220 Z" fill="#e39a12" stroke="none"/>
+<path d="M272 132 L314 134 C334 140 346 158 350 180" fill="none" stroke="#fff3c4" stroke-width="5"/>
+<path d="M286 150 L304 156 L290 162 Z" fill="#111014" stroke="none"/>
+<path d="M254 118 L250 160 L244 196" fill="none" stroke-width="5"/>
+<path d="M184 112 L266 134 L262 150 L254 170 L226 168 L204 146 Z" fill="#111014" stroke-width="4"/>
+<path d="M212 143 L256 153 L250 166 L229 164 Z" fill="#ffc22e" stroke="none"/>
+<path d="M234 148 L246 151 L243 165 L233 164 Z" fill="#ff2e4d" stroke="none"/>
+<circle cx="239" cy="157" r="3" fill="#111014" stroke="none"/>
+<path d="M172 100 L262 126" fill="none" stroke="#fffaf0" stroke-width="7"/>
+<path d="M190 186 L226 192 M206 204 L228 206" fill="none" stroke-width="4"/>
+<g transform="translate(64 300) rotate(-8)"><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#111014" stroke-width="16" fill="none"/><path d="M0 0L-12 62M28 -4L16 66M56 0L44 62" stroke="#fffaf0" stroke-width="8" fill="none"/></g>
+</g>
+</svg>
+        <h1 class="title">Thursday<br>Talons<small>Pick-up Hoops</small></h1>
+    <div class="tagline"><span class="sticker">Thursdays · 20:00</span><span class="sticker">Check in or check out</span><span class="sticker">No ghosts</span></div>
+  </header>
+
+  <div class="demo">Demo board: try it out. Anyone with the link can join and check in, so pick a nickname. Want one for your own crew? <a href="/contact/">Say hi</a>.</div>
+  <div id="notice"></div>
+
+  <section class="panel stripes" aria-labelledby="next-h">
+    <svg class="claw" viewBox="0 0 86 60" aria-hidden="true"><path d="M14 4L4 56M38 2L28 58M62 4L52 56" stroke="#ff2e4d" stroke-width="9" stroke-linecap="round"/><path d="M14 4L4 56M38 2L28 58M62 4L52 56" stroke="#111014" stroke-width="3" stroke-linecap="round" transform="translate(4 2)"/></svg>
+    <div class="kicker" id="next-h">Next run</div>
+    <div class="game">
+      <div class="date" id="gameDate">…</div>
+      <div class="meter"><b id="countIn">0</b><i>ballers in</i></div>
+    </div>
+    <div class="verdict" id="verdict">Loading</div>
+    <ul class="roster" id="roster" aria-label="Who's coming"></ul>
+
+    <div class="me" id="me"></div>
+  </section>
+
+  <section class="panel" aria-labelledby="board-h">
+    <div class="kicker">Attendance</div>
+    <h2 id="board-h">The <span class="hot">Board</span></h2>
+    <div class="badges" id="badges"></div>
+    <table class="board" id="board"></table>
+  </section>
+
+  <section class="panel teal" aria-labelledby="hist-h">
+    <div class="kicker" style="color:var(--black)">Box scores</div>
+    <h2 id="hist-h" style="color:var(--black)">Past <span class="hot">runs</span></h2>
+    <ul class="history" id="history"></ul>
+  </section>
+
+  <footer><span>Thursday Talons · a demo board</span><span>Built by <a href="/work/">stillwork</a></span></footer>
+</div>
+<script>
+(() => {
+  // Scatter a fresh mix of 90s shapes on every visit, so the pattern never repeats.
+  const bg = document.getElementById('bg'); if (!bg) return;
+  const C = ['#12c8b6', '#ff2e4d', '#ffc22e', '#fffaf0', '#ff7a1a', '#c9c6d6'];
+  const K = '#111014';
+  const pick = (a) => a[Math.floor(Math.random() * a.length)];
+  const R = (a, b) => a + Math.random() * (b - a);
+  const shapes = [
+    c => `<svg viewBox="0 0 60 60"><path d="M6 52L30 6L54 52Z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/></svg>`,
+    c => `<svg viewBox="0 0 120 30"><path d="M5 15c12-18 24 18 36 0s24 18 36 0 24 18 36 0" fill="none" stroke="${K}" stroke-width="11" stroke-linecap="round"/><path d="M5 15c12-18 24 18 36 0s24 18 36 0 24 18 36 0" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="${c}" stroke="${K}" stroke-width="5"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="none" stroke="${c}" stroke-width="8"/></svg>`,
+    c => `<svg viewBox="0 0 120 40"><path d="M4 32L24 8L44 32L64 8L84 32L104 8L116 22" fill="none" stroke="${K}" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/><path d="M4 32L24 8L44 32L64 8L84 32L104 8L116 22" fill="none" stroke="${c}" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 40 40"><path d="M8 8L32 32M32 8L8 32" stroke="${c}" stroke-width="7" stroke-linecap="round"/></svg>`,
+    c => `<svg viewBox="0 0 60 60"><rect x="10" y="10" width="40" height="40" fill="${c}" stroke="${K}" stroke-width="5"/></svg>`,
+    c => `<svg viewBox="0 0 80 80"><path d="M40 4l9 25 27 2-21 17 7 27-22-15-22 15 7-27L4 31l27-2z" fill="${c}" stroke="${K}" stroke-width="5" stroke-linejoin="round"/></svg>`,
+    c => `<svg viewBox="0 0 70 70"><path d="M10 60L60 10" stroke="${c}" stroke-width="10" stroke-linecap="round"/><path d="M26 64L64 26" stroke="${c}" stroke-width="5" stroke-linecap="round"/></svg>`,
+    () => `<svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="24" fill="#ff7a1a" stroke="${K}" stroke-width="4"/><path d="M6 30h48M30 6v48M14 13c9 9 9 25 0 34M46 13c-9 9-9 25 0 34" fill="none" stroke="${K}" stroke-width="3"/></svg>`
+  ];
+  const n = Math.round(Math.min(34, Math.max(16, innerWidth * innerHeight / 38000)));
+  let html = '';
+  for (let i = 0; i < n; i++) {
+    const big = Math.random() < .18;
+    const w = big ? R(90, 170) : R(22, 70);
+    html += `<div class="shape" style="left:${R(-4, 96)}%;top:${R(-4, 96)}%;width:${w}px;opacity:${big ? .55 : R(.6, 1)};--r:${R(-40, 40)}deg;--spin:${R(-30, 30)}deg;--dx:${R(-24, 24)}px;--dy:${R(-30, 30)}px;--d:${R(9, 22)}s;--delay:${R(-20, 0)}s">${pick(shapes)(pick(C))}</div>`;
+  }
+  bg.insertAdjacentHTML('beforeend', html);
+})();
+</script>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const SUPABASE_URL = 'https://liqjvlaexuxchlfhtlhz.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxpcWp2bGFleHV4Y2hsZmh0bGh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3NjE1NDIsImV4cCI6MjExMDMzNzU0Mn0.B69F-iRsky4n3NrmCCzDP2BbFAmT3Ef8Ukq_ZYJRyG4';
+  const GAME_DAY = 4;  // 0 Sunday ... 4 Thursday
+  const MIN = 6;       // fewest players for a game
+  const FULL = 10;     // full 5 on 5
+  const ME_KEY = 'talons-me';
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const parse = (s) => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+  const pretty = (s, opts = { weekday: 'short', day: 'numeric', month: 'short' }) => parse(s).toLocaleDateString('en-GB', opts);
+
+  // Thursday 20:00 is game time; the current game stays "next" until 22:00 that evening.
+  function nextGame(now = new Date()) {
+    const d = new Date(now); d.setHours(0, 0, 0, 0);
+    const day = d.getDay();
+    let add = (GAME_DAY - day + 7) % 7;
+    if (add === 0 && now.getHours() >= 22) add = 7;
+    d.setDate(d.getDate() + add);
+    return ymd(d);
+  }
+  function tuesdaysBetween(fromYmd, toYmd) { // inclusive list of game days from..to
+    const out = []; const d = parse(fromYmd); const end = parse(toYmd);
+    d.setDate(d.getDate() + ((GAME_DAY - d.getDay() + 7) % 7));
+    while (d <= end) { out.push(ymd(d)); d.setDate(d.getDate() + 7); }
+    return out;
+  }
+
+  let sb = null, players = [], checkins = [], meId = null;
+  try { meId = localStorage.getItem(ME_KEY); } catch (e) {}
+  const GAME = nextGame();
+
+  function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800); }
+
+  async function load() {
+    const [p, c] = await Promise.all([
+      sb.from('talons_players').select('id,name,created_at').order('name'),
+      sb.from('talons_checkins').select('player_id,game_date,status')
+    ]);
+    if (p.error || c.error) throw (p.error || c.error);
+    players = p.data; checkins = c.data;
+    if (meId && !players.find(x => x.id === meId)) meId = null;
+    render();
+  }
+
+  const statusFor = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date) || {}).status;
+
+  function render() {
+    $('#gameDate').innerHTML = `${esc(pretty(GAME, { weekday: 'long' }))}<br><span>${esc(pretty(GAME, { day: 'numeric', month: 'short' }))} · 20:00</span>`;
+    const ins = players.filter(p => statusFor(p.id, GAME) === 'in');
+    $('#countIn').textContent = ins.length;
+    const v = $('#verdict');
+    if (ins.length >= FULL) { v.className = 'verdict on'; v.textContent = 'Full 5 on 5! 🔥'; }
+    else if (ins.length >= MIN) { v.className = 'verdict close'; v.textContent = `Game on! ${FULL - ins.length} more for 5 on 5`; }
+    else { v.className = 'verdict off'; v.textContent = `Need ${MIN - ins.length} more to play`; }
+
+    const order = { in: 0, undefined: 1, out: 2 };
+    $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || a.name.localeCompare(b.name))
+      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}">${esc(p.name)}${s === 'in' ? ' ✓' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+
+    renderMe(); renderBoard(); renderHistory();
+  }
+
+  function renderMe() {
+    const me = players.find(p => p.id === meId);
+    const box = $('#me');
+    if (!me) {
+      box.innerHTML = `<div class="kicker">Who are you?</div>
+        <div class="me-row">
+          ${players.length ? `<label class="sr" for="pick">Pick your name</label><select id="pick"><option value="">Pick your name</option>${players.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select><button class="btn small" data-act="pick">That's me</button>` : ''}
+        </div>
+        <div class="me-row" style="margin-top:12px">
+          <label class="sr" for="newName">New player name</label><input id="newName" maxlength="40" placeholder="New here? Your name" autocomplete="name">
+          <button class="btn small in" data-act="join">Join the squad</button>
+        </div>`;
+      return;
+    }
+    const s = statusFor(me.id, GAME);
+    box.innerHTML = `<div class="hello">Yo, ${esc(me.name)}! You're <b>${s === 'in' ? 'IN' : s === 'out' ? 'OUT' : 'not checked in yet'}</b> for ${esc(pretty(GAME))}. <button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+      <div class="choice">
+        <button class="btn in" data-act="in" aria-pressed="${s === 'in'}">I'm in 🏀</button>
+        <button class="btn out" data-act="out" aria-pressed="${s === 'out'}">I'm out</button>
+      </div>`;
+  }
+
+  function stats() {
+    const today = new Date();
+    const lastPlayed = (() => { const g = nextGame(today); const d = parse(g); return ymd(new Date(d.getTime() - 7 * 864e5)); })();
+    return players.map(p => {
+      const since = ymd(new Date(p.created_at));
+      const possible = tuesdaysBetween(since, lastPlayed);
+      const played = checkins.filter(c => c.player_id === p.id && c.status === 'in' && c.game_date <= lastPlayed).length;
+      const missed = possible.filter(d => statusFor(p.id, d) !== 'in').length;
+      const silent = possible.filter(d => !statusFor(p.id, d)).length;
+      let streak = 0; for (let i = possible.length - 1; i >= 0 && statusFor(p.id, possible[i]) === 'in'; i--) streak++;
+      let best = 0, run = 0; possible.forEach(d => { run = statusFor(p.id, d) === 'in' ? run + 1 : 0; best = Math.max(best, run); });
+      return { ...p, possible: possible.length, played, missed, silent, streak, best, rate: possible.length ? played / possible.length : null };
+    });
+  }
+
+  function renderBoard() {
+    const st = stats().sort((a, b) => b.played - a.played || (b.rate ?? -1) - (a.rate ?? -1) || a.name.localeCompare(b.name));
+    if (!st.length) { $('#board').innerHTML = ''; $('#badges').innerHTML = '<p class="empty">The board fills up after the first Thursday.</p>'; return; }
+    const ranked = st.filter(s => s.possible > 0);
+    const top = (key) => [...ranked].sort((a, b) => b[key] - a[key] || b.played - a.played)[0];
+    const mvp = top('played'), hot = top('streak'), rec = top('best');
+    const ghosts = ranked.filter(s => s.possible >= 2).sort((a, b) => a.rate - b.rate || b.missed - a.missed);
+    const ghost = ghosts[0] && ghosts[0] !== mvp && ghosts[0].rate < 0.5 ? ghosts[0] : null;
+    const card = (cls, k, who, why) => `<div class="badge ${cls}"><div class="k">${k}</div><div class="who">${esc(who)}</div><div class="why">${why}</div></div>`;
+    $('#badges').innerHTML =
+      (mvp && mvp.played ? card('mvp', '🏆 High score · most runs', mvp.name, `${mvp.played} runs all time`) : '') +
+      (hot && hot.streak > 1 ? card('hot', '🔥 On fire · current streak', hot.name, `${hot.streak} Thursdays in a row and counting`) : '') +
+      (rec && rec.best > 1 && !(hot && rec.id === hot.id && rec.best === hot.streak) ? card('rec', '⚡ Record streak', rec.name, `${rec.best} Thursdays in a row`) : '') +
+      (ghost ? card('ghost', '👻 Ghost of the court', ghost.name, `Showed up ${ghost.played} of ${ghost.possible} Thursdays`) : '');
+    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th></tr></thead><tbody>` +
+      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
+        <td class="n">${s.played}</td><td class="n">${s.streak ? s.streak + (s.streak > 2 ? '🔥' : '') : '·'}</td><td class="n">${s.best || '·'}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td></tr>`).join('') + '</tbody>';
+  }
+
+  function renderHistory() {
+    const dates = [...new Set(checkins.map(c => c.game_date))].filter(d => d < GAME).sort().reverse().slice(0, 12);
+    $('#history').innerHTML = dates.map(d => {
+      const who = checkins.filter(c => c.game_date === d && c.status === 'in').map(c => (players.find(p => p.id === c.player_id) || {}).name).filter(Boolean).sort();
+      return `<li><span class="d">${esc(pretty(d, { day: 'numeric', month: 'short', year: '2-digit' }))}</span><span class="c">${who.length}</span><span>${who.length ? esc(who.join(', ')) : 'Nobody checked in'}</span></li>`;
+    }).join('') || '<li class="empty">No runs on the books yet.</li>';
+  }
+
+  async function setStatus(status) {
+    const prev = checkins.slice();
+    const i = checkins.findIndex(c => c.player_id === meId && c.game_date === GAME);
+    if (i >= 0) checkins[i] = { ...checkins[i], status }; else checkins.push({ player_id: meId, game_date: GAME, status });
+    render();
+    const { error } = await sb.from('talons_checkins').upsert({ player_id: meId, game_date: GAME, status, updated_at: new Date().toISOString() }, { onConflict: 'player_id,game_date' });
+    if (error) { checkins = prev; render(); toast('Could not save. Try again'); return; }
+    toast(status === 'in' ? 'You’re in! 🏀' : 'Got it. Next time!');
+  }
+
+  async function join() {
+    const name = $('#newName').value.trim().replace(/\s+/g, ' ');
+    if (!name) { $('#newName').focus(); return; }
+    if (players.some(p => p.name.toLowerCase() === name.toLowerCase())) { toast('That name is taken'); return; }
+    const { data, error } = await sb.from('talons_players').insert({ name }).select('id,name,created_at').single();
+    if (error) { toast('Could not join. Try again'); return; }
+    players.push(data); players.sort((a, b) => a.name.localeCompare(b.name));
+    meId = data.id; try { localStorage.setItem(ME_KEY, meId); } catch (e) {}
+    render(); toast(`Welcome, ${name}!`);
+  }
+
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('[data-act]'); if (!a) return;
+    const act = a.dataset.act;
+    if (act === 'in' || act === 'out') setStatus(act);
+    if (act === 'join') join();
+    if (act === 'pick') { const v = $('#pick').value; if (!v) return; meId = v; try { localStorage.setItem(ME_KEY, v); } catch (e) {} render(); }
+    if (act === 'switch') { meId = null; try { localStorage.removeItem(ME_KEY); } catch (e) {} render(); }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'newName') join(); });
+
+  function fail(err) {
+    console.error(err);
+    const missing = /relation|does not exist|schema cache/i.test(err && err.message || '');
+    $('#notice').innerHTML = `<div class="notice">${missing ? 'The court isn’t built yet: the database tables are missing. Run the setup SQL in Supabase once, then reload.' : 'Can’t reach the court right now. Check your connection and reload.'}</div>`;
+    $('#verdict').className = 'verdict off'; $('#verdict').textContent = 'Offline';
+    const why = document.createElement('div'); why.style.cssText = 'margin-top:8px;font-size:13px;opacity:.85'; why.textContent = 'Details: ' + ((err && err.message) || err);
+    $('#notice .notice').appendChild(why);
+    render();
+  }
+
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    load().catch(fail);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) load().catch(() => {}); });
+  } catch (err) { fail(err); }
+})();
+</script>
+</body>
+</html>
