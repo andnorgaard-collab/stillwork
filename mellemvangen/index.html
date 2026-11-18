@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Mellemvangen 59 · Byggesag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Retning: arkitekttegning møder byggeplads. Kølig papirhvid, blæk, én varm signalfarve, fagfarver som i en tegningsforklaring. */
+  --paper:#F2F3EF;
+  --card:#FFFFFF;
+  --ink:#16181D;
+  --ink-2:#5B606B;
+  --line:#DCDED8;
+  --signal:#FF5C39;
+  --signal-soft:#FFE3DA;
+  --sky:#8FA8FF;
+  --sky-soft:#E4EAFF;
+  --sun:#FFC93C;
+  --sun-soft:#FFF2CC;
+  --mint:#2FB67C;
+  --mint-soft:#D9F3E6;
+  --lilac:#B79CFF;
+  --bad:#D7332A;
+  --bad-soft:#FBE0DE;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Geist", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --mono:"Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r:14px;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.45 var(--body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* Top */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px 20px;background:var(--paper);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.02em}
+.brand svg{width:30px;height:30px}
+.proj{display:flex;flex-direction:column;line-height:1.15;padding-left:14px;border-left:1px solid var(--line);min-width:0}
+.proj b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj span{font-size:12px;color:var(--ink-2)}
+.spacer{flex:1}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;padding:7px 14px;border-radius:999px;font-weight:600;font-size:13px;color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.demo-tag{font-family:var(--mono);font-size:11px;color:var(--ink-2);border:1px dashed var(--line);padding:3px 8px;border-radius:6px}
+
+/* Shell */
+.shell{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100% - 61px)}
+nav{padding:18px 12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;position:sticky;top:61px;align-self:start;height:calc(100vh - 61px);overflow:auto}
+nav .grp{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-2);padding:14px 10px 6px}
+nav button{display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:10px;font-weight:500}
+nav button:hover{background:#E7E8E3}
+nav button[aria-current="page"]{background:var(--ink);color:#fff}
+.badge{font-family:var(--mono);font-size:11px;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--signal);color:#fff;display:inline-grid;place-items:center}
+main{padding:24px 28px 80px;min-width:0;max-width:1200px}
+.vh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.vh h1{font-size:34px;font-weight:800;line-height:1}
+.vh p{margin:6px 0 0;color:var(--ink-2);max-width:62ch}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  nav{position:sticky;top:57px;z-index:15;height:auto;flex-direction:row;overflow-x:auto;padding:8px 12px;border-right:0;border-bottom:1px solid var(--line);background:var(--paper);gap:4px}
+  nav .grp{display:none}
+  nav button{white-space:nowrap;padding:8px 12px}
+  main{padding:18px 16px 80px}
+  .top{padding:10px 16px;gap:10px}
+  .proj{display:none}
+  .demo-tag{font-size:10px}
+  .vh h1{font-size:28px}
+}
+
+/* Building blocks */
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card h2{font-size:19px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h2 .badge{background:var(--ink)}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.list{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0;padding-top:2px}
+.item .t{font-weight:600}
+.item .s{font-size:13px;color:var(--ink-2)}
+.dot{width:10px;height:10px;border-radius:3px;margin-top:6px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap;border:1px solid transparent}
+.p-ok{background:var(--mint-soft);color:#16774D}
+.p-warn{background:var(--sun-soft);color:#8A6200}
+.p-bad{background:var(--bad-soft);color:var(--bad)}
+.p-info{background:var(--sky-soft);color:#3A4FB0}
+.p-neutral{background:#ECEDE8;color:var(--ink-2)}
+.p-int{background:transparent;border:1px dashed var(--ink-2);color:var(--ink-2)}
+.btn{border:1px solid var(--ink);background:var(--ink);color:#fff;font-weight:600;padding:8px 14px;border-radius:10px;font-size:14px}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.sig{background:var(--signal);border-color:var(--signal)}
+.btn.sm{padding:5px 10px;font-size:13px;border-radius:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stripe{border-left:4px solid var(--line);padding-left:12px}
+.stripe.bad{border-color:var(--bad)}.stripe.warn{border-color:var(--sun)}.stripe.ok{border-color:var(--mint)}.stripe.info{border-color:var(--sky)}
+.empty{padding:16px;border:1px dashed var(--line);border-radius:12px;color:var(--ink-2);text-align:center}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:16px}
+@media (max-width:860px){.hero{grid-template-columns:1fr}}
+.hero-main{background:var(--ink);color:#fff;border-radius:var(--r);padding:22px;position:relative;overflow:hidden}
+.hero-main .lbl{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#A9AEB8}
+.hero-main .big{font-family:var(--display);font-weight:800;font-size:56px;line-height:1;margin:8px 0 4px;letter-spacing:-.03em}
+.hero-main .sub{color:#C9CDD5}
+.hero-main .bricks{position:absolute;right:-10px;bottom:-6px;opacity:.95}
+.prog{height:10px;background:#2A2D35;border-radius:99px;overflow:hidden;margin-top:18px;max-width:380px}
+.prog i{display:block;height:100%;background:var(--signal);border-radius:99px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stat .v{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.05}
+.stat .k{font-size:13px;color:var(--ink-2)}
+
+/* Timeline */
+.tl-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.tl-tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-bottom:1px solid var(--line)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:14px;height:8px;border-radius:3px;display:inline-block}
+.tl{overflow-x:auto;position:relative}
+.tl-in{position:relative}
+.tl-row{display:flex;min-height:46px;border-bottom:1px solid #EEEFEA}
+.tl-row:last-child{border-bottom:0}
+.tl-lab{position:sticky;left:0;z-index:3;flex:0 0 var(--labw);background:var(--card);padding:7px 12px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:center;cursor:pointer}
+.tl-lab b{font-weight:600;font-size:13.5px;line-height:1.2}
+.tl-lab small{font-size:11.5px;color:var(--ink-2)}
+.tl-track{position:relative;flex:0 0 auto}
+.tl-head .tl-lab{cursor:default;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.tl-head{position:sticky;top:0;z-index:4;background:var(--card)}
+.tl-days{display:flex;height:100%}
+.tl-days div{flex:0 0 var(--dw);font-family:var(--mono);font-size:10px;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:5px}
+.tl-days div.wk{color:#A0A4AD}
+.tl-days div.mon{border-left:1px solid var(--line)}
+.tl-days div em{font-style:normal;font-weight:500;color:var(--ink);font-size:10px;margin-bottom:2px;white-space:nowrap}
+.bar{position:absolute;top:10px;height:26px;border-radius:7px;display:flex;align-items:center;padding:0 8px;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;cursor:pointer;border:0;color:var(--ink);text-align:left}
+.bar.sel{outline:2px solid var(--ink);outline-offset:2px}
+.basebar{position:absolute;top:31px;height:6px;border-radius:3px;border:1.5px dashed #9EA3AC;background:transparent;pointer-events:none}
+.today{position:absolute;top:0;bottom:0;width:2px;background:var(--signal);z-index:2;pointer-events:none}
+.today-flag{position:absolute;top:2px;transform:translateX(-50%);background:var(--signal);color:#fff;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:5px;z-index:5;white-space:nowrap}
+.flag{position:absolute;top:4px;width:16px;height:16px;border-radius:50%;background:var(--bad);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center;z-index:2;pointer-events:none}
+.hatch{background-image:repeating-linear-gradient(135deg,rgba(22,24,29,.18) 0 3px,transparent 3px 7px)}
+.detail{margin-top:16px}
+.kv{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:14px}
+.kv dt{color:var(--ink-2)}
+.kv dd{margin:0}
+
+/* Forms / modal */
+.modal{position:fixed;inset:0;background:rgba(22,24,29,.45);display:grid;place-items:center;z-index:50;padding:16px}
+.modal[hidden]{display:none}
+.sheet{background:var(--card);border-radius:18px;max-width:520px;width:100%;padding:22px;max-height:90vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.sheet h2{font-size:22px;margin-bottom:6px}
+.field{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+.field label{font-size:13px;font-weight:600}
+.field input,.field select,.field textarea{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:#FAFAF8}
+.field textarea{min-height:80px;resize:vertical}
+.check{display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.sheet .row{margin-top:18px;justify-content:flex-end}
+.preview{margin-top:12px;background:var(--paper);border-radius:10px;padding:10px 12px;font-size:13px}
+
+/* Rooms */
+.plan svg{width:100%;height:auto;display:block}
+.plan .room{fill:#FAFAF8;stroke:var(--ink);stroke-width:2;cursor:pointer;transition:fill .15s}
+.plan .room:hover{fill:var(--sky-soft)}
+.plan .room.on{fill:var(--sun-soft)}
+.plan text{font-family:var(--body);font-size:12px;font-weight:600;pointer-events:none;fill:var(--ink)}
+.plan text.m{font-family:var(--mono);font-size:10px;font-weight:400;fill:var(--ink-2)}
+.plan .cnt{fill:var(--signal)}
+.plan .cnt-t{fill:#fff;font-family:var(--mono);font-size:10px;font-weight:500}
+
+/* Crew */
+.crew{width:100%;border-collapse:separate;border-spacing:4px;min-width:560px}
+.crew th{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--ink-2);text-align:left;padding:4px}
+.crew td{padding:0}
+.crew td.who{font-weight:600;font-size:14px;padding-right:8px;white-space:nowrap}
+.cell{width:100%;height:40px;border-radius:9px;border:1px solid var(--line);background:#FAFAF8;font-family:var(--mono);font-size:12px;font-weight:500}
+.need td{font-family:var(--mono);font-size:12px;text-align:center;padding:6px 0;border-radius:8px}
+.overflow{overflow-x:auto}
+
+/* Log */
+.log{display:flex;flex-direction:column;gap:12px}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.entry.int{border-style:dashed;background:#FBFBF9}
+.entry-h{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-bottom:6px}
+.photos{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ph{width:110px;height:80px;border-radius:9px;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:600;color:#fff;background-size:cover;background-position:center}
+
+/* Pay */
+.paybar{display:flex;height:16px;border-radius:99px;overflow:hidden;background:#ECEDE8;margin:8px 0 14px}
+.paybar i{display:block;height:100%}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th{font-family:var(--mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+table.t td{padding:10px 6px;border-bottom:1px solid #EEEFEA;vertical-align:top}
+table.t td.r,table.t th.r{text-align:right}
+
+/* Cases */
+.case{cursor:pointer;transition:transform .12s, box-shadow .12s;text-align:left;width:100%}
+.case:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(22,24,29,.08)}
+.case .code{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.case h3{font-size:20px;margin:4px 0 8px}
+.mini{height:6px;background:#ECEDE8;border-radius:99px;overflow:hidden;margin:10px 0}
+.mini i{display:block;height:100%;background:var(--ink)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.25);max-width:calc(100% - 32px)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:600px){.hide-sm{display:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand" aria-label="Sitefellow">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#16181D"/><rect x="6" y="8" width="12" height="4.5" rx="2" fill="#FF5C39"/><rect x="11" y="14" width="15" height="4.5" rx="2" fill="#8FA8FF"/><rect x="6" y="20" width="9" height="4.5" rx="2" fill="#FFC93C"/><rect x="17" y="20" width="9" height="4.5" rx="2" fill="#F2F3EF"/></svg>
+    sitefellow
+  </div>
+  <div class="proj" id="projchip"><b>Mellemvangen 59, Brønshøj</b><span>Murermestervilla 1935 · Nordpil · udbud</span></div>
+  <div class="spacer"></div>
+  <span class="demo-tag" id="stamp"></span>
+  <div class="seg" role="group" aria-label="Vis som" style="display:none">
+    <button id="role-b" aria-pressed="true">Bygherre</button>
+    <button id="role-e" aria-pressed="false">Entreprenør</button>
+  </div>
+</header>
+<div class="shell">
+  <nav id="nav" aria-label="Sektioner"></nav>
+  <main id="main"></main>
+</div>
+<div class="modal" id="modal" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true"></div></div>
+
+<script src="data.js"></script>
+<script>
+const TODAY=(()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')})();
+const MON=['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+const WD=['søn','man','tir','ons','tor','fre','lør'];
+const D=s=>{const[y,m,d]=s.split('-').map(Number);return new Date(Date.UTC(y,m-1,d))};
+const S=dt=>dt.toISOString().slice(0,10);
+const add=(s,n)=>{const d=D(s);d.setUTCDate(d.getUTCDate()+n);return S(d)};
+const diff=(a,b)=>Math.round((D(b)-D(a))/864e5);
+const max=(a,b)=>a>b?a:b;
+const fmt=s=>{const d=D(s);return d.getUTCDate()+'. '+MON[d.getUTCMonth()]};
+const fmtW=s=>WD[D(s).getUTCDay()]+' '+fmt(s);
+const kr=n=>Math.round(n).toLocaleString('da-DK')+' kr.';
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function isoWeek(s){const d=D(s);const day=(d.getUTCDay()+6)%7;d.setUTCDate(d.getUTCDate()-day+3);const f=new Date(Date.UTC(d.getUTCFullYear(),0,4));return 1+Math.round(((d-f)/864e5-3+((f.getUTCDay()+6)%7))/7)}
+const rel=s=>{const n=diff(TODAY,s);if(n===0)return'i dag';if(n===1)return'i morgen';if(n===-1)return'i går';return n>0?'om '+n+' dage':n*-1+' dage siden'};
+
+const TRADE={
+  'Rådgiver':{c:'#2F4BFF',fg:'#fff'},
+  'Bygherre':{c:'#FFE14D',fg:'#16181D'},
+  'Tømrer':{c:'#16181D',fg:'#fff'},
+  'Asbest':{c:'#C9CCD3',fg:'#16181D'},
+  'VVS':{c:'#8FA8FF',fg:'#16181D'},
+  'El':{c:'#FFC93C',fg:'#16181D'},
+  'Murer':{c:'#FF8F73',fg:'#16181D'},
+  'Maler':{c:'#B79CFF',fg:'#16181D'},
+  'Fælles':{c:'#2FB67C',fg:'#fff'}
+};
+const ROOMS={hus:'Hele huset',alrum:'Køkken-alrum',stue:'Stuer',bad0:'Nyt bad, stuen',entre:'Entré',udestue:'Udestue',vaer:'Børneværelser, 1. sal',bad1:'Bad, 1. sal',kaelder:'Kælder og teknik'};
+const SAG=window.SAG||{};
+const st=Object.assign({role:'b',view:'overblik',sel:'p3',room:null,ghost:false,crew:[],week:[],cases:[],pay:[],contract:0},JSON.parse(JSON.stringify(SAG)));
+st.tasks.forEach(t=>{t.delay=t.delay||0;t.extra=0});
+/* godkendt ekstraarbejde forlænger opgaven */
+st.changes.filter(c=>c.status==='Godkendt').forEach(c=>{tk(c.task).extra+=c.days});
+
+function tk(id){return st.tasks.find(t=>t.id===id)}
+function endOf(t){return add(t.start,t.dur+t.extra)}
+function schedule(useBase){
+  for(const t of st.tasks){
+    let s=t.base;
+    for(const d of t.deps){const p=tk(d);s=max(s,useBase?add(p.b0,p.dur):endOf(p))}
+    if(useBase){t.b0=s}else{t.start=add(s,t.delay)}
+  }
+}
+schedule(true); schedule(false);
+
+/* ---------- Afledte data ---------- */
+const decDeadline=d=>add(tk(d.task).start,-d.lead);
+const delDue=l=>add(tk(l.task).start,l.off);
+const delOrderBy=l=>add(delDue(l),-l.lead);
+function delState(l){
+  if(l.status==='Leveret')return{c:'ok',txt:'Leveret'};
+  if(l.status==='Afventer beslutning')return{c:'neutral',txt:'Afventer beslutning'};
+  if(l.status==='Ikke bestilt'){const ob=delOrderBy(l),n=diff(TODAY,ob);return{c:n<=1?'bad':n<=14?'warn':'info',txt:'Bestil senest '+fmt(ob)}}
+  const late=diff(delDue(l),l.eta);
+  return late>0?{c:'bad',txt:'Leveres '+late+' dage for sent'}:{c:'ok',txt:'Ankommer '+fmt(l.eta)};
+}
+function decState(d){
+  if(d.status==='done')return{c:'ok',txt:'Besluttet'};
+  const n=diff(TODAY,decDeadline(d));
+  if(n<0)return{c:'bad',txt:'Overskredet med '+(-n)+' dage'};
+  if(n<=3)return{c:'warn',txt:'Senest '+rel(decDeadline(d))};
+  return{c:'info',txt:'Senest '+fmt(decDeadline(d))};
+}
+function taskState(t){
+  if(diff(endOf(t),TODAY)>=0)return'done';
+  if(diff(t.start,TODAY)>=0)return'run';
+  return'plan';
+}
+function taskIssues(t){
+  const out=[];
+  st.decisions.filter(d=>d.task===t.id&&d.status==='open').forEach(d=>{const s=decState(d);if(s.c==='bad'||s.c==='warn')out.push({c:s.c,txt:'Beslutning: '+d.q,go:'beslutninger'})});
+  st.deliveries.filter(l=>l.task===t.id).forEach(l=>{const s=delState(l);if(s.c==='bad')out.push({c:'bad',txt:l.n+': '+s.txt.toLowerCase(),go:'leverancer'})});
+  if(t.ue&&t.conf!==t.start&&taskState(t)!=='done')out.push({c:'warn',txt:t.ue+' har bekræftet '+fmt(t.conf)+', men opgaven starter nu '+fmt(t.start),go:'ue'});
+  return out;
+}
+const lastTask=()=>st.tasks[st.tasks.length-1];
+function progress(){let tot=0,done=0;st.tasks.forEach(t=>{const L=t.dur+t.extra;tot+=L;const s=taskState(t);if(s==='done')done+=L;else if(s==='run')done+=diff(t.start,TODAY)});return done/tot}
+function approvedExtra(){return st.changes.filter(c=>c.status==='Godkendt').reduce((a,c)=>a+c.price,0)}
+function pendingExtra(){return st.changes.filter(c=>c.status==='Afventer').reduce((a,c)=>a+c.price,0)}
+
+function todosB(){
+  const out=[];
+  (st.actions||[]).filter(a=>a.status==='Åben').forEach(a=>{const n=diff(TODAY,a.due);out.push({k:'Aktion · '+a.who,t:a.t,s:a.s+'. Frist '+fmt(a.due),c:n<0?'bad':n<=7?'warn':'info',go:'overblik',sort:a.due})});
+  st.decisions.filter(d=>d.status==='open').forEach(d=>{const s=decState(d);out.push({k:'Beslutning',t:d.q,s:s.txt,c:s.c,go:'beslutninger',sort:decDeadline(d)})});
+  st.changes.filter(c=>c.status==='Afventer').forEach(c=>out.push({k:'Godkend ekstraarbejde',t:c.t,s:kr(c.price)+(c.days?' · +'+c.days+' dage':' · ingen tidspåvirkning'),c:'info',go:'aendringer',sort:add(c.at,7)}));
+  st.deliveries.filter(l=>l.who==='Bygherre'&&l.status!=='Leveret'&&l.status!=='Afventer beslutning').forEach(l=>{const s=delState(l);if(s.c!=='ok'&&diff(TODAY,delOrderBy(l))<=30)out.push({k:'Din leverance',t:l.n,s:s.txt,c:s.c,go:'leverancer',sort:delDue(l)})});
+  st.defects.filter(m=>m.status==='Udbedret').forEach(m=>out.push({k:'Godkend udbedring',t:m.t,s:'Entreprenøren har meldt den udbedret',c:'info',go:'mangler',sort:TODAY}));
+  const rank={bad:0,warn:1,info:2,neutral:3,ok:4};
+  return out.sort((a,b)=>rank[a.c]-rank[b.c]||(a.sort<b.sort?-1:1));
+}
+function todosE(){
+  const out=[];
+  st.tasks.forEach(t=>{if(t.ue&&t.conf!==t.start&&taskState(t)!=='done')out.push({k:'Underentreprenør',t:t.ue+' skal bekræfte ny dato',s:t.n+' starter nu '+fmt(t.start),c:'warn',go:'ue'})});
+  st.deliveries.filter(l=>l.who==='Entreprenør'&&l.status!=='Leveret').forEach(l=>{const s=delState(l);if(s.c!=='ok')out.push({k:'Leverance',t:l.n,s:s.txt,c:s.c,go:'leverancer'})});
+  st.deliveries.filter(l=>l.who==='Bygherre'&&l.status!=='Leveret').forEach(l=>{const s=delState(l);if(s.c==='bad')out.push({k:'Bygherre-leverance truer planen',t:l.n,s:s.txt+'. Overvej at rykke '+tk(l.task).n.toLowerCase()+'.',c:'bad',go:'tidslinje',sel:l.task})});
+  st.decisions.filter(d=>d.status==='open'&&decState(d).c!=='info').forEach(d=>out.push({k:'Venter på bygherre',t:d.q,s:decState(d).txt,c:decState(d).c,go:'beslutninger'}));
+  st.defects.filter(m=>m.status==='Åben').forEach(m=>out.push({k:'Mangel',t:m.t,s:ROOMS[m.room],c:'warn',go:'mangler'}));
+  const short=crewShort();if(short.length)out.push({k:'Bemanding',t:'Underbemandet på BRØ '+short.map(fmtW).join(', '),s:'Køkkenmontagen kræver 2 mand',c:'bad',go:'bemanding'});
+  const rank={bad:0,warn:1,info:2,neutral:3,ok:4};
+  return out.sort((a,b)=>rank[a.c]-rank[b.c]);
+}
+function brøNeed(day){return st.tasks.filter(t=>!t.ue&&t.crew&&diff(t.start,day)>=0&&diff(day,endOf(t))>0).reduce((a,t)=>a+t.crew,0)}
+function crewCount(code,i){return st.crew.filter(p=>p.a[i]===code).length}
+function crewShort(){return st.week.filter((d,i)=>crewCount('BRØ',i)<brøNeed(d))}
+
+/* ---------- Navigation ---------- */
+const VIEWS=[
+  {id:'overblik',l:'Overblik',g:'Sag'},
+  {id:'tidslinje',l:'Tidslinje',g:'Sag'},
+  {id:'beslutninger',l:'Beslutninger',g:'Sag'},
+  {id:'aendringer',l:'Ekstraarbejde',g:'Sag'},
+  {id:'leverancer',l:'Leverancer',g:'Sag'},
+  {id:'dagbog',l:'Sagslog',g:'Sag'},
+  {id:'rum',l:'Rum og tegning',g:'Sag'},
+  {id:'okonomi',l:'Økonomi',g:'Sag'},
+  {id:'mangler',l:'Mangler',g:'Sag'},
+];
+function badgeFor(id){
+  const b=st.role==='b';
+  if(id==='beslutninger'){const n=st.decisions.filter(d=>d.status==='open'&&decState(d).c!=='info').length;return n}
+  if(id==='aendringer'&&b)return st.changes.filter(c=>c.status==='Afventer').length;
+  if(id==='leverancer'){return st.deliveries.filter(l=>(b?l.who==='Bygherre':true)&&['bad'].includes(delState(l).c)).length}
+  if(id==='ue'&&!b)return st.tasks.filter(t=>t.ue&&t.conf!==t.start&&taskState(t)!=='done').length;
+  if(id==='bemanding'&&!b)return crewShort().length;
+  if(id==='mangler')return st.defects.filter(m=>b?m.status==='Udbedret':m.status==='Åben').length;
+  return 0;
+}
+function renderNav(){
+  let g='',h='';
+  VIEWS.filter(v=>!v.roles||v.roles===st.role).forEach(v=>{
+    if(v.g!==g){g=v.g;h+=`<div class="grp">${g==='Sag'&&st.role==='e'?'Sag BRØ-118':g==='Sag'?'Mellemvangen 59':g}</div>`}
+    const n=badgeFor(v.id);
+    h+=`<button data-go="${v.id}" ${st.view===v.id?'aria-current="page"':''}>${v.l}${n?`<span class="badge">${n}</span>`:''}</button>`;
+  });
+  document.getElementById('nav').innerHTML=h;
+}
+
+/* ---------- Views ---------- */
+const V={};
+const head=(t,p,act='')=>`<div class="vh"><div><h1>${t}</h1>${p?`<p>${p}</p>`:''}</div>${act?`<div class="row">${act}</div>`:''}</div>`;
+const pill=(c,t)=>`<span class="pill p-${c}">${esc(t)}</span>`;
+const dotc={bad:'var(--bad)',warn:'var(--sun)',info:'var(--sky)',ok:'var(--mint)',neutral:'#C9CCD3'};
+
+function todoList(items){
+  if(!items.length)return`<div class="empty">Intet venter på dig lige nu.</div>`;
+  return`<div class="list">${items.map(i=>`<div class="item"><span class="dot" style="background:${dotc[i.c]}"></span><div><div class="s">${esc(i.k)}</div><div class="t">${esc(i.t)}</div><div class="s">${esc(i.s)}</div></div><button class="btn ghost sm" data-go="${i.go}" ${i.sel?`data-sel="${i.sel}"`:''}>Åbn</button></div>`).join('')}</div>`;
+}
+function bricksArt(){
+  return`<svg class="bricks" width="210" height="120" viewBox="0 0 210 120" aria-hidden="true"><rect x="60" y="10" width="90" height="22" rx="7" fill="#FF5C39"/><rect x="100" y="38" width="110" height="22" rx="7" fill="#8FA8FF"/><rect x="40" y="66" width="70" height="22" rx="7" fill="#FFC93C"/><rect x="116" y="66" width="70" height="22" rx="7" fill="#F2F3EF" opacity=".9"/><rect x="80" y="94" width="130" height="22" rx="7" fill="#B79CFF"/></svg>`;
+}
+
+
+const bTot=k=>(st.budget||[]).reduce((a,x)=>a+x[k],0);
+const greet=()=>{const hr=new Date().getHours();return hr<10?'Godmorgen':hr<17?'Goddag':'Godaften'};
+const stampTxt=()=>{const u=st.updated||'';return 'Opdateret '+fmt(u.slice(0,10))+(u.length>10?' kl. '+u.slice(11,16):'')};
+V.overblik=()=>{
+  const L=lastTask(), p=progress(), build=st.tasks.find(t=>t.id==='t0');
+  const running=st.tasks.filter(t=>taskState(t)==='run');
+  const next=st.tasks.filter(t=>taskState(t)==='plan'&&diff(TODAY,t.start)<=21);
+  const todos=todosB(), est=bTot('est'), gap=est-st.frame;
+  const wait=(st.actions||[]).filter(a=>a.status==='Afventer andre');
+  const toBuild=diff(TODAY,build.start);
+  return head(greet()+', Anders','Status på ombygningen af Mellemvangen 59, og det der venter på jer. '+esc(stampTxt())+'.')+
+  `<div class="hero"><div class="hero-main">${bricksArt()}
+    <div class="lbl">Byggestart</div>
+    <div class="big">${fmt(build.start)}</div>
+    <div class="sub">${toBuild>0?'Om '+toBuild+' dage · uge '+isoWeek(build.start):'Byggeriet er i gang'} · forventet aflevering ${fmt(endOf(L))} 2027</div>
+    <div class="prog"><i style="width:${Math.round(p*100)}%"></i></div>
+    <div class="sub small" style="margin-top:6px">${Math.round(p*100)} % af hele forløbet fra udbud til aflevering · uge ${isoWeek(TODAY)}</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="v">${running.length}</div><div class="k">I gang nu: ${running.map(t=>esc(t.n)).join(', ')||'ingen'}</div></div>
+    <div class="stat"><div class="v">${todos.length}</div><div class="k">Ting der venter på jer</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(est)}</div><div class="k">Estimeret samlet pris inkl. moms og reserve</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px;color:${gap>0?'var(--bad)':'var(--ink)'}">${gap>0?'+':''}${kr(gap)}</div><div class="k">${gap>0?'Over':'Under'} rammen på ${kr(st.frame)}</div></div>
+  </div></div>
+  <div class="grid g2">
+    <div class="card"><h2>Det venter på jer <span class="badge">${todos.length}</span></h2>${todoList(todos)}</div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><h2>Venter på andre</h2><div class="list">${wait.length?wait.map(a=>`<div class="item"><span class="dot" style="background:var(--sky)"></span><div><div class="t">${esc(a.t)}</div><div class="s">${esc(a.who)} · ${esc(a.s)}</div></div><span class="s">${rel(a.due)}</span></div>`).join(''):'<div class="empty">Intet lige nu.</div>'}</div></div>
+      <div class="card"><h2>De næste 3 uger</h2><div class="list">${next.length?next.map(t=>`<div class="item"><span class="dot" style="background:${TRADE[t.tr].c}"></span><div><div class="t">${esc(t.n)}</div><div class="s">${esc(t.by||t.tr)} · ${fmtW(t.start)} til ${fmt(add(endOf(t),-1))}</div></div><span class="s">${rel(t.start)}</span></div>`).join(''):'<div class="empty">Ingen nye opgaver de næste 3 uger.</div>'}</div></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h2>Seneste i sagen</h2><div class="list">${st.log.slice(0,5).map(f=>`<div class="item"><span class="num small muted" style="padding-top:2px">${fmt(f.d)}</span><div><div class="t" style="font-weight:500">${esc(f.txt)}</div><div class="s">${esc(f.who)}</div></div><span></span></div>`).join('')}</div>
+  <p class="small muted" style="margin:12px 0 0">${esc(st.updatedNote||'')} Datoer efter byggestart og alle priser uden tilbud er Claudes estimater.</p></div>`;
+};
+
+V.tidslinje=()=>{
+  const e=st.role==='e';
+  const dw=window.innerWidth<600?18:24, labw=window.innerWidth<600?128:210;
+  let s=st.tasks[0].base;while(D(s).getUTCDay()!==6)s=add(s,-1);
+  const last=st.tasks.reduce((m,t)=>max(m,max(endOf(t),add(t.b0,t.dur))),s);
+  const n=diff(s,last)+8, W=n*dw, tx=diff(s,TODAY)*dw;
+  let days='';for(let i=0;i<n;i++){const d=add(s,i),wd=D(d).getUTCDay();days+=`<div class="${wd===0||wd===6?'wk':''} ${wd===1?'mon':''}">${wd===1?`<em>U${isoWeek(d)}</em>`:''}${D(d).getUTCDate()}</div>`}
+  const bg=`background-image:linear-gradient(90deg,#F4F5F1 0 ${2*dw}px,transparent ${2*dw}px ${7*dw}px);background-size:${7*dw}px 100%`;
+  const rows=st.tasks.map(t=>{
+    const L=t.dur+t.extra, x=diff(s,t.start)*dw, gx=diff(s,t.b0)*dw, tr=TRADE[t.tr], stt=taskState(t), iss=taskIssues(t);
+    const op=stt==='done'?'opacity:.45;':'';
+    const moved=diff(t.b0,t.start)!==0||t.extra;
+    return`<div class="tl-row"><div class="tl-lab" data-sel="${t.id}"><b>${esc(t.n)}</b><small>${t.ue?esc(t.ue):esc(t.tr)}${moved&&stt!=='done'?' · flyttet':''}</small></div>
+    <div class="tl-track" style="width:${W}px;${bg}">
+      ${st.ghost&&moved?`<div class="basebar" style="left:${gx}px;width:${t.dur*dw-4}px"></div>`:''}
+      <button class="bar ${st.sel===t.id?'sel':''} ${iss.some(i=>i.c==='bad')?'hatch':''}" data-sel="${t.id}" style="left:${x}px;width:${Math.max(L*dw-4,10)}px;background-color:${tr.c};color:${tr.fg};${op}" aria-label="${esc(t.n)}, ${fmt(t.start)} til ${fmt(add(endOf(t),-1))}">${L*dw>70?esc(t.n):''}</button>
+      ${iss.length?`<span class="flag" style="left:${x-8}px;background:${iss.some(i=>i.c==='bad')?'var(--bad)':'#D99A00'}">!</span>`:''}
+      <div class="today" style="left:${tx}px"></div>
+    </div></div>`}).join('');
+  const t=tk(st.sel);
+  return head('Tidslinje',e?'Ryk en opgave, så flytter alt der afhænger af den med, og bygherren ser hvorfor.':'Fra udbud til aflevering. Opgaver efter byggestart er estimerede, indtil entreprenørens tidsplan foreligger. Tryk på en opgave for detaljer.')+
+  `<div class="tl-wrap" style="--dw:${dw}px;--labw:${labw}px">
+    <div class="tl-tools"><div class="legend">${Object.entries(TRADE).map(([k,v])=>`<span><i style="background:${v.c}"></i>${k}</span>`).join('')}<span><i class="hatch" style="background-color:#eee"></i>Blokeret</span></div><div class="spacer"></div>
+    <label class="check" style="margin:0"><input type="checkbox" id="ghost" ${st.ghost?'checked':''}> Vis oprindelig plan</label></div>
+    <div class="tl"><div class="tl-in">
+      <div class="tl-row tl-head" style="min-height:40px"><div class="tl-lab">Opgave</div><div class="tl-track" style="width:${W}px"><div class="tl-days">${days}</div><span class="today-flag" style="left:${tx+1}px">i dag</span></div></div>
+      ${rows}
+    </div></div>
+  </div>
+  ${t?taskDetail(t):''}`;
+};
+function taskDetail(t){
+  const e=st.role==='e', iss=taskIssues(t), deps=t.deps.map(d=>tk(d).n).join(', ')||'Ingen';
+  const after=st.tasks.filter(x=>x.deps.includes(t.id)).map(x=>x.n).join(', ')||'Ingen';
+  const moved=diff(t.b0,t.start);
+  return`<div class="card detail"><div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(t.n)}</h2>
+   <div class="row">${e&&taskState(t)!=='done'?`<button class="btn" data-act="shift" data-id="${t.id}">Ryk opgave</button>`:''}<button class="btn ghost" data-go="rum" data-room="${t.room}">Se rummet</button></div></div>
+   <dl class="kv" style="margin-top:14px">
+    <dt>Periode</dt><dd>${fmtW(t.start)} til ${fmtW(add(endOf(t),-1))} · ${t.dur+t.extra} dage</dd>
+    <dt>Oprindelig plan</dt><dd>${fmt(t.b0)}${moved?` · ${moved>0?'+':''}${moved} dage`:''}${t.extra?` · forlænget ${t.extra} dage af godkendt ekstraarbejde`:''}</dd>
+    <dt>Udføres af</dt><dd>${esc(t.by||(t.tr+', entreprenør vælges ved licitation'))}${t.est?' · varighed estimeret':''}</dd>
+    <dt>Venter på</dt><dd>${esc(deps)}</dd>
+    <dt>Herefter følger</dt><dd>${esc(after)}</dd>
+    <dt>Rum</dt><dd>${ROOMS[t.room]}</dd>
+   </dl>
+   ${iss.length?`<div class="list" style="margin-top:12px">${iss.map(i=>`<div class="stripe ${i.c}" style="margin-top:8px"><b>${esc(i.txt)}</b> <button class="btn ghost sm" data-go="${i.go}">Åbn</button></div>`).join('')}</div>`:''}
+  </div>`;
+}
+
+V.beslutninger=()=>{
+  const b=st.role==='b';
+  const open=st.decisions.filter(d=>d.status==='open').sort((a,c)=>decDeadline(a)<decDeadline(c)?-1:1);
+  const done=st.decisions.filter(d=>d.status==='done');
+  return head('Beslutninger',b?'Hver beslutning har en frist, regnet baglæns fra den opgave der skal bruge den. Flytter tidsplanen, flytter fristen med.':'Det bygherren skal tage stilling til. Fristerne følger tidsplanen automatisk.',!b?`<button class="btn" data-act="newdec">Ny beslutning</button>`:'')+
+  `<div class="grid g2">${open.map(d=>{const s=decState(d),t=tk(d.task);return`<div class="card stripe ${s.c}" style="border-left-width:4px">
+    <div class="row" style="justify-content:space-between">${pill(s.c,s.txt)}<span class="small muted">${ROOMS[d.room]}</span></div>
+    <h3 style="font-size:20px;margin:10px 0 4px">${esc(d.q)}</h3>
+    <p class="small muted" style="margin:0 0 10px">${esc(d.ctx)} Bruges til: ${esc(t.n)}, der starter ${fmt(t.start)}.</p>
+    ${b?`<div class="list">${d.opts.map((o,i)=>`<label class="check" style="margin-top:6px"><input type="radio" name="${d.id}" value="${i}"> ${esc(o)}</label>`).join('')}</div>
+    <div class="row" style="margin-top:12px"><button class="btn sig" data-act="decide" data-id="${d.id}">Gem beslutning</button><button class="btn ghost" data-act="ask" data-id="${d.id}">Stil et spørgsmål</button></div>`
+    :`<div class="small">${d.opts.map(o=>'· '+esc(o)).join('<br>')}</div><div class="row" style="margin-top:12px"><button class="btn ghost" data-act="nudge" data-id="${d.id}">Påmind bygherre</button></div>`}
+  </div>`}).join('')||'<div class="empty">Ingen åbne beslutninger.</div>'}</div>
+  <div class="card" style="margin-top:16px"><h2>Truffet</h2><div class="list">${done.map(d=>`<div class="item"><span class="dot" style="background:var(--mint)"></span><div><div class="t">${esc(d.q)}</div><div class="s">${esc(d.choice)} · ${esc(d.by)}, ${fmt(d.at)}</div></div>${pill('ok','Besluttet')}</div>`).join('')}</div></div>`;
+};
+
+V.aendringer=()=>{
+  const b=st.role==='b';
+  const col=s=>s==='Godkendt'?'ok':s==='Afvist'?'neutral':'info';
+  return head('Ekstraarbejde',b?'Intet ekstraarbejde udføres, før I har godkendt pris og tidspåvirkning her. Godkendelsen gemmes med dato som skriftlig aftale.':'Send ekstraarbejde med pris og tidspåvirkning. Godkendt arbejde lægges automatisk ind i tidsplanen og økonomien.',!b?`<button class="btn" data-act="newchange">Nyt ekstraarbejde</button>`:'')+
+  `<div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px">
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(approvedExtra())}</div><div class="k">Godkendt</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(pendingExtra())}</div><div class="k">Afventer godkendelse</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px">${st.changes.filter(c=>c.status==='Godkendt').reduce((a,c)=>a+c.days,0)} dage</div><div class="k">Godkendt tidspåvirkning</div></div>
+  </div>
+  ${st.changes.length?'':'<div class="empty">Intet ekstraarbejde endnu. Det starter først, når kontrakten er underskrevet.</div>'}<div class="grid g2">${st.changes.map(c=>`<div class="card">
+    <div class="row" style="justify-content:space-between">${pill(col(c.status),c.status)}<span class="small muted num">Sendt ${fmt(c.at)}</span></div>
+    <h3 style="font-size:19px;margin:10px 0 4px">${esc(c.t)}</h3>
+    <p class="small muted" style="margin:0 0 10px">${esc(c.why)}</p>
+    <dl class="kv"><dt>Pris inkl. moms</dt><dd class="num">${kr(c.price)}</dd><dt>Tid</dt><dd>${c.days?'+'+c.days+' dage på '+esc(tk(c.task).n.toLowerCase()):'Ingen påvirkning'}</dd><dt>Rum</dt><dd>${ROOMS[c.room]}</dd>${c.dec?`<dt>${c.status}</dt><dd>${fmt(c.dec)} af bygherre</dd>`:''}</dl>
+    ${b&&c.status==='Afventer'?`<div class="row" style="margin-top:14px"><button class="btn sig" data-act="approve" data-id="${c.id}">Godkend</button><button class="btn ghost" data-act="reject" data-id="${c.id}">Afvis</button></div>`:''}
+  </div>`).join('')}</div>`;
+};
+
+V.leverancer=()=>{
+  const b=st.role==='b';
+  const row=l=>{const s=delState(l),t=tk(l.task);const mine=(b&&l.who==='Bygherre')||(!b&&l.who==='Entreprenør');
+    return`<tr><td><b>${esc(l.n)}</b><div class="small muted">${esc(l.sup)} · ${ROOMS[l.room]}</div></td><td>${l.who==='Bygherre'?pill('int','Bygherre'):pill('neutral','Entreprenør')}</td><td class="small">${esc(t.n)}<div class="muted">skal bruges ${fmt(delDue(l))}</div></td><td>${pill(s.c,s.txt)}</td><td class="r">${mine&&l.status!=='Leveret'&&l.status!=='Afventer beslutning'?`<button class="btn ghost sm" data-act="deliv" data-id="${l.id}">Opdatér</button>`:''}</td></tr>`};
+  return head('Leverancer','Alt der skal leveres, hvem der har ansvaret, og hvornår det senest skal være der. Datoen følger tidsplanen.')+
+  `<div class="card overflow"><table class="t" style="min-width:680px"><thead><tr><th>Vare</th><th>Ansvar</th><th>Til opgave</th><th>Status</th><th></th></tr></thead><tbody>${st.deliveries.map(row).join('')}</tbody></table></div>`;
+};
+
+function photos(ph){if(!ph||!ph.length)return'';return`<div class="photos">${ph.map(p=>p[2]?`<div class="ph" style="background-image:url(${p[2]})">${esc(p[0])}</div>`:`<div class="ph" style="background:${p[1]};${p[1]==='#FFC93C'||p[1]==='#B79CFF'||p[1]==='#8FA8FF'||p[1]==='#FF8F73'?'color:#16181D':''}">${esc(p[0])}</div>`).join('')}</div>`}
+V.dagbog=()=>{
+  const e=st.role==='e';
+  const items=st.log.filter(x=>e||x.vis);
+  return head('Sagslog','Det der er sket i sagen, samlet fra mails, møder og jeres egne aftaler. Fra byggestart kommer noter fra pladsen her.',`<button class="btn ghost" data-act="newlog">Tilføj note</button>`)+
+  `<div class="log">${items.map(x=>`<div class="entry ${x.vis?'':'int'}"><div class="entry-h"><span><b style="color:var(--ink)">${fmtW(x.d)}</b> · ${esc(x.who)}</span><span>${x.crew?x.crew+' på pladsen · ':''}${esc(x.wx||'')} ${x.vis?'':pill('int','Intern')}</span></div><div>${esc(x.txt)}</div>${photos(x.ph)}</div>`).join('')}</div>`;
+};
+
+V.rum=()=>{
+  const r=st.room;
+  const count=id=>st.tasks.filter(t=>t.room===id&&taskState(t)!=='done').length+st.decisions.filter(d=>d.room===id&&d.status==='open').length+st.defects.filter(m=>m.room===id&&m.status!=='Godkendt').length;
+  const R=(id,x,y,w,h)=>{const c=count(id);return`<rect class="room ${r===id?'on':''}" data-room="${id}" x="${x}" y="${y}" width="${w}" height="${h}"/><text x="${x+10}" y="${y+20}">${ROOMS[id]}</text><text class="m" x="${x+10}" y="${y+34}">${(w/40).toFixed(1).replace('.',',')} × ${(h/40).toFixed(1).replace('.',',')} m</text>${c?`<circle class="cnt" cx="${x+w-16}" cy="${y+16}" r="10"/><text class="cnt-t" x="${x+w-16}" y="${y+19.5}" text-anchor="middle">${c}</text>`:''}`};
+  const R2=(id,x,y,w,h,lab)=>{const c=count(id);return`<rect class="room ${r===id?'on':''}" data-room="${id}" x="${x}" y="${y}" width="${w}" height="${h}"/><text x="${x+10}" y="${y+20}">${lab||ROOMS[id]}</text>${c?`<circle class="cnt" cx="${x+w-16}" cy="${y+16}" r="10"/><text class="cnt-t" x="${x+w-16}" y="${y+19.5}" text-anchor="middle">${c}</text>`:''}`};
+  const svg=`<svg viewBox="0 0 520 470" role="img" aria-label="Skematisk oversigt over husets rum">
+    <text class="m" x="10" y="14">STUEETAGE</text>
+    ${R2('alrum',10,22,260,170)}${R2('stue',270,22,170,170)}${R2('udestue',440,22,70,170,'Udestue')}${R2('bad0',10,192,120,90,'Bad, stuen')}${R2('entre',130,192,310,90)}
+    <line x1="150" y1="22" x2="250" y2="22" stroke="#FF5C39" stroke-width="5"/><text class="m" x="152" y="38" fill="#FF5C39">Ny stålbjælke</text>
+    <line x1="440" y1="70" x2="440" y2="140" stroke="#F2F3EF" stroke-width="6"/><line x1="440" y1="70" x2="440" y2="140" stroke="#16181D" stroke-width="1" stroke-dasharray="4 3"/>
+    <text class="m" x="10" y="310">1. SAL</text>
+    ${R2('vaer',10,318,300,70,'Børneværelser')}${R2('bad1',310,318,130,70,'Bad, 1. sal')}
+    <text class="m" x="10" y="410">KÆLDER</text>
+    ${R2('kaelder',10,418,430,46)}
+  </svg>`;
+  let side='<div class="empty">Tryk på et rum i tegningen for at se alt, der foregår der.</div>';
+  if(r){
+    const ts=st.tasks.filter(t=>t.room===r), ds=st.decisions.filter(d=>d.room===r), ms=st.defects.filter(m=>m.room===r), ls=st.deliveries.filter(l=>l.room===r), cs=st.changes.filter(c=>c.room===r);
+    const sec=(h,arr,f)=>arr.length?`<div class="grp muted small" style="margin-top:14px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em">${h}</div>${arr.map(f).join('')}`:'';
+    const ln=(t,s,c)=>`<div class="item"><span class="dot" style="background:${dotc[c]||c}"></span><div><div class="t">${esc(t)}</div><div class="s">${esc(s)}</div></div><span></span></div>`;
+    side=`<h2>${ROOMS[r]}</h2><div class="list">
+      ${sec('Opgaver',ts,t=>ln(t.n,fmt(t.start)+' til '+fmt(add(endOf(t),-1)),TRADE[t.tr].c))}
+      ${sec('Beslutninger',ds,d=>ln(d.q,decState(d).txt,decState(d).c))}
+      ${sec('Leverancer',ls,l=>ln(l.n,delState(l).txt,delState(l).c))}
+      ${sec('Ekstraarbejde',cs,c=>ln(c.t,c.status+' · '+kr(c.price),c.status==='Godkendt'?'ok':'info'))}
+      ${sec('Mangler',ms,m=>ln(m.t,m.status,m.status==='Godkendt'?'ok':'warn'))}
+    </div>`;
+  }
+  return head('Rum og tegning','Hvert rum samler sine opgaver, valg, leverancer og mangler. Fælles punkter finder du under Hele huset.',`<button class="btn ghost" data-go="rum" data-room="hus">Hele huset</button>`)+
+  `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))"><div class="card plan">${svg}<div class="small muted" style="margin-top:8px">Skematisk, ikke målfast. Tal i cirklerne er åbne punkter. Tryk på et rum.</div></div><div class="card">${side}</div></div>`;
+};
+
+V.okonomi=()=>{
+  const B=st.budget||[], lo=bTot('lo'), hi=bTot('hi'), est=bTot('est'), gap=est-st.frame;
+  const tilbud=B.filter(x=>x.src==='tilbud').reduce((a,x)=>a+x.est,0);
+  const groups=[...new Set(B.map(x=>x.g))];
+  const sv=(st.savings||[]).reduce((a,x)=>a+x.save,0);
+  const max=Math.max(hi,st.frame)*1.04, pct=v=>(v/max*100).toFixed(2)+'%';
+  return head('Økonomi','Estimat pr. post inkl. moms. Grønne poster bygger på et rigtigt tilbud, resten er Claudes bud på realistiske markedspriser i København. Tilbuddene fra licitationen 30/11 erstatter estimaterne.')+
+  `<div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:16px">
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(st.frame)}</div><div class="k">Ramme inkl. moms</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(est)}</div><div class="k">Estimat, mest sandsynligt</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px">${kr(lo)} til ${kr(hi)}</div><div class="k">Spænd</div></div>
+    <div class="stat"><div class="v num" style="font-size:22px;color:${gap>0?'var(--bad)':'var(--ink)'}">${gap>0?'+':''}${kr(gap)}</div><div class="k">${gap>0?'Over':'Under'} rammen</div></div>
+  </div>
+  <div class="card"><h2>Estimat mod ramme</h2>
+    <div style="position:relative;height:34px;background:#ECEDE8;border-radius:10px;margin:10px 0 6px">
+      <div style="position:absolute;left:${pct(lo)};width:calc(${pct(hi)} - ${pct(lo)});top:0;bottom:0;background:var(--sky-soft);border-radius:10px"></div>
+      <div style="position:absolute;left:0;width:${pct(est)};top:11px;height:12px;background:var(--ink);border-radius:6px"></div>
+      <div style="position:absolute;left:${pct(st.frame)};top:-6px;bottom:-6px;width:3px;background:var(--bad)"></div>
+    </div>
+    <div class="small muted">Sort: estimat. Blå: spænd. Rød streg: rammen på ${kr(st.frame)} · ${kr(tilbud)} bygger på tilbud.</div>
+  </div>
+  <div class="card overflow" style="margin-top:16px"><h2>Poster</h2><table class="t"><thead><tr><th>Post</th><th class="r hide-sm">Spænd</th><th class="r">Estimat</th><th>Grundlag</th></tr></thead><tbody>
+    ${groups.map(g=>`<tr><td colspan="4" class="small muted grp-row" style="font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;padding-top:16px">${esc(g)}</td></tr>`+B.filter(x=>x.g===g).map(x=>`<tr><td><b>${esc(x.n)}</b>${x.note?`<div class="small muted">${esc(x.note)}</div>`:''}</td><td class="r num small hide-sm">${Math.round(x.lo/1000)} til ${Math.round(x.hi/1000)} t.kr.</td><td class="r num" style="white-space:nowrap">${kr(x.est)}</td><td>${x.src==='tilbud'?pill('ok','Tilbud'):pill('neutral','Estimat')}</td></tr>`).join('')).join('')}
+    <tr><td><b>I alt</b></td><td class="r num small hide-sm">${Math.round(lo/1000)} til ${Math.round(hi/1000)} t.kr.</td><td class="r num"><b>${kr(est)}</b></td><td></td></tr>
+  </tbody></table></div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card"><h2>Mulige besparelser</h2><div class="list">${(st.savings||[]).map(x=>`<div class="item"><span class="dot" style="background:var(--mint)"></span><div><div class="t">${esc(x.n)}</div><div class="s">Ca. ${kr(x.save)}</div></div><span></span></div>`).join('')}</div>
+    <p class="small muted" style="margin:12px 0 0">Tilsammen ca. ${kr(sv)} · ${gap>0?(sv>=gap?'Det dækker afstanden til rammen.':'Det dækker ikke hele afstanden til rammen.'):''} Til brug ved tilbudsgennemgangen.</p></div>
+    <div class="card"><h2>Uden for rammen</h2><div class="list">${(st.outside||[]).map(x=>`<div class="item"><span class="dot" style="background:#C9CCD3"></span><div><div class="t">${esc(x.n)}</div><div class="s">Ca. ${kr(x.est)} · ${esc(x.note)}</div></div><span></span></div>`).join('')}</div></div>
+  </div>`;
+};
+
+V.mangler=()=>{
+  const b=st.role==='b';
+  const c={Åben:'warn',Udbedret:'info',Godkendt:'ok'};
+  return head('Mangler','En mangel går fra åben til udbedret hos entreprenøren og til godkendt hos bygherren. Bruges også ved 1-års og 5-års gennemgang.',`<button class="btn" data-act="newdef">Ny mangel</button>`)+
+  `<div class="card">${st.defects.length?'':'<div class="empty">Ingen mangler. Bruges fra byggestart og ved afleveringen.</div>'}<div class="list">${st.defects.map(m=>`<div class="item"><span class="dot" style="background:${dotc[c[m.status]]}"></span><div><div class="t">${esc(m.t)}</div><div class="s">${ROOMS[m.room]} · oprettet ${fmt(m.at)} af ${esc(m.by)}</div></div><div class="row">${pill(c[m.status],m.status)}
+  ${!b&&m.status==='Åben'?`<button class="btn ghost sm" data-act="fix" data-id="${m.id}">Meld udbedret</button>`:''}
+  ${b&&m.status==='Udbedret'?`<button class="btn sig sm" data-act="okdef" data-id="${m.id}">Godkend</button><button class="btn ghost sm" data-act="reopen" data-id="${m.id}">Ikke i orden</button>`:''}</div></div>`).join('')}</div>${(st.options||[]).length?`<h2 style="margin-top:16px">Optioner i udbuddet</h2><div class="small muted">Prissættes for sig og tælles ikke med i estimatet.</div><div class="list">${st.options.map(x=>`<div class="item"><span class="dot" style="background:var(--sky)"></span><div><div class="t">${esc(x.n)}</div><div class="s">Ca. ${kr(x.est)} (${Math.round(x.lo/1000)} til ${Math.round(x.hi/1000)} t.kr.)</div></div><span></span></div>`).join('')}</div>`:''}</div>
+  <div class="card" style="margin-top:16px"><h2>Kommende gennemgange</h2><div class="list">
+   <div class="item"><span class="dot" style="background:var(--sky)"></span><div><div class="t">Afleveringsforretning</div><div class="s">Planlagt ${fmtW(add(endOf(lastTask()),-1))}, følger tidsplanen</div></div><span></span></div>
+   <div class="item"><span class="dot" style="background:#C9CCD3"></span><div><div class="t">1-års gennemgang</div><div class="s">Omkring ${fmt(add(endOf(lastTask()),364))} 2028</div></div><span></span></div>
+   <div class="item"><span class="dot" style="background:#C9CCD3"></span><div><div class="t">5-års gennemgang</div><div class="s">Omkring ${fmt(add(endOf(lastTask()),364*5+1))} 2032</div></div><span></span></div>
+  </div></div>`;
+};
+
+V.sager=()=>{
+  const L=lastTask(),slip=diff(add(L.b0,L.dur),endOf(L));
+  const live={prog:progress(),health:slip>3?'warn':'ok',note:`Aflevering ${fmt(endOf(L))}, ${slip} dage efter plan. ${todosE().filter(x=>x.c==='bad').length} kritiske punkter.`,client:todosB().length};
+  const hp={ok:['ok','På sporet'],warn:['warn','Risiko'],bad:['bad','Forsinket'],info:['info','Tilbud']};
+  return head('Mine sager','Alle sager på tværs af kunder. Det er her, mesteren starter dagen.',`<button class="btn" data-act="newcase">Ny sag</button>`)+
+  `<div class="grid g3">${st.cases.map(c=>{const d=c.live?{...c,...live}:c;return`<button class="card case" ${c.live?'data-go="overblik"':'data-act="democase"'}>
+    <div class="row" style="justify-content:space-between"><span class="code">${c.code}</span>${pill(...hp[d.health])}</div>
+    <h3>${esc(c.n)}</h3>
+    ${d.stage?'':`<div class="mini"><i style="width:${Math.round(d.prog*100)}%"></i></div>`}
+    <div class="small muted">${esc(d.note)}</div>
+    ${d.client?`<div class="small" style="margin-top:8px"><b>${d.client}</b> punkter venter på bygherre</div>`:''}
+  </button>`}).join('')}</div>
+  <div class="card" style="margin-top:16px"><h2>Ugen for firmaet</h2>
+  ${todoList(todosE().slice(0,5))}</div>`;
+};
+
+V.bemanding=()=>{
+  const codes=['BRØ','VAL','FRB',''];
+  const col={BRØ:'#FFE3DA',VAL:'#E4EAFF',FRB:'#FFF2CC','':'#FAFAF8'};
+  const need={BRØ:st.week.map(brøNeed)};st.cases.filter(c=>!c.live).forEach(c=>need[c.code]=c.need);
+  return head('Bemanding, uge '+isoWeek(st.week[0]),'Tryk på en celle for at flytte en medarbejder. Behovet for Brønshøj-sagen regnes direkte ud fra tidsplanen.')+
+  `<div class="card overflow"><table class="crew"><thead><tr><th></th>${st.week.map(d=>`<th>${fmtW(d)}</th>`).join('')}</tr></thead><tbody>
+  ${st.crew.map((p,pi)=>`<tr><td class="who">${esc(p.n)}<div class="small muted" style="font-weight:400">${esc(p.r)}</div></td>${p.a.map((a,i)=>`<td><button class="cell" style="background:${col[a]}" data-act="cycle" data-p="${pi}" data-i="${i}" aria-label="${esc(p.n)} ${fmtW(st.week[i])}: ${a||'ikke tildelt'}">${a||'—'}</button></td>`).join('')}</tr>`).join('')}
+  <tr><td colspan="6" style="height:10px"></td></tr>
+  ${['BRØ','VAL','FRB'].map(c=>`<tr class="need"><td class="who" style="text-align:left">${c} <span class="small muted" style="font-weight:400">behov</span></td>${st.week.map((d,i)=>{const h=crewCount(c,i),n=need[c][i];return`<td style="background:${h<n?'var(--bad-soft)':h>n?'var(--sky-soft)':'var(--mint-soft)'};color:${h<n?'var(--bad)':'var(--ink)'}">${h}/${n}</td>`}).join('')}</tr>`).join('')}
+  </tbody></table>
+  <p class="small muted" style="margin:10px 0 0">Rød: for få folk. Blå: flere end behovet. Grøn: passer.</p></div>`;
+};
+
+V.ue=()=>{
+  const list=st.tasks.filter(t=>t.ue);
+  return head('Underentreprenører','Når en opgave flytter sig, mister underentreprenørens bekræftelse automatisk sin gyldighed, så du kan se, hvem der skal have besked.')+
+  `<div class="card overflow"><table class="t" style="min-width:620px"><thead><tr><th>Firma</th><th>Opgave</th><th>Planlagt start</th><th>Bekræftet</th><th></th></tr></thead><tbody>
+  ${list.map(t=>{const done=taskState(t)==='done',ok=t.conf===t.start;return`<tr><td><b>${esc(t.ue)}</b><div class="small muted">${esc(t.tr)}</div></td><td>${esc(t.n)}</td><td class="num">${fmt(t.start)}</td><td>${done?pill('neutral','Udført'):ok?pill('ok','Bekræftet '+fmt(t.conf)):pill('warn','Bekræftede '+fmt(t.conf))}</td><td class="r">${!done&&!ok?`<button class="btn ghost sm" data-act="confirm" data-id="${t.id}">Registrér ny bekræftelse</button>`:''}</td></tr>`}).join('')}
+  </tbody></table></div>`;
+};
+
+/* ---------- Render ---------- */
+function render(){
+  if(!VIEWS.find(v=>v.id===st.view&&(!v.roles||v.roles===st.role)))st.view='overblik';
+  renderNav();
+  document.getElementById('stamp').textContent=stampTxt()+' · priser er estimater';
+  document.getElementById('main').innerHTML=V[st.view]();
+  const tl=document.querySelector('.tl');if(tl){const tf=document.querySelector('.today-flag');if(tf)tl.scrollLeft=Math.max(0,parseFloat(tf.style.left)-tl.clientWidth*0.35)}
+  document.getElementById('role-b').setAttribute('aria-pressed',st.role==='b');
+  document.getElementById('role-e').setAttribute('aria-pressed',st.role==='e');
+}
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3200)}
+function feed(who,txt){st.feed.unshift({d:TODAY,who,txt})}
+const ME=()=>'Anders';
+
+/* ---------- Modal ---------- */
+function openSheet(html,onSubmit){
+  const m=document.getElementById('modal'),s=document.getElementById('sheet');
+  s.innerHTML=`<form id="f">${html}<div class="row"><button type="button" class="btn ghost" data-close>Annullér</button><button class="btn sig" type="submit">Gem</button></div></form>`;
+  m.hidden=false;
+  const f=document.getElementById('f');
+  f.addEventListener('submit',ev=>{ev.preventDefault();if(onSubmit(new FormData(f),f)!==false){m.hidden=true;render()}});
+  f.addEventListener('input',()=>f.dispatchEvent(new CustomEvent('live')));
+  const first=f.querySelector('input,select,textarea');if(first)first.focus();
+  return f;
+}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.hasAttribute('data-close'))document.getElementById('modal').hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('modal').hidden=true});
+const opt=(arr,sel)=>arr.map(a=>`<option ${a===sel?'selected':''}>${esc(a)}</option>`).join('');
+const roomOpts=()=>Object.entries(ROOMS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+
+const ACT={
+  shift(id){
+    const t=tk(id);
+    const f=openSheet(`<h2>Ryk ${esc(t.n.toLowerCase())}</h2><p class="small muted">Starter nu ${fmtW(t.start)}. Bygherren får besked med årsagen.</p>
+      <div class="field"><label for="sd">Antal dage (negativ = tidligere)</label><input id="sd" name="d" type="number" value="3" min="-20" max="40" required></div>
+      <div class="field"><label for="sr">Årsag</label><select id="sr" name="r">${opt(['Forsinket leverance','Vejr','Afventer bygherres beslutning','Ekstraarbejde','Mandskab','Underentreprenør','Andet'])}</select></div>
+      <div class="field"><label for="sn">Note til bygherre</label><textarea id="sn" name="n" placeholder="Fx: Køkkenet ankommer først 20. nov."></textarea></div>
+      <div class="preview" id="pv"></div>`,fd=>{
+        const n=parseInt(fd.get('d'),10)||0;if(!n)return false;
+        const before=Object.fromEntries(st.tasks.map(x=>[x.id,x.start]));
+        t.delay+=n;schedule(false);
+        const moved=st.tasks.filter(x=>x.id!==t.id&&x.start!==before[x.id]).length;
+        feed(ME(),`Rykkede ${t.n} ${n>0?'+':''}${n} dage. Årsag: ${fd.get('r').toLowerCase()}.${fd.get('n')?' "'+fd.get('n')+'"':''} ${moved} opgaver flyttede med.`);
+        toast(`${t.n} flyttet. ${moved} afhængige opgaver fulgte med.`);
+      });
+    const pv=()=>{const n=parseInt(f.d.value,10)||0;const before=Object.fromEntries(st.tasks.map(x=>[x.id,x.start]));t.delay+=n;schedule(false);
+      const moved=st.tasks.filter(x=>x.id!==t.id&&x.start!==before[x.id]);const L=lastTask();const newEnd=endOf(L);
+      const ues=moved.filter(x=>x.ue).map(x=>x.ue);
+      t.delay-=n;schedule(false);
+      document.getElementById('pv').innerHTML=`<b>${moved.length} opgaver flytter med.</b> Aflevering bliver ${fmt(newEnd)}.${ues.length?'<br>Skal have ny dato: '+ues.map(esc).join(', ')+'.':''}`};
+    f.addEventListener('live',pv);pv();
+  },
+  decide(id){
+    const d=st.decisions.find(x=>x.id===id);const r=document.querySelector(`input[name="${id}"]:checked`);
+    if(!r){toast('Vælg en af mulighederne først.');return}
+    d.status='done';d.choice=d.opts[r.value];d.by='Bygherre';d.at=TODAY;
+    st.deliveries.filter(l=>l.waits===id).forEach(l=>{l.status='Ikke bestilt';l.n=l.n+': '+d.choice.split(' (')[0]});
+    feed('Bygherre',`Besluttede: ${d.q}: ${d.choice}`);toast('Beslutningen er noteret i denne visning. Skriv den til Claude, så den gemmes i sagen.');render();
+  },
+  ask(id){const d=st.decisions.find(x=>x.id===id);openSheet(`<h2>Spørgsmål om ${esc(d.q.toLowerCase())}</h2><div class="field"><label for="aq">Dit spørgsmål</label><textarea id="aq" name="q" required></textarea></div>`,fd=>{feed('Bygherre',`Spurgte om ${d.q.toLowerCase()}: "${fd.get('q')}"`);toast('Spørgsmålet er lagt i ændringsloggen (demo).')})},
+  nudge(id){const d=st.decisions.find(x=>x.id===id);feed('Kvist & Bjælke',`Påmindede bygherre: ${d.q} (${decState(d).txt.toLowerCase()})`);toast('Påmindelse registreret (demo).');render()},
+  newdec(){openSheet(`<h2>Ny beslutning til bygherre</h2><div class="field"><label for="nq">Hvad skal besluttes</label><input id="nq" name="q" required></div><div class="field"><label for="no">Muligheder, én pr. linje</label><textarea id="no" name="o" required></textarea></div><div class="field"><label for="nt">Skal bruges til</label><select id="nt" name="t">${st.tasks.filter(t=>taskState(t)!=='done').map(t=>`<option value="${t.id}">${esc(t.n)}</option>`).join('')}</select></div><div class="field"><label for="nl">Dage før opgaven starter</label><input id="nl" name="l" type="number" value="7" min="0"></div>`,fd=>{const t=tk(fd.get('t'));st.decisions.push({id:'d'+Date.now(),q:fd.get('q'),ctx:'',task:t.id,lead:+fd.get('l'),room:t.room,opts:fd.get('o').split('\n').map(s=>s.trim()).filter(Boolean),status:'open'});feed('Kvist & Bjælke','Bad bygherre om at beslutte: '+fd.get('q'))})},
+  approve(id){const c=st.changes.find(x=>x.id===id);const L=lastTask(),old=endOf(L);c.status='Godkendt';c.dec=TODAY;if(c.days){tk(c.task).extra+=c.days;schedule(false)}feed('Bygherre',`Godkendte ekstraarbejde: ${c.t} (${kr(c.price)})`);toast(c.days?`Godkendt. Afleveringen flytter fra ${fmt(old)} til ${fmt(endOf(L))}.`:'Godkendt. Ingen påvirkning af tidsplanen.');render()},
+  reject(id){const c=st.changes.find(x=>x.id===id);c.status='Afvist';c.dec=TODAY;feed('Bygherre','Afviste ekstraarbejde: '+c.t);render()},
+  newchange(){openSheet(`<h2>Nyt ekstraarbejde</h2><div class="field"><label for="ct">Beskrivelse</label><input id="ct" name="t" required></div><div class="field"><label for="cw">Baggrund</label><textarea id="cw" name="w"></textarea></div><div class="field"><label for="cp">Pris inkl. moms (kr.)</label><input id="cp" name="p" type="number" min="0" required></div><div class="field"><label for="cd">Ekstra dage</label><input id="cd" name="d" type="number" min="0" value="0"></div><div class="field"><label for="ck">Påvirker opgave</label><select id="ck" name="k">${st.tasks.filter(t=>taskState(t)!=='done').map(t=>`<option value="${t.id}">${esc(t.n)}</option>`).join('')}</select></div>`,fd=>{const t=tk(fd.get('k'));st.changes.unshift({id:'c'+Date.now(),t:fd.get('t'),why:fd.get('w')||'',price:+fd.get('p'),days:+fd.get('d'),task:t.id,status:'Afventer',at:TODAY,room:t.room});feed('Kvist & Bjælke',`Sendte ekstraarbejde: ${fd.get('t')} (${kr(+fd.get('p'))})`);toast('Sendt til bygherrens godkendelse.')})},
+  deliv(id){const l=st.deliveries.find(x=>x.id===id);openSheet(`<h2>${esc(l.n)}</h2><p class="small muted">Skal være på pladsen senest ${fmtW(delDue(l))}.</p><div class="field"><label for="ds">Status</label><select id="ds" name="s">${opt(['Ikke bestilt','Bestilt','Leveret'],l.status)}</select></div><div class="field"><label for="de">Forventet levering</label><input id="de" name="e" type="date" value="${l.eta||''}"></div>`,fd=>{l.status=fd.get('s');l.eta=fd.get('e')||l.eta;if(l.status==='Bestilt'&&!l.eta){toast('Angiv en forventet leveringsdato.');return false}feed(ME(),`Opdaterede leverance: ${l.n}: ${l.status.toLowerCase()}${l.eta&&l.status==='Bestilt'?', ankommer '+fmt(l.eta):''}`)})},
+  newlog(){const e=st.role==='e';const f=openSheet(`<h2>${e?'Ny note fra pladsen':'Skriv til byggepladsen'}</h2><div class="field"><label for="lt">Tekst</label><textarea id="lt" name="t" required></textarea></div>${e?`<div class="field"><label for="lc">Folk på pladsen</label><input id="lc" name="c" type="number" min="0" value="3"></div><div class="field"><label for="lw">Vejr</label><input id="lw" name="w" value="Gråvejr, 7°"></div><label class="check"><input type="checkbox" name="v" checked> Synlig for bygherre</label>`:''}<div class="field"><label for="lp">Billeder</label><input id="lp" name="p" type="file" accept="image/*" multiple></div>`,fd=>{const ph=[...(f.p.files||[])].slice(0,6).map((x,i)=>['Foto '+(i+1),'#5B606B',URL.createObjectURL(x)]);st.log.unshift({d:TODAY,who:e?'Ali, formand':'Bygherre',txt:fd.get('t'),crew:e?+fd.get('c'):null,wx:e?fd.get('w'):'',vis:e?fd.get('v')==='on':true,ph});if(!e||fd.get('v')==='on')feed(ME(),'Skrev i dagbogen');})},
+  newdef(){openSheet(`<h2>Ny mangel</h2><div class="field"><label for="mt">Hvad er der galt</label><input id="mt" name="t" required></div><div class="field"><label for="mr">Rum</label><select id="mr" name="r">${roomOpts()}</select></div><div class="field"><label for="mp">Foto</label><input id="mp" name="p" type="file" accept="image/*"></div>`,fd=>{st.defects.unshift({id:'m'+Date.now(),t:fd.get('t'),room:fd.get('r'),status:'Åben',at:TODAY,by:ME()});feed(ME(),'Oprettede mangel: '+fd.get('t'))})},
+  fix(id){const m=st.defects.find(x=>x.id===id);m.status='Udbedret';feed('Kvist & Bjælke','Meldte udbedret: '+m.t);render()},
+  okdef(id){const m=st.defects.find(x=>x.id===id);m.status='Godkendt';feed('Bygherre','Godkendte udbedring: '+m.t);render()},
+  reopen(id){const m=st.defects.find(x=>x.id===id);m.status='Åben';feed('Bygherre','Genåbnede mangel: '+m.t);render()},
+  cycle(_,el){const p=st.crew[+el.dataset.p],i=+el.dataset.i;const codes=['BRØ','VAL','FRB',''];p.a[i]=codes[(codes.indexOf(p.a[i])+1)%codes.length];render()},
+  confirm(id){const t=tk(id);t.conf=t.start;feed('Kvist & Bjælke',`${t.ue} bekræftede ${fmt(t.start)}`);toast(`${t.ue} står nu som bekræftet ${fmt(t.start)}.`);render()},
+  democase(){toast('I demoen er kun Brønshøj-sagen udfyldt.')},
+  newcase(){toast('Opret sag fra tilbud kommer i næste version.')}
+};
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-go],[data-act],[data-sel],[data-room]');if(!el)return;
+  if(el.closest('#sheet')&&!el.dataset.act)return;
+  if(el.dataset.act){ACT[el.dataset.act](el.dataset.id,el);return}
+  if(el.dataset.go){st.view=el.dataset.go;if(el.dataset.sel)st.sel=el.dataset.sel;if(el.dataset.room)st.room=el.dataset.room;render();window.scrollTo({top:0});return}
+  if(el.dataset.sel){st.sel=el.dataset.sel;render();const d=document.querySelector('.detail');if(d&&window.innerWidth<860)d.scrollIntoView({behavior:'smooth',block:'nearest'});return}
+  if(el.dataset.room){st.room=st.room===el.dataset.room?null:el.dataset.room;render()}
+});
+document.addEventListener('change',e=>{if(e.target.id==='ghost'){st.ghost=e.target.checked;render()}});
+document.getElementById('role-b').onclick=()=>{st.role='b';if(['sager','bemanding','ue'].includes(st.view))st.view='overblik';render()};
+document.getElementById('role-e').onclick=()=>{st.role='e';st.view='sager';render()};
+let rw;window.addEventListener('resize',()=>{clearTimeout(rw);rw=setTimeout(()=>{if(st.view==='tidslinje')render()},150)});
+render();
+</script>
+</body>
+</html>
