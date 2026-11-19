@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Foremind · AI til tømrervirksomheder</title>
+<meta name="description" content="Foremind svarer kunder, skriver tilbudsudkast og holder styr på ugen for tømrervirksomheder med 3-15 medarbejdere.">
+<meta name="theme-color" content="#1F3A2E">
+<link rel="icon" href="/foremind/mark.svg" type="image/svg+xml">
+<style>
+@font-face{font-family:"Barlow Condensed";src:url("/foremind/fonts/BarlowCondensed-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url("/foremind/fonts/BarlowCondensed-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url("/foremind/fonts/BarlowCondensed-ExtraBold.woff2") format("woff2");font-weight:800;font-display:swap}
+@font-face{font-family:"Barlow";src:url("/foremind/fonts/Barlow-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow";src:url("/foremind/fonts/Barlow-Medium.woff2") format("woff2");font-weight:500;font-display:swap}
+@font-face{font-family:"Barlow";src:url("/foremind/fonts/Barlow-SemiBold.woff2") format("woff2");font-weight:600;font-display:swap}
+:root{
+  --paper:#F4EEE3;
+  --paper-2:#EBE2D1;
+  --card:#FBF8F2;
+  --ink:#1B1A17;
+  --ink-2:#5E594F;
+  --line:#DCD2BF;
+  --pine:#1F3A2E;
+  --pine-2:#2C4F3F;
+  --oak:#EAD9BC;
+  --pencil:#E0532F;
+  --pencil-dark:#B83E20;
+  --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow",-apple-system,"Segoe UI",system-ui,sans-serif;
+  --r:14px;
+  --wrap:1120px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;overflow-x:hidden;background:var(--paper);color:var(--ink);font:17px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+img,svg{display:block}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:.98;letter-spacing:.005em;margin:0;text-transform:uppercase}
+h1{font-size:clamp(46px,8.4vw,96px)}
+h2{font-size:clamp(36px,5.6vw,62px)}
+h3{font-size:26px;font-weight:700}
+p{margin:0}
+.kicker{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--pencil-dark)}
+.lead{font-size:clamp(18px,2.2vw,21px);color:var(--ink-2);max-width:34em}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;padding:14px 22px;border-radius:10px;border:2px solid var(--ink);transition:transform .15s ease,background .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{background:var(--pencil);border-color:var(--pencil);color:#fff}
+.btn-primary:hover{background:var(--pencil-dark);border-color:var(--pencil-dark)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.on-dark .btn-ghost{color:var(--paper);border-color:var(--oak)}
+
+/* header */
+.top{position:sticky;top:0;z-index:20;background:rgba(244,238,227,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{display:flex;align-items:center;gap:11px;text-decoration:none}
+.logo svg{width:38px;height:38px}
+.logo span{font-family:var(--display);font-weight:800;font-size:27px;letter-spacing:.03em;text-transform:uppercase}
+.top nav{display:flex;align-items:center;gap:26px}
+.top nav a.nl{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink-2)}
+.top nav a.nl:hover{color:var(--ink)}
+.top .btn{padding:9px 16px;font-size:17px;white-space:nowrap}
+@media(max-width:760px){.top nav a.nl{display:none}}
+
+/* hero */
+.hero{padding:72px 0 88px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.hero-grid > *{min-width:0}
+.hero h1 em{display:block;font-style:normal;color:var(--pencil)}
+.hero .lead{margin-top:24px}
+.hero .ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.hero .fine{margin-top:18px;font-size:14px;color:var(--ink-2)}
+.rings-bg{position:absolute;right:-180px;top:-120px;width:620px;height:620px;opacity:.07;pointer-events:none}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px}.hero{padding:48px 0 64px}.rings-bg{display:none}}
+
+/* demo card */
+.demo{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 0 var(--line),0 24px 48px -28px rgba(31,58,46,.45);overflow:hidden}
+.demo-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--pine);color:var(--oak);font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase}
+.demo-head small{white-space:nowrap;font-family:var(--body);font-weight:500;letter-spacing:0;text-transform:none;font-size:13px;opacity:.75}
+.demo-body{padding:18px}
+.msg{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.msg .who{font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.msg p{font-size:15px;line-height:1.45}
+.arrow-down{display:flex;align-items:center;gap:10px;margin:14px 2px;font-size:13px;font-weight:600;color:var(--pine-2)}
+.arrow-down::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--pencil);box-shadow:0 0 0 4px rgba(224,83,47,.18)}
+.draft{border:2px solid var(--pine);border-radius:12px;padding:14px;background:#fff}
+.draft .row{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;padding:6px 0;border-bottom:1px dashed var(--line)}
+.draft .row:last-of-type{border-bottom:0}
+.draft .row b{font-weight:600}
+.draft .total{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:10px;border-top:2px solid var(--ink)}
+.draft .total span{font-size:14px;color:var(--ink-2)}
+.draft .total strong{font-family:var(--display);font-size:28px;font-weight:800}
+.approve{display:flex;gap:8px;margin-top:14px}
+.approve span{flex:1;text-align:center;font-family:var(--display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:15px;padding:9px;border-radius:8px;border:2px solid var(--ink)}
+.approve span.ok{background:var(--pine);border-color:var(--pine);color:var(--oak)}
+.demo-note{font-size:12.5px;color:var(--ink-2);padding:0 18px 16px}
+
+/* promise strip */
+.strip{background:var(--pine);color:var(--paper)}
+.strip .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.strip div.p{padding:30px 24px;border-left:1px solid rgba(234,217,188,.18)}
+.strip div.p:first-child{border-left:0;padding-left:0}
+.strip b{display:block;font-family:var(--display);font-weight:800;font-size:30px;text-transform:uppercase;line-height:1;color:var(--oak)}
+.strip span{display:block;margin-top:8px;font-size:15.5px;opacity:.85}
+@media(max-width:760px){.strip .wrap{grid-template-columns:1fr}.strip div.p{border-left:0;border-top:1px solid rgba(234,217,188,.18);padding:22px 0}.strip div.p:first-child{border-top:0}}
+
+section.block{padding:96px 0}
+section.block .head{max-width:760px;margin-bottom:48px}
+section.block .head .kicker{margin-bottom:14px}
+section.block .head .lead{margin-top:18px}
+@media(max-width:760px){section.block{padding:68px 0}}
+
+/* pains */
+.pains{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pain{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:26px}
+.pain .t{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;color:var(--pencil)}
+.pain h3{margin:14px 0 10px}
+.pain p{color:var(--ink-2);font-size:16px}
+@media(max-width:860px){.pains{grid-template-columns:1fr}}
+
+/* modules */
+.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.mod{position:relative;border-radius:var(--r);padding:28px 26px 26px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column}
+.mod.live{border:2px solid var(--pine)}
+.mod .num{font-family:var(--display);font-weight:800;font-size:16px;letter-spacing:.14em;color:var(--ink-2)}
+.mod .tag{position:absolute;top:24px;right:22px;font-family:var(--display);font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:99px}
+.mod.live .tag{background:var(--pine);color:var(--oak)}
+.mod.next .tag{border:1.5px dashed var(--ink-2);color:var(--ink-2)}
+.mod h3{font-size:34px;margin:12px 0 12px}
+.mod > p{color:var(--ink-2);font-size:16px}
+.mod ul{list-style:none;margin:20px 0 0;padding:0;border-top:1px solid var(--line)}
+.mod li{padding:11px 0 11px 26px;border-bottom:1px solid var(--line);font-size:15.5px;position:relative}
+.mod li::before{content:"";position:absolute;left:2px;top:17px;width:12px;height:12px;border-radius:50%;border:2.5px solid var(--pencil)}
+.mod.next{background:transparent;border-style:dashed}
+@media(max-width:900px){.modules{grid-template-columns:1fr}}
+
+/* usp */
+.usp{background:var(--pine);color:var(--paper);position:relative;overflow:hidden}
+.usp .kicker{color:var(--pencil)}
+.usp .lead{color:rgba(244,238,227,.82)}
+.usp-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.layers{display:flex;flex-direction:column;gap:12px}
+.layer{display:grid;grid-template-columns:92px 1fr;gap:16px;align-items:center;padding:18px 20px;border-radius:12px;border:1px solid rgba(234,217,188,.25)}
+.layer .pct{font-family:var(--display);font-weight:800;font-size:40px;line-height:1;color:var(--oak)}
+.layer b{display:block;font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:.04em;text-transform:uppercase}
+.layer span{display:block;font-size:15px;opacity:.8;margin-top:2px}
+.layer.core{background:rgba(234,217,188,.08)}
+.layer.you{border:2px solid var(--pencil)}
+.layer.you .pct{color:var(--pencil)}
+.rules{margin-top:36px;display:grid;gap:14px}
+.rules div{display:flex;gap:14px}
+.rules i{flex:none;font-style:normal;font-family:var(--display);font-weight:800;color:var(--pencil);font-size:20px;width:26px}
+.rules p{font-size:16px;color:rgba(244,238,227,.88)}
+.rules p b{color:var(--paper)}
+@media(max-width:900px){.usp-grid{grid-template-columns:1fr;gap:40px}}
+
+/* values */
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:2px solid var(--ink)}
+.val{padding:28px 26px 8px 0}
+.val + .val{padding-left:26px;border-left:1px solid var(--line)}
+.val h3{font-size:30px}
+.val .sub{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--pencil-dark);margin-bottom:10px}
+.val p{margin-top:12px;color:var(--ink-2);font-size:16px}
+@media(max-width:860px){.values{grid-template-columns:1fr}.val,.val + .val{padding:24px 0;border-left:0;border-bottom:1px solid var(--line)}}
+
+/* steps */
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
+.step{position:relative;padding-top:58px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:0;left:0;width:42px;height:42px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:22px}
+.step::after{content:"";position:absolute;top:21px;left:52px;right:-8px;height:0;border-top:2px dashed var(--line)}
+.step:last-child::after{display:none}
+.step .when{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--pencil-dark)}
+.step h3{font-size:25px;margin:6px 0 8px}
+.step p{color:var(--ink-2);font-size:15.5px}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr;row-gap:36px}.step::after{display:none}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+
+/* pricing */
+.prices{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.price{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:28px 26px;display:flex;flex-direction:column}
+.price.feat{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.price .name{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.price.feat .name{color:var(--oak)}
+.price .amt{font-family:var(--display);font-weight:800;font-size:54px;line-height:1;margin:14px 0 4px}
+.price .per{font-size:14px;color:var(--ink-2)}
+.price.feat .per{color:rgba(244,238,227,.7)}
+.price ul{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px;font-size:15.5px}
+.price li{padding-left:22px;position:relative}
+.price li::before{content:"";position:absolute;left:0;top:9px;width:10px;height:2px;background:var(--pencil)}
+.price-note{margin-top:22px;font-size:14.5px;color:var(--ink-2);max-width:56em}
+@media(max-width:900px){.prices{grid-template-columns:1fr}}
+
+/* faq */
+.faq{max-width:820px;border-top:2px solid var(--ink)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;position:relative;font-family:var(--display);font-weight:700;font-size:23px;text-transform:uppercase;letter-spacing:.02em}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:4px;top:14px;font-size:30px;color:var(--pencil)}
+.faq details[open] summary::after{content:"−"}
+.faq details p{padding:0 0 22px;color:var(--ink-2);max-width:44em}
+
+/* final cta */
+.final{background:var(--pencil);color:#fff;text-align:left}
+.final .wrap{display:grid;grid-template-columns:1.3fr .7fr;gap:40px;align-items:center;padding-top:84px;padding-bottom:84px}
+.final h2{font-size:clamp(40px,6vw,74px)}
+.final p{margin-top:16px;font-size:19px;opacity:.95;max-width:30em}
+.final .btn{background:var(--ink);border-color:var(--ink);color:#fff;font-size:21px;padding:18px 26px}
+.final .side{justify-self:end;text-align:right}
+.final .side small{display:block;margin-top:12px;font-size:14px;opacity:.85}
+@media(max-width:860px){.final .wrap{grid-template-columns:1fr}.final .side{justify-self:start;text-align:left}}
+
+footer{background:var(--ink);color:rgba(244,238,227,.7);font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:28px;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+footer .logo span{color:var(--paper);font-size:22px}
+footer .logo svg{width:30px;height:30px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="fm-mark" viewBox="0 0 64 64">
+      <clipPath id="fm-c"><rect width="64" height="64" rx="13"/></clipPath>
+      <rect width="64" height="64" rx="13" fill="#1F3A2E"/>
+      <g clip-path="url(#fm-c)" fill="none"><path d="M32.61 37.00 L32.73 37.55 L32.78 38.11 L32.73 38.68 L32.59 39.23 L32.35 39.75 L32.02 40.23 L31.63 40.66 L31.18 41.04 L30.69 41.37 L30.20 41.65 L29.69 41.90 L29.18 42.13 L28.67 42.33 L28.16 42.51 L27.63 42.66 L27.09 42.77 L26.55 42.84 L26.00 42.85 L25.45 42.81 L24.91 42.73 L24.39 42.60 L23.88 42.43 L23.37 42.24 L22.88 42.03 L22.39 41.80 L21.89 41.55 L21.40 41.27 L20.93 40.96 L20.48 40.59 L20.08 40.18 L19.75 39.71 L19.49 39.20 L19.33 38.66 L19.27 38.10 L19.29 37.55 L19.39 37.00 L19.54 36.47 L19.72 35.97 L19.93 35.49 L20.13 35.01 L20.34 34.55 L20.57 34.08 L20.81 33.62 L21.08 33.16 L21.40 32.72 L21.78 32.32 L22.20 31.95 L22.68 31.65 L23.19 31.40 L23.74 31.22 L24.30 31.09 L24.86 31.01 L25.43 30.97 L26.00 30.97 L26.57 30.99 L27.13 31.05 L27.69 31.15 L28.23 31.29 L28.76 31.49 L29.26 31.74 L29.72 32.05 L30.14 32.42 L30.50 32.82 L30.81 33.25 L31.08 33.69 L31.33 34.14 L31.56 34.59 L31.78 35.04 L32.01 35.50 L32.23 35.98 L32.43 36.48Z" stroke="#EAD9BC" stroke-width="2.8" stroke-linejoin="round"/><path d="M39.95 37.00 L39.96 38.14 L39.77 39.26 L39.40 40.34 L38.87 41.36 L38.23 42.30 L37.50 43.18 L36.72 43.98 L35.91 44.74 L35.08 45.45 L34.22 46.11 L33.32 46.72 L32.38 47.27 L31.39 47.75 L30.35 48.12 L29.28 48.39 L28.19 48.55 L27.09 48.62 L26.00 48.60 L24.92 48.51 L23.84 48.38 L22.77 48.22 L21.69 48.02 L20.60 47.78 L19.50 47.47 L18.41 47.08 L17.36 46.57 L16.39 45.94 L15.52 45.18 L14.79 44.30 L14.22 43.32 L13.82 42.28 L13.57 41.21 L13.45 40.13 L13.43 39.06 L13.46 38.02 L13.51 37.00 L13.58 35.99 L13.67 34.98 L13.78 33.96 L13.96 32.92 L14.21 31.89 L14.58 30.87 L15.09 29.89 L15.73 28.98 L16.50 28.16 L17.38 27.44 L18.34 26.83 L19.37 26.31 L20.43 25.89 L21.51 25.53 L22.61 25.25 L23.73 25.03 L24.86 24.88 L26.00 24.83 L27.14 24.87 L28.27 25.04 L29.36 25.33 L30.40 25.75 L31.37 26.28 L32.27 26.90 L33.09 27.59 L33.85 28.30 L34.57 29.03 L35.28 29.76 L35.99 30.49 L36.72 31.24 L37.45 32.04 L38.15 32.89 L38.80 33.81 L39.34 34.81 L39.74 35.88Z" stroke="#EAD9BC" stroke-width="2.8" stroke-linejoin="round"/><path d="M47.69 37.00 L47.34 38.74 L46.81 40.41 L46.15 42.02 L45.39 43.56 L44.56 45.05 L43.66 46.48 L42.67 47.86 L41.59 49.17 L40.39 50.39 L39.07 51.49 L37.63 52.45 L36.09 53.26 L34.47 53.90 L32.81 54.40 L31.12 54.78 L29.42 55.06 L27.72 55.28 L26.00 55.44 L24.25 55.55 L22.47 55.59 L20.66 55.52 L18.84 55.29 L17.05 54.86 L15.32 54.20 L13.72 53.30 L12.30 52.18 L11.08 50.88 L10.07 49.43 L9.26 47.90 L8.61 46.33 L8.08 44.77 L7.61 43.22 L7.18 41.69 L6.75 40.16 L6.35 38.60 L6.00 37.00 L5.74 35.35 L5.65 33.66 L5.75 31.96 L6.10 30.26 L6.69 28.63 L7.52 27.08 L8.55 25.64 L9.76 24.32 L11.09 23.13 L12.52 22.06 L14.01 21.08 L15.57 20.20 L17.19 19.43 L18.87 18.78 L20.61 18.28 L22.39 17.96 L24.20 17.85 L26.00 17.95 L27.76 18.27 L29.46 18.77 L31.06 19.42 L32.59 20.17 L34.04 20.96 L35.46 21.77 L36.87 22.57 L38.30 23.37 L39.76 24.21 L41.24 25.11 L42.70 26.13 L44.09 27.29 L45.33 28.62 L46.37 30.10 L47.14 31.73 L47.62 33.46 L47.79 35.23Z" stroke="#EAD9BC" stroke-width="2.8" stroke-linejoin="round"/><path d="M54.76 37.00 L54.44 39.31 L54.01 41.59 L53.45 43.84 L52.74 46.05 L51.84 48.21 L50.72 50.27 L49.37 52.22 L47.79 54.00 L46.01 55.61 L44.07 57.02 L42.01 58.26 L39.88 59.36 L37.70 60.34 L35.49 61.24 L33.23 62.08 L30.90 62.83 L28.49 63.47 L26.00 63.94 L23.44 64.16 L20.87 64.08 L18.32 63.65 L15.88 62.85 L13.61 61.71 L11.55 60.28 L9.71 58.63 L8.09 56.85 L6.65 55.00 L5.32 53.14 L4.05 51.29 L2.80 49.46 L1.55 47.60 L0.32 45.69 L-0.84 43.69 L-1.87 41.57 L-2.68 39.33 L-3.20 37.00 L-3.39 34.61 L-3.22 32.21 L-2.71 29.85 L-1.89 27.56 L-0.81 25.37 L0.48 23.30 L1.93 21.33 L3.53 19.47 L5.27 17.72 L7.14 16.10 L9.17 14.65 L11.35 13.41 L13.68 12.42 L16.11 11.73 L18.61 11.34 L21.12 11.26 L23.60 11.44 L26.00 11.82 L28.32 12.33 L30.57 12.89 L32.78 13.47 L34.99 14.03 L37.24 14.59 L39.54 15.19 L41.88 15.90 L44.23 16.79 L46.52 17.92 L48.65 19.33 L50.54 21.02 L52.12 22.98 L53.34 25.14 L54.20 27.45 L54.72 29.84 L54.95 32.25 L54.94 34.65Z" stroke="#E0532F" stroke-width="3.6" stroke-linejoin="round"/><path d="M62.82 37.00 L62.82 40.00 L62.53 42.99 L61.91 45.95 L60.94 48.83 L59.61 51.58 L57.97 54.17 L56.07 56.58 L53.97 58.82 L51.73 60.93 L49.39 62.92 L46.95 64.83 L44.41 66.66 L41.74 68.38 L38.90 69.95 L35.87 71.27 L32.69 72.26 L29.37 72.83 L26.00 72.91 L22.66 72.50 L19.44 71.62 L16.39 70.34 L13.57 68.77 L10.95 67.01 L8.51 65.17 L6.19 63.31 L3.91 61.48 L1.64 59.65 L-0.65 57.79 L-2.93 55.84 L-5.15 53.72 L-7.21 51.40 L-9.02 48.86 L-10.50 46.09 L-11.57 43.16 L-12.21 40.11 L-12.43 37.00 L-12.26 33.89 L-11.77 30.81 L-10.99 27.78 L-9.98 24.82 L-8.73 21.94 L-7.25 19.14 L-5.51 16.48 L-3.49 13.99 L-1.16 11.74 L1.45 9.79 L4.32 8.21 L7.38 7.00 L10.54 6.17 L13.74 5.67 L16.90 5.41 L19.99 5.31 L23.02 5.28 L26.00 5.25 L28.99 5.21 L32.04 5.17 L35.16 5.20 L38.37 5.38 L41.63 5.83 L44.86 6.63 L47.96 7.84 L50.84 9.47 L53.40 11.52 L55.60 13.90 L57.42 16.54 L58.88 19.35 L60.03 22.24 L60.93 25.18 L61.64 28.12 L62.19 31.07 L62.59 34.02Z" stroke="#EAD9BC" stroke-width="2.8" stroke-linejoin="round"/><path d="M72.60 37.00 L72.45 40.78 L71.84 44.52 L70.81 48.17 L69.42 51.70 L67.76 55.11 L65.89 58.42 L63.86 61.65 L61.66 64.83 L59.26 67.93 L56.61 70.93 L53.66 73.74 L50.36 76.25 L46.72 78.33 L42.78 79.89 L38.63 80.83 L34.37 81.15 L30.13 80.88 L26.00 80.10 L22.05 78.95 L18.31 77.58 L14.74 76.10 L11.28 74.61 L7.87 73.15 L4.46 71.70 L1.01 70.19 L-2.45 68.54 L-5.87 66.64 L-9.15 64.43 L-12.17 61.86 L-14.85 58.93 L-17.10 55.69 L-18.89 52.20 L-20.24 48.52 L-21.16 44.73 L-21.72 40.88 L-21.96 37.00 L-21.90 33.10 L-21.53 29.21 L-20.82 25.33 L-19.70 21.53 L-18.13 17.86 L-16.08 14.41 L-13.53 11.26 L-10.55 8.48 L-7.21 6.12 L-3.63 4.16 L0.08 2.58 L3.82 1.27 L7.52 0.14 L11.17 -0.90 L14.78 -1.94 L18.42 -2.99 L22.14 -4.02 L26.00 -4.93 L30.01 -5.62 L34.14 -5.94 L38.32 -5.78 L42.46 -5.05 L46.43 -3.74 L50.13 -1.87 L53.50 0.47 L56.51 3.18 L59.18 6.14 L61.54 9.26 L63.67 12.47 L65.62 15.73 L67.40 19.05 L69.02 22.44 L70.42 25.93 L71.53 29.53 L72.28 33.23Z" stroke="#EAD9BC" stroke-width="2.8" stroke-linejoin="round"/></g>
+      <circle cx="26" cy="37" r="2.6" fill="#EAD9BC"/>
+    </symbol>
+    <symbol id="fm-rings" viewBox="0 0 64 64">
+      <g fill="none"><path d="M32.61 37.00 L32.73 37.55 L32.78 38.11 L32.73 38.68 L32.59 39.23 L32.35 39.75 L32.02 40.23 L31.63 40.66 L31.18 41.04 L30.69 41.37 L30.20 41.65 L29.69 41.90 L29.18 42.13 L28.67 42.33 L28.16 42.51 L27.63 42.66 L27.09 42.77 L26.55 42.84 L26.00 42.85 L25.45 42.81 L24.91 42.73 L24.39 42.60 L23.88 42.43 L23.37 42.24 L22.88 42.03 L22.39 41.80 L21.89 41.55 L21.40 41.27 L20.93 40.96 L20.48 40.59 L20.08 40.18 L19.75 39.71 L19.49 39.20 L19.33 38.66 L19.27 38.10 L19.29 37.55 L19.39 37.00 L19.54 36.47 L19.72 35.97 L19.93 35.49 L20.13 35.01 L20.34 34.55 L20.57 34.08 L20.81 33.62 L21.08 33.16 L21.40 32.72 L21.78 32.32 L22.20 31.95 L22.68 31.65 L23.19 31.40 L23.74 31.22 L24.30 31.09 L24.86 31.01 L25.43 30.97 L26.00 30.97 L26.57 30.99 L27.13 31.05 L27.69 31.15 L28.23 31.29 L28.76 31.49 L29.26 31.74 L29.72 32.05 L30.14 32.42 L30.50 32.82 L30.81 33.25 L31.08 33.69 L31.33 34.14 L31.56 34.59 L31.78 35.04 L32.01 35.50 L32.23 35.98 L32.43 36.48Z" stroke="#1F3A2E" stroke-width="2.8" stroke-linejoin="round"/><path d="M39.95 37.00 L39.96 38.14 L39.77 39.26 L39.40 40.34 L38.87 41.36 L38.23 42.30 L37.50 43.18 L36.72 43.98 L35.91 44.74 L35.08 45.45 L34.22 46.11 L33.32 46.72 L32.38 47.27 L31.39 47.75 L30.35 48.12 L29.28 48.39 L28.19 48.55 L27.09 48.62 L26.00 48.60 L24.92 48.51 L23.84 48.38 L22.77 48.22 L21.69 48.02 L20.60 47.78 L19.50 47.47 L18.41 47.08 L17.36 46.57 L16.39 45.94 L15.52 45.18 L14.79 44.30 L14.22 43.32 L13.82 42.28 L13.57 41.21 L13.45 40.13 L13.43 39.06 L13.46 38.02 L13.51 37.00 L13.58 35.99 L13.67 34.98 L13.78 33.96 L13.96 32.92 L14.21 31.89 L14.58 30.87 L15.09 29.89 L15.73 28.98 L16.50 28.16 L17.38 27.44 L18.34 26.83 L19.37 26.31 L20.43 25.89 L21.51 25.53 L22.61 25.25 L23.73 25.03 L24.86 24.88 L26.00 24.83 L27.14 24.87 L28.27 25.04 L29.36 25.33 L30.40 25.75 L31.37 26.28 L32.27 26.90 L33.09 27.59 L33.85 28.30 L34.57 29.03 L35.28 29.76 L35.99 30.49 L36.72 31.24 L37.45 32.04 L38.15 32.89 L38.80 33.81 L39.34 34.81 L39.74 35.88Z" stroke="#1F3A2E" stroke-width="2.8" stroke-linejoin="round"/><path d="M47.69 37.00 L47.34 38.74 L46.81 40.41 L46.15 42.02 L45.39 43.56 L44.56 45.05 L43.66 46.48 L42.67 47.86 L41.59 49.17 L40.39 50.39 L39.07 51.49 L37.63 52.45 L36.09 53.26 L34.47 53.90 L32.81 54.40 L31.12 54.78 L29.42 55.06 L27.72 55.28 L26.00 55.44 L24.25 55.55 L22.47 55.59 L20.66 55.52 L18.84 55.29 L17.05 54.86 L15.32 54.20 L13.72 53.30 L12.30 52.18 L11.08 50.88 L10.07 49.43 L9.26 47.90 L8.61 46.33 L8.08 44.77 L7.61 43.22 L7.18 41.69 L6.75 40.16 L6.35 38.60 L6.00 37.00 L5.74 35.35 L5.65 33.66 L5.75 31.96 L6.10 30.26 L6.69 28.63 L7.52 27.08 L8.55 25.64 L9.76 24.32 L11.09 23.13 L12.52 22.06 L14.01 21.08 L15.57 20.20 L17.19 19.43 L18.87 18.78 L20.61 18.28 L22.39 17.96 L24.20 17.85 L26.00 17.95 L27.76 18.27 L29.46 18.77 L31.06 19.42 L32.59 20.17 L34.04 20.96 L35.46 21.77 L36.87 22.57 L38.30 23.37 L39.76 24.21 L41.24 25.11 L42.70 26.13 L44.09 27.29 L45.33 28.62 L46.37 30.10 L47.14 31.73 L47.62 33.46 L47.79 35.23Z" stroke="#1F3A2E" stroke-width="2.8" stroke-linejoin="round"/><path d="M54.76 37.00 L54.44 39.31 L54.01 41.59 L53.45 43.84 L52.74 46.05 L51.84 48.21 L50.72 50.27 L49.37 52.22 L47.79 54.00 L46.01 55.61 L44.07 57.02 L42.01 58.26 L39.88 59.36 L37.70 60.34 L35.49 61.24 L33.23 62.08 L30.90 62.83 L28.49 63.47 L26.00 63.94 L23.44 64.16 L20.87 64.08 L18.32 63.65 L15.88 62.85 L13.61 61.71 L11.55 60.28 L9.71 58.63 L8.09 56.85 L6.65 55.00 L5.32 53.14 L4.05 51.29 L2.80 49.46 L1.55 47.60 L0.32 45.69 L-0.84 43.69 L-1.87 41.57 L-2.68 39.33 L-3.20 37.00 L-3.39 34.61 L-3.22 32.21 L-2.71 29.85 L-1.89 27.56 L-0.81 25.37 L0.48 23.30 L1.93 21.33 L3.53 19.47 L5.27 17.72 L7.14 16.10 L9.17 14.65 L11.35 13.41 L13.68 12.42 L16.11 11.73 L18.61 11.34 L21.12 11.26 L23.60 11.44 L26.00 11.82 L28.32 12.33 L30.57 12.89 L32.78 13.47 L34.99 14.03 L37.24 14.59 L39.54 15.19 L41.88 15.90 L44.23 16.79 L46.52 17.92 L48.65 19.33 L50.54 21.02 L52.12 22.98 L53.34 25.14 L54.20 27.45 L54.72 29.84 L54.95 32.25 L54.94 34.65Z" stroke="#E0532F" stroke-width="3.6" stroke-linejoin="round"/><path d="M62.82 37.00 L62.82 40.00 L62.53 42.99 L61.91 45.95 L60.94 48.83 L59.61 51.58 L57.97 54.17 L56.07 56.58 L53.97 58.82 L51.73 60.93 L49.39 62.92 L46.95 64.83 L44.41 66.66 L41.74 68.38 L38.90 69.95 L35.87 71.27 L32.69 72.26 L29.37 72.83 L26.00 72.91 L22.66 72.50 L19.44 71.62 L16.39 70.34 L13.57 68.77 L10.95 67.01 L8.51 65.17 L6.19 63.31 L3.91 61.48 L1.64 59.65 L-0.65 57.79 L-2.93 55.84 L-5.15 53.72 L-7.21 51.40 L-9.02 48.86 L-10.50 46.09 L-11.57 43.16 L-12.21 40.11 L-12.43 37.00 L-12.26 33.89 L-11.77 30.81 L-10.99 27.78 L-9.98 24.82 L-8.73 21.94 L-7.25 19.14 L-5.51 16.48 L-3.49 13.99 L-1.16 11.74 L1.45 9.79 L4.32 8.21 L7.38 7.00 L10.54 6.17 L13.74 5.67 L16.90 5.41 L19.99 5.31 L23.02 5.28 L26.00 5.25 L28.99 5.21 L32.04 5.17 L35.16 5.20 L38.37 5.38 L41.63 5.83 L44.86 6.63 L47.96 7.84 L50.84 9.47 L53.40 11.52 L55.60 13.90 L57.42 16.54 L58.88 19.35 L60.03 22.24 L60.93 25.18 L61.64 28.12 L62.19 31.07 L62.59 34.02Z" stroke="#1F3A2E" stroke-width="2.8" stroke-linejoin="round"/><path d="M72.60 37.00 L72.45 40.78 L71.84 44.52 L70.81 48.17 L69.42 51.70 L67.76 55.11 L65.89 58.42 L63.86 61.65 L61.66 64.83 L59.26 67.93 L56.61 70.93 L53.66 73.74 L50.36 76.25 L46.72 78.33 L42.78 79.89 L38.63 80.83 L34.37 81.15 L30.13 80.88 L26.00 80.10 L22.05 78.95 L18.31 77.58 L14.74 76.10 L11.28 74.61 L7.87 73.15 L4.46 71.70 L1.01 70.19 L-2.45 68.54 L-5.87 66.64 L-9.15 64.43 L-12.17 61.86 L-14.85 58.93 L-17.10 55.69 L-18.89 52.20 L-20.24 48.52 L-21.16 44.73 L-21.72 40.88 L-21.96 37.00 L-21.90 33.10 L-21.53 29.21 L-20.82 25.33 L-19.70 21.53 L-18.13 17.86 L-16.08 14.41 L-13.53 11.26 L-10.55 8.48 L-7.21 6.12 L-3.63 4.16 L0.08 2.58 L3.82 1.27 L7.52 0.14 L11.17 -0.90 L14.78 -1.94 L18.42 -2.99 L22.14 -4.02 L26.00 -4.93 L30.01 -5.62 L34.14 -5.94 L38.32 -5.78 L42.46 -5.05 L46.43 -3.74 L50.13 -1.87 L53.50 0.47 L56.51 3.18 L59.18 6.14 L61.54 9.26 L63.67 12.47 L65.62 15.73 L67.40 19.05 L69.02 22.44 L70.42 25.93 L71.53 29.53 L72.28 33.23Z" stroke="#1F3A2E" stroke-width="2.8" stroke-linejoin="round"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Foremind"><svg><use href="#fm-mark"/></svg><span>Foremind</span></a>
+    <nav aria-label="Sektioner">
+      <a class="nl" href="#saadan">Sådan virker det</a>
+      <a class="nl" href="#priser">Priser</a>
+      <a class="btn btn-primary" href="#kontakt">Book en snak</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <svg class="rings-bg" aria-hidden="true"><use href="#fm-rings"/></svg>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="kicker">AI til tømrervirksomheder med 3-15 mand</p>
+      <h1 style="margin-top:16px">En formand til papirarbejdet. <em>Så du kan passe træet.</em></h1>
+      <p class="lead">Foremind svarer dine kunder, skriver tilbudsudkast og holder styr på ugen. I jeres egen tone, med jeres egne priser. Du godkender, før noget bliver sendt.</p>
+      <div class="ctas">
+        <a class="btn btn-primary" href="#kontakt">Book 30 minutter</a>
+        <a class="btn btn-ghost" href="#saadan">Se hvordan</a>
+      </div>
+      <p class="fine">Ingen ny software at lære. Bygget på værktøjer, I allerede kender.</p>
+    </div>
+
+    <div class="demo" aria-label="Eksempel på et tilbudsudkast">
+      <div class="demo-head">Ny henvendelse <small>i dag 07:12</small></div>
+      <div class="demo-body">
+        <div class="msg">
+          <p class="who">Fra: Mette, privatkunde</p>
+          <p>Hej, vi vil gerne have ny terrasse i lærk, ca. 24 m², og skiftet to vinduer i stuen. Kan I give et tilbud?</p>
+        </div>
+        <div class="arrow-down">Foremind har lavet et udkast</div>
+        <div class="draft">
+          <div class="row"><b>Terrasse, lærk, 24 m²</b><span>inkl. underkonstruktion</span></div>
+          <div class="row"><b>2 stk. vinduesudskiftning</b><span>besigtigelse foreslået</span></div>
+          <div class="row"><b>Forbehold</b><span>jeres standardtekst</span></div>
+          <div class="total"><span>Udkast klar til gennemsyn</span><strong>Klar</strong></div>
+          <div class="approve"><span>Ret</span><span class="ok">Godkend og send</span></div>
+        </div>
+      </div>
+      <p class="demo-note">Eksempel. Priser og tekster kommer altid fra jeres egen prisliste.</p>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="p"><b>Svar samme dag</b><span>Ingen kunde venter en uge på at høre fra jer.</span></div>
+    <div class="p"><b>Tilbud i arbejdstiden</b><span>Ikke om aftenen ved køkkenbordet.</span></div>
+    <div class="p"><b>Du har sidste ord</b><span>Intet forlader firmaet uden din godkendelse.</span></div>
+  </div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Kender du det?</p>
+      <h2>Du blev tømrer for at bygge. Ikke for at skrive mails kl. 22.</h2>
+    </div>
+    <div class="pains">
+      <div class="pain"><div class="t">22:14</div><h3>Tilbud om aftenen</h3><p>Dagen går med at bygge, så tilbuddene bliver skrevet, når ungerne er lagt i seng. Eller de bliver ikke skrevet.</p></div>
+      <div class="pain"><div class="t">17 ulæste</div><h3>Kunder der venter</h3><p>Mails og sms'er hober sig op. Kunden synes, I er svære at få fat i, og ringer til den næste.</p></div>
+      <div class="pain"><div class="t">06:45</div><h3>Planen i hovedet</h3><p>Svendene ringer for at høre, hvor de skal hen. Ekstraarbejde bliver aftalt mundtligt og glemt ved fakturering.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="saadan" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Pakken</p>
+      <h2>Start med kunderne og tilbuddene. Byg videre derfra.</h2>
+      <p class="lead">Foremind tager det skriftlige arbejde, der stjæler mesters tid. Først kundedialog og tilbud. Næste led er styring af projekter og uger.</p>
+    </div>
+    <div class="modules">
+      <article class="mod live">
+        <span class="tag">Med fra start</span>
+        <span class="num">01</span>
+        <h3>Kunder</h3>
+        <p>Hver henvendelse bliver læst, opsummeret og besvaret i jeres tone. Klar til at sende med ét tryk.</p>
+        <ul>
+          <li>Svarudkast på mails og beskeder</li>
+          <li>Kort resumé af hver ny sag</li>
+          <li>Opfølgning på tilbud uden svar</li>
+          <li>Status til kunden undervejs</li>
+        </ul>
+      </article>
+      <article class="mod live">
+        <span class="tag">Med fra start</span>
+        <span class="num">02</span>
+        <h3>Tilbud</h3>
+        <p>Fra noter og billeder fra besigtigelsen til et færdigt tilbudsudkast med jeres priser og forbehold.</p>
+        <ul>
+          <li>Notat fra besigtigelse</li>
+          <li>Udkast ud fra jeres prisliste</li>
+          <li>Jeres standardforbehold og betingelser</li>
+          <li>Klar sprogbrug, kunden forstår</li>
+        </ul>
+      </article>
+      <article class="mod next">
+        <span class="tag">Næste led</span>
+        <span class="num">03</span>
+        <h3>Projekt</h3>
+        <p>Ugen samlet ét sted: hvem er hvor, hvad mangler, og hvad er aftalt undervejs.</p>
+        <ul>
+          <li>Dagsplan til svendene</li>
+          <li>Log over ekstraarbejde</li>
+          <li>Materialer og bestillinger</li>
+          <li>Fakturagrundlag ved aflevering</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block usp on-dark">
+  <div class="wrap usp-grid">
+    <div>
+      <p class="kicker">Hvorfor det virker</p>
+      <h2>Skræddersyet til jer. Bygget på standard.</h2>
+      <p class="lead" style="margin-top:20px">De fleste tømrerfirmaer arbejder i samme grove rytme: henvendelse, besigtigelse, tilbud, udførelse, aflevering. Den proces har vi finpudset én gang. Hos jer fylder vi den med jeres priser, jeres tekster og jeres måde at tale med kunder på.</p>
+      <div class="rules">
+        <div><i>01</i><p><b>Ingen specialsoftware.</b> Vi bygger på standardværktøjer og færdige integrationer. Intet hjemmelavet, der går i stykker.</p></div>
+        <div><i>02</i><p><b>I ejer jeres data.</b> Kontoen står i jeres navn. Stopper I, tager I det hele med.</p></div>
+        <div><i>03</i><p><b>Det bliver bedre af sig selv.</b> Når vi forbedrer kernen, får alle kunder forbedringen.</p></div>
+      </div>
+    </div>
+    <div class="layers" aria-label="Sådan er løsningen bygget">
+      <div class="layer you"><span class="pct">Jeres</span><div><b>Det kunden mærker</b><span>Jeres priser, tone, forbehold, navne og medarbejdere</span></div></div>
+      <div class="layer core"><span class="pct">80%</span><div><b>Den gennemprøvede kerne</b><span>Proces, skabeloner og AI-assistenter, finpudset på tværs af firmaer</span></div></div>
+      <div class="layer"><span class="pct">Std.</span><div><b>Værktøjer I kender</b><span>Mail, kalender, dokumenter og jeres fagsystem, hvor der findes en integration</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Ordentligt arbejde</p>
+      <h2>God mod kunden. God mod materialet. God mod dig selv.</h2>
+      <p class="lead">Foremind er bygget til håndværkere, der står ved deres arbejde. AI'en skal ikke gøre jer hurtigere på bekostning af kvaliteten. Den skal give jer tid til at lave det ordentligt.</p>
+    </div>
+    <div class="values">
+      <div class="val"><p class="sub">Kunden</p><h3>Ærlige tilbud</h3><p>Klare priser, tydelige forbehold og svar i et sprog, kunden forstår. Det er sådan, man får anbefalinger.</p></div>
+      <div class="val"><p class="sub">Materialet</p><h3>Rigtige mængder</h3><p>Tilbud og bestillinger bygger på jeres egne erfaringstal. Det rigtige materiale til opgaven, beskrevet og dokumenteret.</p></div>
+      <div class="val"><p class="sub">Dig selv</p><h3>Fri om aftenen</h3><p>Papirarbejdet bliver gjort i arbejdstiden. Weekenden er til familien, ikke til tilbudsskabeloner.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Forløbet</p>
+      <h2>I gang på cirka fire uger.</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><p class="when">Uge 1</p><h3>Værkstedssnak</h3><p>To til tre timer hos jer. Vi gennemgår, hvordan en sag kører fra første opkald til faktura.</p></div>
+      <div class="step"><p class="when">Uge 1-2</p><h3>I sender jeres viden</h3><p>Prisliste, standardtekster, et par gode tilbud og typiske kundemails. Efter en enkel tjekliste.</p></div>
+      <div class="step"><p class="when">Uge 3</p><h3>Vi sætter op</h3><p>Konto, assistenter og forbindelser til mail og kalender. I skal ikke installere noget.</p></div>
+      <div class="step"><p class="when">Uge 4</p><h3>Oplæring på rigtige sager</h3><p>Vi prøver det sammen på jeres egne opgaver. Derefter holder vi øje med det hver måned.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="priser" style="padding-top:0">
+  <div class="wrap">
+    <div class="head">
+      <p class="kicker">Priser</p>
+      <h2>Fast pris. Ingen timer, der løber.</h2>
+    </div>
+    <div class="prices">
+      <div class="price">
+        <p class="name">Opstart</p>
+        <p class="amt">18.000 kr.</p>
+        <p class="per">engangsbeløb, ekskl. moms</p>
+        <ul><li>Værkstedssnak hos jer</li><li>Opsætning af Kunder og Tilbud</li><li>Oplæring på rigtige sager</li><li>Fast pris, uanset hvad</li></ul>
+      </div>
+      <div class="price">
+        <p class="name">Drift Basis</p>
+        <p class="amt">1.900 kr.</p>
+        <p class="per">pr. måned, ekskl. moms</p>
+        <ul><li>Op til 5 brugere</li><li>Månedligt tjek af kvaliteten</li><li>Nye forbedringer automatisk</li><li>Support på mail</li></ul>
+      </div>
+      <div class="price feat">
+        <p class="name">Drift Plus</p>
+        <p class="amt">3.500 kr.</p>
+        <p class="per">pr. måned, ekskl. moms</p>
+        <ul><li>Op til 15 brugere</li><li>Forbedringsmøde hvert kvartal</li><li>Først i køen til Projekt-modulet</li><li>Prioriteret support</li></ul>
+      </div>
+    </div>
+    <p class="price-note">AI-licenserne står i jeres eget navn og betales direkte til udbyderen. Så ejer I kontoen og jeres data, og vi tjener ikke på at videresælge licenser.</p>
+  </div>
+</section>
+
+<section class="block" style="padding-top:0">
+  <div class="wrap">
+    <div class="head"><p class="kicker">Spørgsmål</p><h2>Det, folk plejer at spørge om.</h2></div>
+    <div class="faq">
+      <details><summary>Skal vi skifte vores system ud?</summary><p>Nej. Foremind lægger sig oven på det, I bruger i dag: mail, kalender og jeres fagsystem. Hvor der findes en færdig integration, kobler vi det på. Hvor der ikke gør, arbejder I som nu.</p></details>
+      <details><summary>Hvad hvis AI'en tager fejl?</summary><p>Derfor sendes intet automatisk. Alt, der skal ud af huset, er et udkast, som en af jer læser og godkender. Udkastene bygger på jeres egne priser og tekster, ikke på gætværk.</p></details>
+      <details><summary>Hvad med vores data?</summary><p>Kontoen står i jeres navn, og I bestemmer, hvad den har adgang til. Vi indgår en databehandleraftale, hvor det er relevant, og I kan altid tage jeres data med.</p></details>
+      <details><summary>Er det ikke bare ChatGPT?</summary><p>Værktøjerne er standard, og det er en fordel. Forskellen er metoden: en gennemprøvet proces for tømrerfirmaer, jeres firmaviden lagt ind, oplæring af folkene og løbende forbedringer. Det er det, der får det til at virke i hverdagen.</p></details>
+      <details><summary>Hvor lang er bindingen?</summary><p>Abonnementet løber måned for måned med en måneds opsigelse. Vi skal gerne fortjene, at I bliver.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="final" id="kontakt">
+  <div class="wrap">
+    <div>
+      <h2>Lad os tage en snak over en kop kaffe.</h2>
+      <p>30 minutter, hvor vi kigger på, hvordan jeres tilbud og kundedialog kører i dag, og hvor meget tid der er at hente. Uforpligtende.</p>
+    </div>
+    <div class="side">
+      <a class="btn" href="https://www.linkedin.com/in/anders-norgaard-carlsen" target="_blank" rel="noopener">Skriv til Anders</a>
+      <small>Åbner LinkedIn i en ny fane.</small>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Foremind, til toppen"><svg><use href="#fm-mark"/></svg><span>Foremind</span></a>
+    <span>AI til tømrere, der står ved deres arbejde.</span>
+  </div>
+</footer>
+</body>
+</html>
