@@ -1,7 +1,7 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-18T16:53',
+  updated: '2026-11-19T09:53',
   updatedNote: 'MUFF Byg bekræfter, at de byder. Dermed tre bydende: CPH Wood, MUFF Byg og Adamson Byg. Besigtigelsen 16/11 er holdt. Estimatet er uændret.',
   frame: 1700000,
 
