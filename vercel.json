@@ -27,5 +27,11 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/CLAUDE.md",
+      "destination": "/__not_found"
+    }
   ]
 }
