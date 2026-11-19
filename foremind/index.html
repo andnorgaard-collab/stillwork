@@ -184,6 +184,7 @@ section.block .head .lead{margin-top:18px}
 .price ul{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px;font-size:15.5px}
 .price li{padding-left:22px;position:relative}
 .price li::before{content:"";position:absolute;left:0;top:9px;width:10px;height:2px;background:var(--pencil)}
+.price-note b{color:var(--ink)}
 .price-note{margin-top:22px;font-size:14.5px;color:var(--ink-2);max-width:56em}
 @media(max-width:900px){.prices{grid-template-columns:1fr}}
 
@@ -206,6 +207,16 @@ section.block .head .lead{margin-top:18px}
 .final .side small{display:block;margin-top:12px;font-size:14px;opacity:.85}
 @media(max-width:860px){.final .wrap{grid-template-columns:1fr}.final .side{justify-self:start;text-align:left}}
 
+
+/* manifest */
+.manifest{background:var(--ink);color:var(--paper);padding:88px 0}
+.manifest .kicker{color:var(--pencil)}
+.manifest ol{list-style:none;margin:22px 0 0;padding:0;counter-reset:m}
+.manifest li{counter-increment:m;display:grid;grid-template-columns:64px 1fr;align-items:baseline;padding:22px 0;border-top:1px solid rgba(244,238,227,.16);font-size:clamp(18px,2vw,21px);color:rgba(244,238,227,.72)}
+.manifest li::before{content:"0" counter(m);font-family:var(--display);font-stretch:75%;font-weight:800;font-size:20px;color:var(--pencil)}
+.manifest li b{display:block;font-family:var(--display);font-stretch:75%;font-weight:800;font-size:clamp(34px,5vw,60px);line-height:1;text-transform:uppercase;color:var(--paper);margin-bottom:8px}
+.manifest .not-for{margin-top:36px;padding-top:28px;border-top:2px solid var(--pencil);font-size:clamp(19px,2.2vw,23px);max-width:36em;color:var(--oak)}
+@media(max-width:560px){.manifest li{grid-template-columns:44px 1fr}.manifest{padding:64px 0}}
 footer{background:var(--ink);color:rgba(244,238,227,.7);font-size:14px}
 footer .wrap{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;padding-top:28px;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
 footer .logo span{color:var(--paper);font-size:22px}
@@ -243,14 +254,14 @@ footer .logo svg{width:30px;height:30px}
   <svg class="rings-bg" aria-hidden="true"><use href="#fm-rings"/></svg>
   <div class="wrap hero-grid">
     <div>
-      <p class="kicker">AI til tømrervirksomheder med 3-15 mand</p>
-      <h1 style="margin-top:16px">En formand til papirarbejdet. <em>Så du kan passe træet.</em></h1>
-      <p class="lead">Foremind svarer dine kunder, skriver tilbudsudkast og holder styr på ugen. I jeres egen tone, med jeres egne priser. Du godkender, før noget bliver sendt.</p>
+      <p class="kicker">For tømrerfirmaer med 3-15 mand, der tager kunder og håndværk seriøst</p>
+      <h1 style="margin-top:16px">Arbejd med træ. <em>Ikke med mails.</em></h1>
+      <p class="lead">Foremind er formanden, der tager papirarbejdet: svarer kunderne, skriver tilbudsudkast og holder styr på ugen. I jeres tone, med jeres priser. Du godkender, før noget bliver sendt.</p>
       <div class="ctas">
         <a class="btn btn-primary" href="#kontakt">Book 30 minutter</a>
         <a class="btn btn-ghost" href="#saadan">Se hvordan</a>
       </div>
-      <p class="fine">Ingen ny software at lære. Bygget på værktøjer, I allerede kender.</p>
+      <p class="fine">Ingen binding. Ingen ny software at lære. Ingen timer, der løber.</p>
     </div>
 
     <div class="demo" aria-label="Eksempel på et tilbudsudkast">
@@ -276,9 +287,9 @@ footer .logo svg{width:30px;height:30px}
 
 <div class="strip">
   <div class="wrap">
-    <div class="p"><b>Svar samme dag</b><span>Ingen kunde venter en uge på at høre fra jer.</span></div>
-    <div class="p"><b>Tilbud i arbejdstiden</b><span>Ikke om aftenen ved køkkenbordet.</span></div>
-    <div class="p"><b>Du har sidste ord</b><span>Intet forlader firmaet uden din godkendelse.</span></div>
+    <div class="p"><b>Ingen kunde venter en uge</b><span>Svar samme dag, i jeres tone.</span></div>
+    <div class="p"><b>Ingen tilbud ved køkkenbordet</b><span>De bliver skrevet i arbejdstiden.</span></div>
+    <div class="p"><b>Intet sendes uden dit ja</b><span>Du har altid sidste ord.</span></div>
   </div>
 </div>
 
@@ -296,7 +307,20 @@ footer .logo svg{width:30px;height:30px}
   </div>
 </section>
 
-<section class="block" id="saadan" style="padding-top:0">
+<section class="manifest" aria-label="Det står vi ved">
+  <div class="wrap">
+    <p class="kicker">Det står vi ved</p>
+    <ol>
+      <li><div><b>Vi binder dig ikke.</b>Vi skal gerne fortjene, at du bliver. Hver måned.</div></li>
+      <li><div><b>Vi sælger ikke timer.</b>Vi sælger tid tilbage til værkstedet.</div></li>
+      <li><div><b>Vi rører ikke dit håndværk.</b>Vi rydder dit skrivebord.</div></li>
+      <li><div><b>Ingen maskine taler i dit navn.</b>Ikke uden at du har læst med først.</div></li>
+    </ol>
+    <p class="not-for">Foremind er ikke for alle. Det er for firmaer, der svarer ordentligt, regner ærligt og står ved deres arbejde. Hvis det er jer, så snakker vi gerne.</p>
+  </div>
+</section>
+
+<section class="block" id="saadan">
   <div class="wrap">
     <div class="head">
       <p class="kicker">Pakken</p>
@@ -398,14 +422,14 @@ footer .logo svg{width:30px;height:30px}
   <div class="wrap">
     <div class="head">
       <p class="kicker">Priser</p>
-      <h2>Fast pris. Ingen timer, der løber.</h2>
+      <h2>Fast pris. Ingen binding. Ingen timer, der løber.</h2>
     </div>
     <div class="prices">
       <div class="price">
         <p class="name">Opstart</p>
         <p class="amt">18.000 kr.</p>
         <p class="per">engangsbeløb, ekskl. moms</p>
-        <ul><li>Værkstedssnak hos jer</li><li>Opsætning af Kunder og Tilbud</li><li>Oplæring på rigtige sager</li><li>Fast pris, uanset hvad</li></ul>
+        <ul><li>Værkstedssnak hos jer</li><li>Opsætning af Kunder og Tilbud</li><li>Oplæring på rigtige sager</li><li>Fast pris. Bliver det mere arbejde, er det vores problem</li></ul>
       </div>
       <div class="price">
         <p class="name">Drift Basis</p>
@@ -420,7 +444,7 @@ footer .logo svg{width:30px;height:30px}
         <ul><li>Op til 15 brugere</li><li>Forbedringsmøde hvert kvartal</li><li>Først i køen til Projekt-modulet</li><li>Prioriteret support</li></ul>
       </div>
     </div>
-    <p class="price-note">AI-licenserne står i jeres eget navn og betales direkte til udbyderen. Så ejer I kontoen og jeres data, og vi tjener ikke på at videresælge licenser.</p>
+    <p class="price-note"><b>Abonnementet kan opsiges med en måneds varsel.</b> Vi skal gerne fortjene, at I bliver. AI-licenserne står i jeres eget navn og betales direkte til udbyderen. Så ejer I kontoen og jeres data, og vi tjener ikke på at videresælge licenser.</p>
   </div>
 </section>
 
@@ -432,7 +456,7 @@ footer .logo svg{width:30px;height:30px}
       <details><summary>Hvad hvis AI'en tager fejl?</summary><p>Derfor sendes intet automatisk. Alt, der skal ud af huset, er et udkast, som en af jer læser og godkender. Udkastene bygger på jeres egne priser og tekster, ikke på gætværk.</p></details>
       <details><summary>Hvad med vores data?</summary><p>Kontoen står i jeres navn, og I bestemmer, hvad den har adgang til. Vi indgår en databehandleraftale, hvor det er relevant, og I kan altid tage jeres data med.</p></details>
       <details><summary>Er det ikke bare ChatGPT?</summary><p>Værktøjerne er standard, og det er en fordel. Forskellen er metoden: en gennemprøvet proces for tømrerfirmaer, jeres firmaviden lagt ind, oplæring af folkene og løbende forbedringer. Det er det, der får det til at virke i hverdagen.</p></details>
-      <details><summary>Hvor lang er bindingen?</summary><p>Abonnementet løber måned for måned med en måneds opsigelse. Vi skal gerne fortjene, at I bliver.</p></details>
+      <details><summary>Hvor lang er bindingen?</summary><p>Der er ingen. Abonnementet løber måned for måned med en måneds opsigelse. Kan vi ikke spare jer for mere tid, end vi koster, skal I ikke betale for os.</p></details>
     </div>
   </div>
 </section>
@@ -440,8 +464,8 @@ footer .logo svg{width:30px;height:30px}
 <section class="final" id="kontakt">
   <div class="wrap">
     <div>
-      <h2>Lad os tage en snak over en kop kaffe.</h2>
-      <p>30 minutter, hvor vi kigger på, hvordan jeres tilbud og kundedialog kører i dag, og hvor meget tid der er at hente. Uforpligtende.</p>
+      <h2>Mindre skrivebord. Mere værksted.</h2>
+      <p>30 minutter over en kop kaffe. Vi kigger på, hvordan jeres tilbud og kundedialog kører i dag, og hvor meget tid der er at hente. Er der ikke noget at hente, siger vi det.</p>
     </div>
     <div class="side">
       <a class="btn" href="https://www.linkedin.com/in/anders-norgaard-carlsen" target="_blank" rel="noopener">Skriv til Anders</a>
@@ -454,7 +478,7 @@ footer .logo svg{width:30px;height:30px}
 <footer>
   <div class="wrap">
     <a class="logo" href="#top" aria-label="Foremind, til toppen"><svg><use href="#fm-mark"/></svg><span>Foremind</span></a>
-    <span>AI til tømrere, der står ved deres arbejde.</span>
+    <span>Arbejd med træ. Ikke med mails.</span>
   </div>
 </footer>
 </body>
