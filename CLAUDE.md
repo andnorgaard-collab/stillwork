@@ -2,9 +2,12 @@
 
 Anders Nørgaard-Carlsens personlige site og hjem for hans små apps og projekter. Siden præsenterer ham som person, ikke som et studie.
 
+Personlige præferencer (sprog, tone, ingen tankestreger) står i Claudes hukommelse og gentages ikke her. Filen her rummer kun det, der gælder for selve repoet.
+
+Claude holder filen opdateret: når en ændring tilføjer, flytter eller fjerner en side, en tabel eller en konvention, opdateres CLAUDE.md i samme commit.
+
 ## Sådan arbejder vi
-- Anders skriver på dansk og arbejder fra iPhone og iPad, uden PC. Svar på dansk, kort, og vis resultatet med et mobil-screenshot (ca. 390 px bredt) frem for lange forklaringer.
-- Brug aldrig tankestreger (em-dash) i tekst, hverken på siden, i commits eller i svar.
+- Vis resultatet med et mobil-screenshot (ca. 390 px bredt).
 - Alt arbejde skal ende i repoet. Filer, der kun ligger i arbejdsområdet, er væk, når sessionen slutter. Commit og push til `main`, når en ændring er færdig og tjekket.
 - Vercel bygger og udgiver automatisk ved push til `main` (Hobby-plan). Domæne og DNS ligger hos Simply.com.
 
