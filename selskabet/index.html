@@ -82,6 +82,7 @@ body[data-era="3"] .big{font-size:26px;font-weight:bold}
 body[data-era="3"] .card-tile{background:#fff}
 
 /* ---------- Fælles ---------- */
+#bar[hidden]{display:none}
 #bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--line);font-size:.86em;line-height:1.15}
 #bar .stat{display:flex;flex-direction:column;min-width:0}
 #bar .stat span{color:var(--dim);font-size:.8em;white-space:nowrap}
@@ -175,8 +176,8 @@ body[data-era="1"] #modal .win{background:var(--bg)}
 <main id="app"></main>
 <div id="modal" hidden></div>
 <noscript><p style="padding:20px">Spillet kræver JavaScript.</p></noscript>
-<script src="engine.js"></script>
-<script src="content.js"></script>
-<script src="ui.js"></script>
+<script src="/selskabet/engine.js"></script>
+<script src="/selskabet/content.js"></script>
+<script src="/selskabet/ui.js"></script>
 </body>
 </html>
