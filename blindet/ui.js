@@ -1,7 +1,7 @@
 // Blindet: skærmbillederne. Al spillogik ligger i engine.js.
 (() => {
   'use strict';
-  const E = window.Engine, CARDS = window.CARDS, KEY = 'blindet.v1';
+  const E = window.Engine, CARDS = window.CARDS, KEY = 'blindet.v2';
   const app = document.getElementById('app'), bar = document.getElementById('bar'), modal = document.getElementById('modal');
   let S = null;
 
@@ -14,7 +14,7 @@
     'Vendor': ['PM', '#495057', 'Vendor Project Manager'], 'System': ['K', '#3b5bdb', ''],
     'Dr. Weber': ['DW', '#2b8a3e', 'Investigator · site 205'], 'Dr. Tanaka': ['DT', '#2b8a3e', 'Investigator · site 602'],
     'Dr. Ortega': ['DO', '#2b8a3e', 'Investigator · site 304'],
-    'CRA, Spanien': ['CR', '#5c940d', 'CRA · blinded'], 'You': ['YOU', '#212529', '']
+    'CRA, Spain': ['CR', '#5c940d', 'CRA · blinded'], 'You': ['YOU', '#212529', '']
   };
   const av = who => { const p = P[who] || ['?', '#868e96']; return `<span class="av" style="background:${p[1]}">${p[0]}</span>`; };
   const quote = (who, text) => `<div class="quote">${av(who)}<div class="q"><span class="n">${esc(who)}${P[who] && P[who][2] ? ' · ' + P[who][2] : ''}</span>${text}</div></div>`;
@@ -49,14 +49,14 @@
   // ---------- Forside ----------
   function title() {
     const old = load();
-    app.innerHTML = `<div class="hero"><div class="mark">${MARK}</div><h1>Blindet</h1><p>Et spil om at sætte et klinisk studie op, uden at nogen finder ud af, hvem der får hvad.</p></div>
+    app.innerHTML = `<div class="hero"><div class="mark">${MARK}</div><h1>Blindet</h1><p>A game about setting up a clinical trial without anyone finding out who gets what.</p></div>
       <div class="sys">kestrel rtsm · build 26.11<br>natural-language spec <b>ok</b> · supply engine <b>ok</b> · edc integration <b>ok</b></div>
-      ${card('Welcome', `<p>Nordhavn Pharma har en fase 3-protokol klar, og du er RTSM-lead. Du skriver specifikationen, vælger randomisering og forsyningsstrategi, beslutter hvor meget der skal testes, og går live.</p>
-        <p>Derefter kører studiet i tolv måneder. Sites laver fejl, kølerum svigter, en komité lukker en arm, og nogen vil altid gerne se en rapport, de ikke må se. Til sidst brydes koden, og en inspektør læser din audit trail.</p>
+      ${card('Welcome', `<p>Nordhavn Pharma has a phase 3 protocol ready, and you are the RTSM lead. You write the specification, choose the randomization and supply strategy, decide how much to test, and go live.</p>
+        <p>Then the study runs for twelve months. Sites make mistakes, fridges fail, a committee closes an arm, and someone always wants a report they are not allowed to see. At the end the codes are broken, and an inspector reads your audit trail.</p>
         <div class="lbl">Your name</div><input type="text" id="pname" maxlength="24" autocomplete="off" placeholder="RTSM Lead">
         <button class="btn primary" data-act="start">Open protocol</button>
         ${old ? `<button class="btn" data-act="resume">Resume ${old.phase === 'month' ? 'month ' + old.month : old.phase === 'end' ? 'results' : 'setup'}</button>` : ''}`)}
-      <p class="foot">Inspireret af moderne RTSM-platforme. Firma, studie, lægemiddel og personer er opdigtede.</p>`;
+      <p class="foot">Inspired by modern RTSM platforms. Company, study, drug and people are fictional.</p>`;
   }
 
   // ---------- Opsætning ----------
@@ -72,7 +72,7 @@
     const c = S.cfg, f = c.factors;
     let h = stepper(), ok = true;
     if (S.step === 0) {
-      h += `<p class="eyebrow">NHP-2290-3021 · Fase 3</p><h1 class="title">TIDEVAND</h1><p class="lead">Protokollen er landet i din indbakke.</p>`;
+      h += `<p class="eyebrow">NHP-2290-3021 · Fase 3</p><h1 class="title">TIDEVAND</h1><p class="lead">The protocol has landed in your inbox.</p>`;
       h += card('Protocol synopsis', `<table>
         <tr><td class="muted">Design</td><td style="white-space:normal">Double-blind, placebo-controlled</td></tr>
         <tr><td class="muted">Participants</td><td style="white-space:normal">600 at 30 sites in 6 countries</td></tr>
@@ -83,14 +83,14 @@
         <tr><td class="muted">Stratification</td><td style="white-space:normal">Baseline BMI (&lt;35 / ≥35), type 2 diabetes</td></tr>
         <tr><td class="muted">Japan</td><td style="white-space:normal">Local requirements may apply</td></tr>
         <tr><td class="muted">LPFV target</td><td style="white-space:normal">End of month ${E.LPFV_TARGET}</td></tr></table>`);
-      h += quote('Mette', 'Vi har lovet første patient om seks uger. Platformen kan bygges på to, siger leverandøren. Så du har fire til at gøre det rigtigt.');
-      h += quote('Jonas', 'Specifikationen skrives i almindeligt sprog, og systemet bygges direkte ud fra den. Det er hurtigt. Det betyder også, at det, du skriver, er det, der sker.');
+      h += quote('Mette', 'We promised first patient in six weeks. The vendor says the platform builds in two. So you have four to get it right.');
+      h += quote('Jonas', 'The specification is written in plain language, and the system is built straight from it. That’s fast. It also means what you write is what happens.');
     }
     if (S.step === 1) {
       ok = !!c.titr;
       h += `<p class="eyebrow">Step 1 of 5</p><h1 class="title">Titration &amp; blinding</h1>`;
       h += card('', `<p>All participants start on 0.6 mg and move to 1.2 mg in month 2. Only the high-dose arm continues to 2.4 mg in month 3.</p>
-        ${quote('Line', 'Hvis pennene hedder det, de indeholder, kan alle på sitet se, hvem der får lavdosis, fra måned 3. Men hver ekstra kit-type er mere at holde på lager.')}`);
+        ${quote('Line', 'If the pens say what’s in them, everyone at site can see who is on low dose from month 3. But every extra kit type is more to keep in stock.')}`);
       h += card('Pen presentation', [
         opt('titr', 'open', c.titr === 'open', 'Dose-labelled packs', 'Five kit types, simple to supply. Low dose stays on the 1.2 mg pen.'),
         opt('titr', 'blind', c.titr === 'blind', 'Blinded titration', 'Everyone follows steps 1, 2 and 3. The low-dose step 3 pen contains 1.2 mg. Seven kit types.'),
@@ -100,7 +100,7 @@
     if (S.step === 2) {
       ok = !!c.method;
       h += `<p class="eyebrow">Step 2 of 5</p><h1 class="title">Randomization</h1>`;
-      h += card('', quote('Jonas', 'Protokollen siger stratificeret efter BMI og diabetes. Resten er dit valg. Og mit problem, når det går galt.'));
+      h += card('', quote('Jonas', 'The protocol says stratified by BMI and diabetes. The rest is your call. And my problem when it goes wrong.'));
       h += card('Method', [
         opt('method', 'simple', c.method === 'simple', 'Simple randomization', 'Each participant is allocated by chance at 2:2:1. No lists, no strata.'),
         opt('method', 'block', c.method === 'block', 'Stratified permuted blocks', 'One list per stratum. Classic and easy to explain.'),
@@ -119,7 +119,7 @@
     if (S.step === 3) {
       ok = !!c.kitlist;
       h += `<p class="eyebrow">Step 3 of 5</p><h1 class="title">Kit list</h1>`;
-      h += card('', quote('Line', 'Pakkeriet vil gerne have kit 1001 til 2400 som aktiv og 2401 til 3000 som placebo. Så er etiketterne lettere at holde styr på.'));
+      h += card('', quote('Line', 'Packaging would like kits 1001 to 2400 as active and 2401 to 3000 as placebo. Makes the labels easier to keep track of.'));
       h += card('Kit numbering', [
         opt('kitlist', 'seq', c.kitlist === 'seq', 'Sequential ranges per kit type', 'As proposed by packaging. Easy to manage in the warehouse.'),
         opt('kitlist', 'rand', c.kitlist === 'rand', 'Randomized kit list', 'Numbers are shuffled across types. Only the system knows what is in the box.')
@@ -128,7 +128,7 @@
     if (S.step === 4) {
       ok = c.resup && c.dnsd !== null && c.over !== null;
       h += `<p class="eyebrow">Step 4 of 5</p><h1 class="title">Supply strategy</h1>`;
-      h += card('', quote('Line', 'Batch 1 udløber midt i måned 8, og batch 2 er klar fra måned 5. En pakning skal holde 28 dage plus besøgsvinduet på 7. Brasilien og Japan har en måneds leveringstid.'));
+      h += card('', quote('Line', 'Batch 1 expires mid month 8, and batch 2 is available from month 5. A pack must last 28 days plus the 7-day visit window. Brazil and Japan have a one-month lead time.'));
       h += card('Resupply', [
         opt('resup', 'minmax', c.resup === 'minmax', 'Min/max per site', 'Fixed levels based on the plan. Robust, but blind to how the study actually develops.'),
         opt('resup', 'pred', c.resup === 'pred', 'Predictive', 'Forecasts from each participant’s visit schedule and titration, plus expected enrollment.')
@@ -147,7 +147,7 @@
         `<span class="tag ${L.some(l => l.sev === 'bad') ? 'bad' : L.some(l => l.sev === 'warn') ? 'warn' : 'ok'}">${L.filter(l => l.sev !== 'ok').length} findings</span>`);
       h += card('UAT scope', Object.entries(E.UAT).map(([k, u]) =>
         opt('uat', k, c.uat === k, `${u.name} · ${u.days} days`, { happy: 'Main workflows only. First participant can be randomized immediately.', risk: 'Randomization, titration, emergency unblinding and expiry tested in depth. Month 1 gets shorter.', full: 'Every requirement, role and report. Month 1 is mostly gone.' }[k])).join('')
-        + quote('Mette', 'Hver dag i UAT er en dag senere første patient. Bare så du ved det.'));
+        + quote('Mette', 'Every day in UAT is a day later first patient. Just so you know.'));
     }
     app.innerHTML = h + nav(ok);
   }
@@ -157,7 +157,7 @@
     let h = `<p class="eyebrow">UAT complete</p><h1 class="title">${u.n} scripts executed</h1>`;
     h += card('Defects', F.length ? F.map(d => `<div class="alert ${d.crit ? 'bad' : 'warn'}"><span class="dot"></span><div>${esc(d.t)}${d.crit ? ' <span class="tag bad">critical</span>' : ''}<br><span class="muted" style="font-size:13px">Fixed and retested before go-live.</span></div></div>`).join('') : '<p class="muted">No defects found.</p>',
       `<span class="tag ${F.length ? 'warn' : 'ok'}">${F.length} fixed</span>`);
-    h += card('', quote('Vendor', F.length ? 'Godt fanget. Det er præcis derfor, man tester.' : 'Ingen fejl. Det sker.') + quote('Birgitte', 'Fejl, der ikke blev fundet, står ikke på listen. Dem møder vi i produktion.'));
+    h += card('', quote('Vendor', F.length ? 'Good catch. That is exactly why you test.' : 'No defects. It happens.') + quote('Birgitte', 'Defects that weren’t found aren’t on the list. We’ll meet those in production.'));
     h += `<button class="btn primary" data-act="golive">Release to production</button>`;
     app.innerHTML = h;
   }
@@ -198,7 +198,7 @@
     h += card('Supply', `<table><tr><th>Kit type</th><th>Depot</th><th>Sites</th><th>Empty</th></tr>
       ${E.VARIANTS.filter(v => S.cfg.titr !== 'open' || v !== 'S3L').map(v => { const r = D.per[v], low = D.low.includes(v); return `<tr><td>${E.VLABEL[v]}${S.mods.hDrop && v === 'S3H' ? ' <span class="faint">closed</span>' : ''}</td><td class="${low ? 'bad' : ''}">${n(r.central)}</td><td>${n(r.sites)}</td><td>${last ? `<span class="pill ${r.empty === 0 ? 'ok' : r.empty < 4 ? 'warn' : 'bad'}">${r.empty}</span>` : '<span class="faint">shipping</span>'}</td></tr>`; }).join('')}</table>
       <p class="faint" style="font-size:12px;margin-top:8px">Unblinded supply view. Sites and CRAs see kit numbers only.</p>
-      ${D.low.length ? quote('Line', `Depotet er ved at løbe tørt for ${D.low.map(v => E.VLABEL[v]).join(', ')}. En ekstra batch tager tre måneder.`) : ''}
+      ${D.low.length ? quote('Line', `The depot is running low on ${D.low.map(v => E.VLABEL[v]).join(', ')}. An extra batch takes three months.`) : ''}
       <div class="lbl">${S.cfg.resup === 'pred' ? 'Safety stock' : 'Min/max level'}</div>${seg('setbuf', [[1, 'Low'], [2, 'Medium'], [3, 'High']], S.cfg.buf)}
       <button class="btn" data-act="order" ${E.canOrder(S) ? '' : 'disabled'}>${E.canOrder(S) ? 'Order additional production · +15 % · DKK 1.2M' : S.mods.extra.some(e => e.m > m) ? 'Additional production in progress' : 'Too late to order more'}</button>`);
     h += `<button class="btn primary" data-act="run" ${wait ? 'disabled' : ''}>${wait ? 'Resolve open cases to continue' : m === E.MONTHS ? 'Run final month and lock database' : `Run month ${m}`}</button>`;
@@ -233,12 +233,12 @@
     h += card('Unblinded allocation', `<p class="muted" style="font-size:13.5px">Actual (expected by ratio).</p>
       <table><tr><th>Group</th>${arms.map(a => `<th><span class="arm" style="background:${a[2]}"></span>${a[1]}</th>`).join('')}</tr>
       ${Object.entries(B).map(([g, r]) => `<tr><td>${g}</td>${arms.map(a => `<td>${r.n[a[0]]} <span class="faint">(${n(r.e[a[0]])})</span></td>`).join('')}</tr>`).join('')}</table>
-      ${quote('Jonas', R.B.max < .03 ? 'Pænt. Det er sådan, det skal se ud, når ingen har pillet ved noget.' : R.B.max < .06 ? 'Lidt skævt hist og her, men intet, analysen ikke kan bære.' : 'Det her skal forklares i den statistiske rapport. Flere steder.')}`);
+      ${quote('Jonas', R.B.max < .03 ? 'Nice. That’s what it looks like when nobody has tampered with anything.' : R.B.max < .06 ? 'A bit uneven here and there, nothing the analysis can’t carry.' : 'This will need explaining in the statistical report. In several places.')}`);
     h += card('Inspection findings', R.findings.length ? `<ul class="spec lint">${R.findings.slice().sort((a, b) => b.pts - a.pts).map(f => `<li class="${f.breach || f.pts >= 10 ? 'bad' : 'warn'}">${esc(f.why)}${f.m ? ` <span class="faint">· M${f.m}</span>` : ''}${f.breach ? ' <span class="tag bad">blinding</span>' : ''}</li>`).join('')}</ul>` : '<p class="muted">No findings.</p>',
       `<span class="tag ${R.findings.length ? 'warn' : 'ok'}">${R.findings.length}</span>`);
-    h += card('', quote('Birgitte', R.integ >= 90 ? 'Det er en audit trail, man kan læse højt. Tak.' : R.integ >= 70 ? 'Alt kan forklares. Noget af det tog bare lidt længere end nødvendigt.' : 'Jeg har booket et lokale til CAPA-mødet. Hele dagen.')
-      + quote('Mette', S.lpfv && S.lpfv <= E.LPFV_TARGET ? 'Vi ramte tidsplanen. Det har jeg sagt til alle.' : 'Vi blev færdige. Lad os sige det sådan.')
-      + quote('Line', R.costKr < 2.5e6 ? 'Der står næsten intet tilbage at destruere. Det er sjældent.' : 'Jeg har bestilt en container til destruktion. Den er stor.'));
+    h += card('', quote('Birgitte', R.integ >= 90 ? 'That is an audit trail you can read out loud. Thank you.' : R.integ >= 70 ? 'Everything can be explained. Some of it just took longer than necessary.' : 'I’ve booked a room for the CAPA meeting. All day.')
+      + quote('Mette', S.lpfv && S.lpfv <= E.LPFV_TARGET ? 'We hit the timeline. I’ve told everyone.' : 'We finished. Let’s put it that way.')
+      + quote('Line', R.costKr < 2.5e6 ? 'There is almost nothing left to destroy. That is rare.' : 'I’ve ordered a container for destruction. It’s a big one.'));
     h += `<button class="btn primary" data-act="restart">Set up a new study</button><button class="btn" data-act="audit">View audit trail</button>`;
     app.innerHTML = h;
   }

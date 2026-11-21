@@ -34,7 +34,7 @@ Claude holder filen opdateret: når en ændring tilføjer, flytter eller fjerner
 | `/eagles/` | Dragør Eagles' check-in (tirsdag 20:00) | en | Holdets egen side. Tabeller `hoops_*`, SQL i `eagles/setup.sql` |
 | `/talons/` | Offentlig demo-klon af Eagles | en | Det er den, Work linker til. Tabeller `talons_*` |
 | `/selskabet/` | Forsikringsspil i 80'erne, en gave til Melanie | da | Egen stil i tre epoker. Må ikke linkes fra andre sider. `noindex`. Logik i `engine.js`, tekster i `content.js`, skærme i `ui.js`. Gemmer kun i localStorage |
-| `/blindet/` | RTSM-spil om et klinisk studie i et moderne system, til kolleger i Clinical Supplies | da/en | Søster til Selskabet, egen stil med lys og mørk tilstand. Systemets flade (sager, knapper, tabeller, fund, audit trail) er på engelsk; personerne, fortællingen og begrebskortene er på dansk. Må ikke linkes fra andre sider. `noindex`. Logik i `engine.js` (kan køres i Node), begrebskort i `content.js`, skærme i `ui.js`. Gemmer kun i localStorage |
+| `/blindet/` | RTSM-spil om et klinisk studie i et moderne system, til kolleger i Clinical Supplies | en | Søster til Selskabet, egen stil med lys og mørk tilstand. Alt, spilleren ser, er på engelsk. Må ikke linkes fra andre sider. `noindex`. Logik i `engine.js` (kan køres i Node), begrebskort i `content.js`, skærme i `ui.js`. Gemmer kun i localStorage |
 | `/foremind/` | Skjult salgsside for Foremind | da | Må aldrig linkes fra andre sider. `noindex` |
 | `/mellemvangen/` | Privat byggesagsdashboard | da | Login og `noindex`. `data.js` opdateres dagligt af en planlagt opgave |
 
@@ -43,7 +43,7 @@ Claude holder filen opdateret: når en ændring tilføjer, flytter eller fjerner
 - Skrifter: Instrument Serif, Instrument Sans og IBM Plex Mono fra Google Fonts.
 - Wordmarket er det originale serif-wordmark. Håndtegnede versioner er afvist.
 - Sloganet skal stå med "still work" i den rækkefølge: "I like having fun, so I make things that are fun. Every now and then I have to remind myself: this is still work."
-- Stillwork-siderne er på engelsk. Foremind, Mellemvangen og Selskabet er på dansk. Blindet blander: engelsk systemflade, dansk fortælling.
+- Stillwork-siderne og Blindet er på engelsk. Foremind, Mellemvangen og Selskabet er på dansk.
 - Tonen er rolig, ærlig og uden salgssprog.
 
 ## Data
