@@ -9,38 +9,38 @@
   const EXTEND = 180;            // holdbarhedsforlængelse i dage
 
   const COUNTRIES = [
-    { id: 'DK', name: 'Danmark',  region: 'EU',    n: 4, lead: 0, rate: 2.3, base: 101 },
-    { id: 'DE', name: 'Tyskland', region: 'EU',    n: 6, lead: 0, rate: 2.4, base: 201 },
-    { id: 'ES', name: 'Spanien',  region: 'EU',    n: 5, lead: 0, rate: 2.5, base: 301 },
-    { id: 'US', name: 'USA',      region: 'NA',    n: 8, lead: 0, rate: 2.7, base: 401 },
-    { id: 'BR', name: 'Brasilien', region: 'LATAM', n: 4, lead: 1, rate: 2.4, base: 501 },
+    { id: 'DK', name: 'Denmark',  region: 'EU',    n: 4, lead: 0, rate: 2.3, base: 101 },
+    { id: 'DE', name: 'Germany', region: 'EU',    n: 6, lead: 0, rate: 2.4, base: 201 },
+    { id: 'ES', name: 'Spain',  region: 'EU',    n: 5, lead: 0, rate: 2.5, base: 301 },
+    { id: 'US', name: 'United States',      region: 'NA',    n: 8, lead: 0, rate: 2.7, base: 401 },
+    { id: 'BR', name: 'Brazil', region: 'LATAM', n: 4, lead: 1, rate: 2.4, base: 501 },
     { id: 'JP', name: 'Japan',    region: 'ASIA',  n: 3, lead: 1, rate: 1.9, base: 601 }
   ];
   const ACT_MONTH = [1, 2, 1, 3, 2, 1, 2, 3, 1, 2];   // aktiveringsmåned efter sitets plads
   const VARIANTS = ['S1A', 'S1P', 'S2A', 'S2P', 'S3L', 'S3H', 'S3P'];
-  const VLABEL = { S1A: 'Trin 1 · aktiv', S1P: 'Trin 1 · placebo', S2A: 'Trin 2 · aktiv', S2P: 'Trin 2 · placebo', S3L: 'Trin 3 · 1,2 mg', S3H: 'Trin 3 · 2,4 mg', S3P: 'Trin 3 · placebo' };
+  const VLABEL = { S1A: 'Step 1 · active', S1P: 'Step 1 · placebo', S2A: 'Step 2 · active', S2P: 'Step 2 · placebo', S3L: 'Step 3 · 1.2 mg', S3H: 'Step 3 · 2.4 mg', S3P: 'Step 3 · placebo' };
   const STEP_OF = { S1A: 1, S1P: 1, S2A: 2, S2P: 2, S3L: 3, S3H: 3, S3P: 3 };
   const MMIN = [null, .5, .9, 1.4], MMAX = [null, 1.1, 1.6, 2.3];   // min/max i måneders planlagt forbrug
   const RATIO3 = { L: .4, H: .4, P: .2 }, RATIO2 = { L: 2 / 3, H: 0, P: 1 / 3 };
 
   const DEFECTS = {
-    D1: { t: 'Nødafblindingsmailen viser behandlingsarmen', crit: true, p: { happy: .1, risk: .85, full: .95 } },
-    D2: { t: 'Do-not-dispense regnes i måneder, ikke dage', p: { happy: .15, risk: .6, full: .9 } },
-    D3: { t: 'Erstatningskit vælger forrige titreringstrin', p: { happy: .1, risk: .7, full: .9 } },
-    D4: { t: 'T2D-stratum er byttet om (ja/nej) i randomiseringen', p: { happy: .3, risk: .8, full: .95 }, need: c => c.factors.t2d },
-    D5: { t: 'Lagerprognosen glemmer trin 3', p: { happy: .2, risk: .75, full: .9 }, need: c => c.resup === 'pred' }
+    D1: { t: 'Emergency unblinding notification shows treatment arm', crit: true, p: { happy: .1, risk: .85, full: .95 } },
+    D2: { t: 'Do-not-dispense calculated in months, not days', p: { happy: .15, risk: .6, full: .9 } },
+    D3: { t: 'Replacement kit selects previous titration step', p: { happy: .1, risk: .7, full: .9 } },
+    D4: { t: 'T2D stratum mapping inverted (yes/no) in randomization', p: { happy: .3, risk: .8, full: .95 }, need: c => c.factors.t2d },
+    D5: { t: 'Supply forecast omits titration step 3', p: { happy: .2, risk: .75, full: .9 }, need: c => c.resup === 'pred' }
   };
   const UAT = {
     happy: { name: 'Happy path', days: 3, scripts: 24, m1: 1 },
-    risk: { name: 'Risikobaseret', days: 8, scripts: 71, m1: .6 },
-    full: { name: 'Fuld UAT', days: 15, scripts: 148, m1: .2 }
+    risk: { name: 'Risk-based', days: 8, scripts: 71, m1: .6 },
+    full: { name: 'Full UAT', days: 15, scripts: 148, m1: .2 }
   };
 
   let rand = Math.random;
   function pois(l) { let L = Math.exp(-l), k = 0, p = 1; do { k++; p *= rand(); } while (p > L); return k - 1; }
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
-  function fmt(x, d) { return Number(x).toLocaleString('da-DK', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
+  function fmt(x, d) { return Number(x).toLocaleString('en-US', { minimumFractionDigits: d || 0, maximumFractionDigits: d || 0 }); }
 
   // ---------- Opstart ----------
   function defaultCfg() {
@@ -70,23 +70,23 @@
   function lint(cfg) {
     const out = [], f = cfg.factors;
     const nStrata = stratCount(cfg);
-    if (cfg.titr === 'open') out.push({ sev: 'bad', t: 'Fra måned 3 kan sitet se, hvem der står stille på trin 2. Det afslører lavdosis.' });
-    if (cfg.titr === 'dd') out.push({ sev: 'warn', t: 'Double-dummy fordobler antallet af penne pr. besøg.' });
+    if (cfg.titr === 'open') out.push({ sev: 'bad', t: 'From month 3, sites can see who stays on step 2. This reveals the low-dose arm.' });
+    if (cfg.titr === 'dd') out.push({ sev: 'warn', t: 'Double-dummy doubles the number of pens per visit.' });
     if (cfg.method && cfg.method !== 'simple') {
-      if (!f.bmi) out.push({ sev: 'bad', t: 'Protokollen kræver stratificering efter baseline-BMI. Den mangler.' });
-      if (!f.t2d) out.push({ sev: 'bad', t: 'Protokollen kræver stratificering efter type 2-diabetes. Den mangler.' });
+      if (!f.bmi) out.push({ sev: 'bad', t: 'Protocol requires stratification by baseline BMI. Missing.' });
+      if (!f.t2d) out.push({ sev: 'bad', t: 'Protocol requires stratification by type 2 diabetes. Missing.' });
     }
-    if (cfg.method === 'simple') out.push({ sev: 'bad', t: 'Simpel randomisering bruger ikke protokollens stratifikationsfaktorer, og 2:2:1 kan skride.' });
+    if (cfg.method === 'simple') out.push({ sev: 'bad', t: 'Simple randomization ignores the protocol stratification factors, and 2:2:1 may drift.' });
     if (cfg.method === 'block') {
       const per = TARGET / nStrata, bs = cfg.bs === 'mix' ? 7.5 : +cfg.bs;
-      if (per < bs * 3) out.push({ sev: 'warn', t: `${nStrata} strata giver ca. ${fmt(per)} patienter pr. stratum. Mange blokke ender halvfyldte.` });
-      if (cfg.bs === '5') out.push({ sev: f.site ? 'bad' : 'warn', t: f.site ? 'Blokke på 5 pr. site: efter fire randomiseringer kan sitet gætte den femte.' : 'Faste blokke på 5 er lette at gætte for et site, der tæller efter.' });
+      if (per < bs * 3) out.push({ sev: 'warn', t: `${nStrata} strata give approx. ${fmt(per)} participants per stratum. Many blocks will remain incomplete.` });
+      if (cfg.bs === '5') out.push({ sev: f.site ? 'bad' : 'warn', t: f.site ? 'Blocks of 5 per site: after four randomizations the site can predict the fifth.' : 'Fixed blocks of 5 are easy to predict for a site that keeps count.' });
     }
-    if (cfg.method === 'min' && f.site) out.push({ sev: 'ok', t: 'Site som minimeringsfaktor er almindeligt og ufarligt.' });
-    if (cfg.kitlist === 'seq') out.push({ sev: 'bad', t: 'Kit-numre i fortløbende serier pr. arm afslører behandlingen for alle, der kan tælle.' });
-    if (cfg.dnsd !== null && cfg.dnsd < 35) out.push({ sev: 'warn', t: `Do-not-dispense på ${cfg.dnsd} dage dækker ikke 28 dages forbrug plus 7 dages besøgsvindue.` });
-    if (cfg.over !== null && cfg.over <= 1.2 && cfg.resup === 'minmax' && cfg.buf >= 2) out.push({ sev: 'warn', t: 'Med min/max-lager ligger meget medicin ude på sites. 20 % overproduktion bliver stramt.' });
-    if (!out.some(o => o.sev !== 'ok') && cfg.uat) out.push({ sev: 'ok', t: 'Ingen bemærkninger til specifikationen.' });
+    if (cfg.method === 'min' && f.site) out.push({ sev: 'ok', t: 'Site as a minimization factor is common and harmless.' });
+    if (cfg.kitlist === 'seq') out.push({ sev: 'bad', t: 'Sequential kit number ranges per type reveal treatment to anyone who can count.' });
+    if (cfg.dnsd !== null && cfg.dnsd < 35) out.push({ sev: 'warn', t: `Do-not-dispense of ${cfg.dnsd} days does not cover 28 days of use plus the 7-day visit window.` });
+    if (cfg.over !== null && cfg.over <= 1.2 && cfg.resup === 'minmax' && cfg.buf >= 2) out.push({ sev: 'warn', t: 'Min/max keeps a lot of drug at sites. 20 % overage will be tight.' });
+    if (!out.some(o => o.sev !== 'ok') && cfg.uat) out.push({ sev: 'ok', t: 'No findings.' });
     return out;
   }
 
@@ -100,22 +100,22 @@
   // Specifikationen i almindeligt sprog, sådan som platformen bygger ud fra den.
   function specLines(cfg) {
     const f = cfg.factors, L = [];
-    const fac = [f.region && 'region', f.bmi && 'baseline-BMI (<35 / ≥35)', f.t2d && 'type 2-diabetes (ja/nej)', f.site && 'site'].filter(Boolean);
-    const facTxt = fac.length ? fac.join(', ') : 'ingen faktorer';
-    if (cfg.method === 'simple') L.push('Randomisér 2:2:1 til NH-2290 1,2 mg, NH-2290 2,4 mg og placebo med simpel randomisering.');
-    if (cfg.method === 'block') L.push(`Randomisér 2:2:1 til NH-2290 1,2 mg, NH-2290 2,4 mg og placebo i permuterede blokke på ${cfg.bs === 'mix' ? '5 og 10 i tilfældig rækkefølge' : cfg.bs}, stratificeret efter ${facTxt}.`);
-    if (cfg.method === 'min') L.push(`Randomisér 2:2:1 med minimering efter ${facTxt}. Vælg armen med mindst ubalance med 80 % sandsynlighed, ellers tilfældigt efter forholdet.`);
-    if (cfg.method) L.push('Tillad kun randomisering, når sitet har kits på lager til alle arme.');
-    if (cfg.titr === 'open') L.push('Udlevér pen mærket 0,6 mg i måned 1 og 1,2 mg i måned 2. Højdosis får 2,4 mg fra måned 3. Lavdosis fortsætter på 1,2 mg.');
-    if (cfg.titr === 'blind') L.push('Alle patienter følger trin 1, 2 og 3. Lavdosis-patienter får trin 3-penne med 1,2 mg. Placebo matcher hvert trin.');
-    if (cfg.titr === 'dd') L.push('Udlevér to penne pr. besøg: én med aktivt stof eller placebo og én matchende placebo, så alle stikker det samme.');
-    if (cfg.kitlist === 'seq') L.push('Kit-numre tildeles i fortløbende serier: 1001 til 2400 aktiv, 2401 til 3000 placebo.');
-    if (cfg.kitlist === 'rand') L.push('Kit-numre blandes på tværs af kit-typer, så nummeret ikke siger noget om indholdet.');
-    if (cfg.resup === 'minmax') L.push(`Genforsyn hvert site, når en kit-type falder under ${fmt(MMIN[cfg.buf], 1)} måneds planlagt forbrug, op til ${fmt(MMAX[cfg.buf], 1)} måneds forbrug. Niveauerne lægges fast ved go-live. Lande med lang leveringstid får tillæg.`);
-    if (cfg.resup === 'pred') L.push(`Genforsyn efter prognose over planlagte besøg og forventet rekruttering, plus et sikkerhedslager på ${cfg.buf - 1} pr. kit-type.`);
-    if (cfg.dnsd !== null) L.push(`Udlevér ikke kits med mindre end ${cfg.dnsd} dage til udløb. Send ikke kits, der rammer grænsen inden ankomst.`);
-    if (cfg.over !== null) L.push(`Producér ${fmt((cfg.over - 1) * 100)} % over den planlagte efterspørgsel.`);
-    L.push('Investigatoren kan nødafblinde egne patienter. Studieteamet får besked om afblindingen, ikke om armen.');
+    const fac = [f.region && 'region', f.bmi && 'baseline BMI (<35 / ≥35)', f.t2d && 'type 2 diabetes (yes/no)', f.site && 'site'].filter(Boolean);
+    const facTxt = fac.length ? fac.join(', ') : 'no factors';
+    if (cfg.method === 'simple') L.push('Randomize 2:2:1 to NH-2290 1.2 mg, NH-2290 2.4 mg and placebo using simple randomization.');
+    if (cfg.method === 'block') L.push(`Randomize 2:2:1 to NH-2290 1.2 mg, NH-2290 2.4 mg and placebo in permuted blocks of ${cfg.bs === 'mix' ? '5 and 10 in random order' : cfg.bs}, stratified by ${facTxt}.`);
+    if (cfg.method === 'min') L.push(`Randomize 2:2:1 using minimization on ${facTxt}. Assign the arm minimizing imbalance with probability 0.8, otherwise at random by ratio.`);
+    if (cfg.method) L.push('Allow randomization only when the site holds kits for all arms.');
+    if (cfg.titr === 'open') L.push('Dispense pens labelled 0.6 mg in month 1 and 1.2 mg in month 2. High dose receives 2.4 mg from month 3. Low dose continues on 1.2 mg.');
+    if (cfg.titr === 'blind') L.push('All participants follow steps 1, 2 and 3. Low-dose participants receive step 3 pens containing 1.2 mg. Placebo matches each step.');
+    if (cfg.titr === 'dd') L.push('Dispense two pens per visit: one active or placebo and one matching placebo, so all participants inject the same.');
+    if (cfg.kitlist === 'seq') L.push('Assign kit numbers in sequential ranges: 1001 to 2400 active, 2401 to 3000 placebo.');
+    if (cfg.kitlist === 'rand') L.push('Randomize kit numbers across kit types so the number reveals nothing about content.');
+    if (cfg.resup === 'minmax') L.push(`Resupply a site when a kit type falls below ${fmt(MMIN[cfg.buf], 1)} months of planned use, up to ${fmt(MMAX[cfg.buf], 1)} months. Levels are fixed at go-live. Long lead-time countries get an add-on.`);
+    if (cfg.resup === 'pred') L.push(`Resupply on forecast of scheduled visits and expected enrollment, plus safety stock of ${cfg.buf - 1} per kit type.`);
+    if (cfg.dnsd !== null) L.push(`Do not dispense kits with fewer than ${cfg.dnsd} days to expiry. Do not ship kits that reach the limit before arrival.`);
+    if (cfg.over !== null) L.push(`Produce ${fmt((cfg.over - 1) * 100)} % above planned demand.`);
+    L.push('Investigators may emergency-unblind their own participants. The study team is notified of the unblinding, not the arm.');
     return L;
   }
 
@@ -175,8 +175,8 @@
       S.st.produced += S.central[v][0] + S.central[v][1];
     });
     S.uat = { found, n: UAT[c.uat].scripts };
-    log(S, 'Du', `Specifikation godkendt. UAT: ${UAT[c.uat].name}, ${UAT[c.uat].scripts} scripts, ${found.length} fejl fundet og rettet.`);
-    found.forEach(id => log(S, 'Leverandøren', `Rettet før go-live: ${DEFECTS[id].t}.`));
+    log(S, 'You', `Specification v1.0 approved. UAT: ${UAT[c.uat].name}, ${UAT[c.uat].scripts} scripts, ${found.length} defects found and fixed.`);
+    found.forEach(id => log(S, 'Vendor', `Fixed before go-live: ${DEFECTS[id].t}.`));
     ['blok', 'uat'].forEach(id => unlock(S, id));
     if (c.method === 'min') unlock(S, 'min');
     if (c.method !== 'simple') unlock(S, 'strat');
@@ -191,27 +191,27 @@
     S.newCards = [];
     S.notes = [];
     const m = S.month, c = S.cfg;
-    if (m === 1) { log(S, 'Platformen', 'Systemet er i produktion. Første forsendelser er på vej til de aktive sites.'); unlock(S, 'allearme'); }
+    if (m === 1) { log(S, 'System', 'Go-live. Initial shipments dispatched to active sites.'); unlock(S, 'allearme'); }
     // Konsekvenser af designet
     if (m === 2 && c.titr === 'dd') { S.notes.push({ sev: 'warn', who: 'Mette', t: 'Flere patienter klager over to stik om ugen. Tre har trukket sig.' }); S.st.dropouts += 3; dropRandom(S, 3); }
-    if (m === 3 && c.titr === 'open') { S.notes.push({ sev: 'bad', who: 'Jonas', t: 'Sites har opdaget, at nogle patienter bliver på 1,2 mg-pennen i måned 3. De ved nu, hvem der får lavdosis. Blindingen mellem doserne er brudt.' }); penal(S, 20, 'Titreringsdesign afslører lavdosis-armen', true); log(S, 'Jonas', 'Blindingsbrud: åbne dosisetiketter afslører lavdosis.', 'bad'); }
-    if (m === 4 && c.kitlist === 'seq') { S.notes.push({ sev: 'bad', who: 'Birgitte', t: 'En CRA har skrevet i en mail, at "alle kits over 2400 er nok placebo". Hun har ret. Kit-listen skal genereres på ny, og blindingen er kompromitteret for de første patienter.' }); penal(S, 15, 'Fortløbende kit-numre afslører placebo', true); log(S, 'Birgitte', 'Blindingsbrud: kit-numre i serier. Ny kit-liste bestilt.', 'bad'); unlock(S, 'kitliste'); }
+    if (m === 3 && c.titr === 'open') { S.notes.push({ sev: 'bad', who: 'Jonas', t: 'Sites har opdaget, at nogle patienter bliver på 1,2 mg-pennen i måned 3. De ved nu, hvem der får lavdosis. Blindingen mellem doserne er brudt.' }); penal(S, 20, 'Titration design reveals low-dose arm', true); log(S, 'Jonas', 'Blinding breach: dose-labelled pens reveal low dose.', 'bad'); }
+    if (m === 4 && c.kitlist === 'seq') { S.notes.push({ sev: 'bad', who: 'Birgitte', t: 'En CRA har skrevet i en mail, at "alle kits over 2400 er nok placebo". Hun har ret. Kit-listen skal genereres på ny, og blindingen er kompromitteret for de første patienter.' }); penal(S, 15, 'Sequential kit numbers reveal placebo', true); log(S, 'Birgitte', 'Blinding breach: sequential kit numbers. New kit list ordered.', 'bad'); unlock(S, 'kitliste'); }
     // Fejl fra build, der ikke blev fundet i UAT
     const D = S.defects;
     if (m === 3 && D.D4 && !D.D4.found && !D.D4.surfaced) {
       D.D4.surfaced = true;
       S.notes.push({ sev: 'bad', who: 'Jonas', t: `Afstemning mod EDC viser, at T2D-stratum er byttet om i systemet for alle ${S.patients.length} patienter. Randomiseringen står ved magt, men alle er fejlstratificeret og skal dokumenteres. Leverandøren retter det i en ny version.` });
-      penal(S, 8, 'Fejl i stratum-mapping fra build (ikke fundet i UAT)'); log(S, 'Leverandøren', 'Hotfix: T2D-stratum mapping rettet.', 'bad'); unlock(S, 'fejlstrat');
+      penal(S, 8, 'Stratum mapping defect from build (not found in UAT)'); log(S, 'Vendor', 'Hotfix: T2D stratum mapping corrected.', 'bad'); unlock(S, 'fejlstrat');
     }
     if (m === 4 && D.D5 && !D.D5.found && !D.D5.surfaced) {
       D.D5.surfaced = true;
       S.notes.push({ sev: 'bad', who: 'Line', t: 'Prognosen sendte ingen trin 3-penne til sites. De første patienter på trin 3 blev mødt af tomme hylder. Fejlen var med fra build og er nu rettet.' });
-      log(S, 'Leverandøren', 'Hotfix: prognosen medregner trin 3.', 'bad');
+      log(S, 'Vendor', 'Hotfix: forecast includes step 3.', 'bad');
     }
     if (m === 9 && D.D2 && !D.D2.found && !D.D2.surfaced) {
       D.D2.surfaced = true;
       S.notes.push({ sev: 'bad', who: 'Line', t: `Systemet har regnet do-not-dispense i måneder i stedet for dage. Kits med under 35 dage tilbage er blevet udleveret. ${S.st.expDisp ? 'Det gælder ' + S.st.expDisp + ' udleveringer.' : ''}` });
-      penal(S, 6, 'Fejl i udløbsberegning fra build'); log(S, 'Leverandøren', 'Hotfix: do-not-dispense regnes i dage.', 'bad');
+      penal(S, 6, 'Expiry calculation defect from build'); log(S, 'Vendor', 'Hotfix: do-not-dispense calculated in days.', 'bad');
     }
     S.snap = null; S.snap = JSON.stringify(S);
     S.phase = 'month';
@@ -222,123 +222,152 @@
   function rewind(S) { const T = JSON.parse(S.snap); T.rewinds = S.rewinds + 1; T.snap = S.snap; return T; }
 
   // ---------- Valg undervejs ----------
+  // Hver måned har en eller flere sager. Sagen (titel, tekst, handlinger) er systemets og står på engelsk.
+  // Personerne og det, der sker bagefter, er på dansk.
   const EVENTS = {
-    1: { id: 'akt', card: 'aktivering', title: 'Site 101 vil i gang', who: 'Mette',
-      text: 'Site 101 i Aarhus har sin første patient klar i morgen tidlig. Den etiske komités godkendelse er kommet på mail, men er ikke registreret, så sitet er ikke grønt i systemet.',
+    1: [{ id: 'akt', card: 'aktivering', title: 'Site 101 requests activation', who: 'Mette',
+      text: 'Site 101 (Aarhus) has its first participant scheduled tomorrow morning. Ethics approval arrived by email but has not been entered, so the site is not activated in the system.',
       quote: 'Kan du ikke bare trykke på knappen? Det er jo godkendt.',
       options: [
-        { id: 'a', label: 'Aktivér sitet manuelt nu', after: 'Patienten er randomiseret kl. 8.04. Birgitte fra QA har sat et flueben i sin notesbog.', fx: S => penal(S, 5, 'Site aktiveret, før den regulatoriske godkendelse var dokumenteret') },
-        { id: 'b', label: 'Registrér godkendelsen først, så åbner systemet sitet', after: 'Det tager to dage. Patienten kommer igen torsdag, lidt fortørnet, men randomiseret efter bogen.', fx: S => { S.mods.site0Slow = true; } },
-        { id: 'c', label: 'Lad sitet randomisere på papir og indtaste bagefter', after: 'Der findes ingen papirliste. Sitet improviserer. Jonas får hikke.', fx: S => penal(S, 12, 'Randomisering uden om systemet') }
-      ] },
-    2: { id: 'fejlstrat', card: 'fejlstrat', title: 'Forkert stratum i Madrid', who: 'Jonas',
-      text: 'Site 302 har randomiseret en patient med BMI under 35. I EDC står der 37,2. Det er en tastefejl fra screeningen.',
+        { id: 'a', label: 'Override: activate site manually now', after: 'Patienten er randomiseret kl. 8.04. Birgitte fra QA har sat et flueben i sin notesbog.', fx: S => penal(S, 5, 'Site activated before regulatory approval was documented') },
+        { id: 'b', label: 'Enter the approval first and let the system activate the site', after: 'Det tager to dage. Patienten kommer igen torsdag, lidt fortørnet, men randomiseret efter bogen.', fx: S => { S.mods.site0Slow = true; } },
+        { id: 'c', label: 'Allow paper randomization, enter it afterwards', after: 'Der findes ingen papirliste. Sitet improviserer. Jonas får hikke.', fx: S => penal(S, 12, 'Randomization performed outside the system') }
+      ] }],
+    2: [{ id: 'fejlstrat', card: 'fejlstrat', title: 'Mis-stratification at site 302', who: 'Jonas',
+      text: 'Site 302 (Madrid) randomized a participant in stratum BMI < 35. EDC shows BMI 37.2. Data entry error at screening.',
       quote: 'Patienten er randomiseret og har fået sin første pen. Spørgsmålet er, hvad vi gør nu.',
       options: [
-        { id: 'a', label: 'Randomisér patienten igen i det rigtige stratum', after: 'Systemet tillader det med en override. Patienten har nu to randomiseringsnumre og to behandlinger i historikken. Jonas har lukket sin dør.', fx: S => penal(S, 12, 'Patient randomiseret to gange') },
-        { id: 'b', label: 'Ret stratum i systemet, så det passer med EDC', after: 'Rettelsen står i audit trail. Men blokken i det gamle stratum har nu et hul, og det nye stratum har en patient, det aldrig har tildelt. Listen passer ikke længere med virkeligheden.', fx: S => penal(S, 7, 'Stratum ændret efter randomisering') },
-        { id: 'c', label: 'Lad randomiseringen stå, ret EDC og registrér en protokolafvigelse', after: 'Patienten fortsætter i sin arm. Statistikerne analyserer efter det stratum, der blev brugt ved randomiseringen, og nævner det i rapporten. Kedeligt og korrekt.', fx: S => {} }
+        { id: 'a', label: 'Re-randomize the participant in the correct stratum', after: 'Systemet tillader det med en override. Patienten har nu to randomiseringsnumre og to behandlinger i historikken. Jonas har lukket sin dør.', fx: S => penal(S, 12, 'Participant randomized twice') },
+        { id: 'b', label: 'Correct the stratum in RTSM to match EDC', after: 'Rettelsen står i audit trail. Men blokken i det gamle stratum har nu et hul, og det nye stratum har en patient, det aldrig har tildelt. Listen passer ikke længere med virkeligheden.', fx: S => penal(S, 7, 'Stratum changed after randomization') },
+        { id: 'c', label: 'Keep randomization, correct EDC, log a protocol deviation', after: 'Patienten fortsætter i sin arm. Statistikerne analyserer efter det stratum, der blev brugt ved randomiseringen, og nævner det i rapporten. Kedeligt og korrekt.', fx: S => {} }
       ] },
-    3: { id: 'titr', card: 'aendring', title: 'Kvalme i Hamborg', who: 'Dr. Weber',
-      text: 'En patient på site 205 skal fra trin 2 til trin 3 i dag, men har haft kvalme i to uger. Protokollen tillader én måned ekstra på trin 2. Den regel kom ikke med i specifikationen, så systemet vil udlevere en trin 3-pen.',
+      { id: 'sentinel', card: 'kohorte', title: 'PMDA: sentinel cohort in Japan', who: 'Jonas',
+      text: 'The Japanese authority requires a sentinel cohort: the first 6 Japanese participants are dosed through titration step 2, followed by a safety review before further Japanese participants may be randomized. Expected review: end of month 3.',
+      quote: 'Seks patienter, så stop. Lyder enkelt. Det plejer det at gøre.',
+      options: [
+        { id: 'a', label: 'Configure a cohort cap for Japan that opens on sponsor approval', after: 'Systemet stopper Japan ved seks og viser sites en venteliste. Da review-komitéen godkender, åbner studieteamet kohorten med ét klik, og det står i audit trail.', fx: S => { S.mods.jpCohort = { cap: 6, until: 4 }; } },
+        { id: 'b', label: 'Ask the CRA to tell Japanese sites to stop after six', after: 'Mailen når frem til to af tre sites. Site 603 randomiserer patient 7 og 8, før nogen opdager det.', fx: S => { S.mods.jpCohort = { cap: 8, until: 4 }; penal(S, 8, 'Two participants randomized in Japan before the sentinel safety review'); } },
+        { id: 'c', label: 'Close Japan entirely until the review is done', after: 'Japan står stille i to måneder, også de sites, der havde patienter klar til at blive kohortens første seks.', fx: S => { S.mods.pause.JP = [2, 3]; } }
+      ] }],
+    3: [{ id: 'titr', card: 'aendring', title: 'Dose hold request, site 205', who: 'Dr. Weber',
+      text: 'A participant at site 205 (Hamburg) is due to move from step 2 to step 3 today but has had nausea for two weeks. The protocol allows one additional month on step 2. That rule was not in the specification, so the system will dispense a step 3 pen.',
       quote: 'Jeg vil ikke give hende den højere dosis i dag. Hvad gør jeg?',
       options: [
-        { id: 'a', label: 'Ændringsanmodning: byg dosispausen ind, som protokollen beskriver', after: 'Leverandøren bygger reglen på tre dage som en ny version af konfigurationen, testet og godkendt. Patienten får sin trin 2-pen ved et ikke-planlagt besøg, og fremtidige patienter kan få det samme.', fx: S => { S.mods.titrFix = true; S.st.extraKr += 150000; } },
-        { id: 'b', label: 'Sitet tager en trin 2-pen fra hylden uden om systemet', after: 'Patienten er glad. Systemet tror, at pennen stadig står på hylden, og lagerregnskabet har nu et hul.', fx: S => { penal(S, 6, 'Kit udleveret uden om systemet'); unlock(S, 'accountability'); } },
-        { id: 'c', label: 'Følg systemet: patienten skal op på trin 3', after: 'Patienten kaster op i en uge og trækker sig fra studiet. Dr. Weber skriver en lang mail til medical monitor.', fx: S => { penal(S, 5, 'Protokollens dosispause kunne ikke bruges'); S.st.dropouts++; dropRandom(S, 1); } }
-      ] },
-    4: { id: 'temp', card: 'temp', title: '14 grader i São Paulo', who: 'Line',
-      text: 'Dataloggerne på de brasilianske sites viser, at kølerummene var 14 °C i ni timer under et strømsvigt. Det tilladte er 2 til 8 °C.',
+        { id: 'a', label: 'Change request: add the protocol dose hold to the configuration', after: 'Leverandøren bygger reglen på tre dage som en ny version af konfigurationen, testet og godkendt. Patienten får sin trin 2-pen ved et ikke-planlagt besøg, og fremtidige patienter kan få det samme.', fx: S => { S.mods.titrFix = true; S.st.extraKr += 150000; } },
+        { id: 'b', label: 'Site dispenses a step 2 pen from the shelf outside the system', after: 'Patienten er glad. Systemet tror, at pennen stadig står på hylden, og lagerregnskabet har nu et hul.', fx: S => { penal(S, 6, 'Kit dispensed outside the system'); unlock(S, 'accountability'); } },
+        { id: 'c', label: 'Follow the system: participant moves to step 3', after: 'Patienten kaster op i en uge og trækker sig fra studiet. Dr. Weber skriver en lang mail til medical monitor.', fx: S => { penal(S, 5, 'Protocol dose hold could not be applied'); S.st.dropouts++; dropRandom(S, 1); } }
+      ] }],
+    4: [{ id: 'temp', card: 'temp', title: 'Temperature excursion, Brazil', who: 'Line',
+      text: 'Data loggers at the Brazilian sites show 14 °C for 9 hours during a power outage. Labelled storage condition: 2 to 8 °C.',
       quote: 'Stabilitetsdata dækker måske udsvinget. Måske.',
       options: [
-        { id: 'a', label: 'Karantæne i systemet, til QA har vurderet stabilitetsdata', after: 'Systemet springer kittene over og bestiller erstatning med det samme. Efter tre uger frigiver QA dem igen: stabilitetsdata dækker udsvinget.', fx: S => { S.mods.quar = 4; } },
-        { id: 'b', label: 'Fortsæt udlevering. 14 grader er næsten køleskab.', after: 'Ingen opdager noget i en måned. Så kommer loggerdata med i en rutinegennemgang.', fx: S => penal(S, 10, 'Kits udleveret efter temperaturudsving uden vurdering') },
-        { id: 'c', label: 'Destruér alt på de brasilianske sites for en sikkerheds skyld', after: 'Det er sikkert. Det er også tomme hylder, indtil nye penne er gennem tolden.', fx: S => { S.sites.filter(s => s.c === 'BR').forEach(s => VARIANTS.forEach(v => { S.st.waste += s.stock[v][0] + s.stock[v][1]; s.stock[v] = [0, 0]; })); } }
-      ] },
-    5: { id: 'afbl', card: 'nodafbl', title: 'Kl. 02.40 i Osaka', who: 'Dr. Tanaka',
-      text: 'En patient på site 602 er indlagt med akut pancreatitis. Lægen på vagt vil vide, om patienten får aktivt stof, før behandlingen lægges fast.',
+        { id: 'a', label: 'Quarantine affected kits pending QA stability assessment', after: 'Systemet springer kittene over og bestiller erstatning med det samme. Efter tre uger frigiver QA dem igen: stabilitetsdata dækker udsvinget.', fx: S => { S.mods.quar = 4; } },
+        { id: 'b', label: 'Continue dispensing', after: 'Ingen opdager noget i en måned. Så kommer loggerdata med i en rutinegennemgang.', fx: S => penal(S, 10, 'Kits dispensed after temperature excursion without assessment') },
+        { id: 'c', label: 'Destroy all stock at Brazilian sites', after: 'Det er sikkert. Det er også tomme hylder, indtil nye penne er gennem tolden.', fx: S => { S.sites.filter(s => s.c === 'BR').forEach(s => VARIANTS.forEach(v => { S.st.waste += s.stock[v][0] + s.stock[v][1]; s.stock[v] = [0, 0]; })); } }
+      ] }],
+    5: [{ id: 'afbl', card: 'nodafbl', title: 'Emergency unblinding, site 602', who: 'Dr. Tanaka',
+      text: '02:40 local time (Osaka). A participant has been admitted with acute pancreatitis. The treating physician needs to know whether the participant is on active drug.',
       quote: 'Jeg har brug for svaret nu, ikke i morgen.',
       options: [
-        { id: 'a', label: 'Investigatoren afblinder selv i systemet', after: 'Det tager to minutter. Kun investigatoren ser behandlingen. Studieteamet får besked om, at en afblinding er sket, men ikke hvad den viste.', fx: S => d1(S) },
-        { id: 'b', label: 'Investigatoren ringer til studieteamet, som finder statistikeren', after: 'Jonas sover. Efter fire timer får lægen svaret, og nu ved tre personer i det blindede studieteam det også.', fx: S => { penal(S, 8, 'Blindet studieteam fik kendskab til behandling', true); d1(S); } },
-        { id: 'c', label: 'Behandl, som om der er aktivt stof, og afblind ikke', after: 'Patienten bliver rask. Men beslutningen om at afblinde er investigatorens, ikke din, og den ret står i protokollen.', fx: S => penal(S, 4, 'Nødafblinding forhindret af studieteamet') }
-      ] },
-    6: { id: 'holdbar', card: 'holdbar', title: 'Seks måneder mere', who: 'Line',
-      text: 'Nye stabilitetsdata forlænger holdbarheden for batch 1 med seks måneder. Etiketterne viser stadig den gamle dato, midt i måned 8.',
+        { id: 'a', label: 'Investigator performs emergency unblinding in the system', after: 'Det tager to minutter. Kun investigatoren ser behandlingen. Studieteamet får besked om, at en afblinding er sket, men ikke hvad den viste.', fx: S => d1(S) },
+        { id: 'b', label: 'Investigator calls the study team, who contact the statistician', after: 'Jonas sover. Efter fire timer får lægen svaret, og nu ved tre personer i det blindede studieteam det også.', fx: S => { penal(S, 8, 'Blinded study team became aware of treatment', true); d1(S); } },
+        { id: 'c', label: 'Treat as if on active drug, do not unblind', after: 'Patienten bliver rask. Men beslutningen om at afblinde er investigatorens, ikke din, og den ret står i protokollen.', fx: S => penal(S, 4, 'Emergency unblinding prevented by the study team') }
+      ] }],
+    6: [{ id: 'holdbar', card: 'holdbar', title: 'Shelf-life extension, batch 1', who: 'Line',
+      text: 'New stability data extend the shelf life of batch 1 by six months. Labels still show the original expiry, mid month 8.',
       quote: 'En stor del af lageret i verden er batch 1. Uden forlængelse ryger det hele.',
       options: [
-        { id: 'a', label: 'Ommærk, og opdatér udløbsdatoen i systemet, når QP har frigivet', after: 'Ommærkningen koster 400.000 kr. og tre ugers koordinering. Batch 1 kan bruges resten af studiet.', fx: S => { S.mods.b1Exp = B1_EXP + EXTEND; S.st.extraKr += 400000; } },
-        { id: 'b', label: 'Opdatér datoen i systemet nu. Etiketterne kan vente.', after: 'System og etiketter er nu uenige. Det opdager en farmaceut i Hamborg efter en uge, og hun skriver til myndighederne.', fx: S => { S.mods.b1Exp = B1_EXP + EXTEND; penal(S, 10, 'Udløbsdato ændret i systemet uden ommærkning og frigivelse'); } },
-        { id: 'c', label: 'Lad batch 1 udløbe som planlagt', after: 'Batch 2 tager over. Det, der står tilbage af batch 1, destrueres.', fx: S => {} }
+        { id: 'a', label: 'Relabel, then update expiry in the system after QP release', after: 'Ommærkningen koster 400.000 kr. og tre ugers koordinering. Batch 1 kan bruges resten af studiet.', fx: S => { S.mods.b1Exp = B1_EXP + EXTEND; S.st.extraKr += 400000; } },
+        { id: 'b', label: 'Update expiry in the system now, relabel later', after: 'System og etiketter er nu uenige. Det opdager en farmaceut i Hamborg efter en uge, og hun skriver til myndighederne.', fx: S => { S.mods.b1Exp = B1_EXP + EXTEND; penal(S, 10, 'Expiry updated in system without relabelling and release'); } },
+        { id: 'c', label: 'Let batch 1 expire as planned', after: 'Batch 2 tager over. Det, der står tilbage af batch 1, destrueres.', fx: S => {} }
       ] },
-    7: { id: 'dsmb', card: 'aendring', title: 'DSMB lukker en arm', who: 'Jonas',
-      text: 'Den uafhængige komité anbefaler at lukke 2,4 mg-armen for nye patienter på grund af mave-tarm-bivirkninger. Patienter, der allerede er på 2,4 mg, fortsætter. Forholdet bliver 2:1 mellem 1,2 mg og placebo.',
+      { id: 'transfer', card: 'transfer', title: 'Possible duplicate participant, site 405', who: 'Mette',
+      text: 'Site 405 (Chicago) is screening a participant. The duplicate check matches date of birth and initials with participant 402-0117, randomized at site 402 (Boston) in month 3 and since lost to follow-up. The participant has moved.',
+      quote: 'Hun vil gerne fortsætte. Hun var glad for medicinen, siger hun.',
+      options: [
+        { id: 'a', label: 'Transfer 402-0117 to site 405. No new randomization.', after: 'Patienten fortsætter som den samme patient med samme randomisering og arm. Systemet flytter historikken, og site 405 overtager. Ingen ved, hvad hun fik, og sådan skal det være.', fx: S => {} },
+        { id: 'b', label: 'Screen and randomize as a new participant', after: 'Hun får et nyt nummer og en ny arm. I databasen er hun nu to personer, og den ene har to behandlinger. Det finder data management i måned 11.', fx: S => penal(S, 10, 'Same participant randomized twice under two IDs') },
+        { id: 'c', label: 'Decline: participant has left the study', after: 'Hun går. Det er ikke forkert, men protokollen tillod at fortsætte, og nu mangler hendes data.', fx: S => penal(S, 2, 'Eligible transfer declined, data lost') }
+      ] }],
+    7: [{ id: 'dsmb', card: 'aendring', title: 'DSMB recommendation: close 2.4 mg arm', who: 'Jonas',
+      text: 'The DSMB recommends closing the 2.4 mg arm to new participants due to GI tolerability. Participants already on 2.4 mg continue. New allocation ratio 2:1 (1.2 mg : placebo).',
       quote: 'Jeg kan have nye lister klar i morgen. Det er sådan set resten, der er svært.',
       options: [
-        { id: 'a', label: 'Ny konfigurationsversion: armen lukkes, kits forbliver blindede', after: 'Ændringen testes og går i produktion uden nedetid. Sites mærker ingenting. Nye patienter fordeles 2:1.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; } },
-        { id: 'b', label: 'Send sites en liste over kit-numre, der ikke længere må udleveres', after: 'Listen virker. Nu ved alle sites også præcis, hvilke kits der er 2,4 mg.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; penal(S, 18, 'Sites fik liste over kit-numre med 2,4 mg', true); } },
-        { id: 'c', label: 'Stop al randomisering til næste planlagte release om seks uger', after: 'Sites venter. Nogle patienter går til et andet studie i mellemtiden.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; S.mods.pause.all = [7, 8]; } }
-      ] },
-    8: { id: 'us', card: 'loft', title: 'Amerika vil have mere', who: 'Mette',
-      text: 'Et konkurrerende studie er lukket, og de amerikanske sites får tre gange så mange henvisninger. Mette er i himlen. Line er ikke.',
-      quote: 'Vi kan blive færdige før tid! Hvad venter vi på?',
+        { id: 'a', label: 'New configuration version: close the arm, kits remain blinded', after: 'Ændringen testes og går i produktion uden nedetid. Sites mærker ingenting. Nye patienter fordeles 2:1.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; } },
+        { id: 'b', label: 'Send sites a list of kit numbers that must no longer be dispensed', after: 'Listen virker. Nu ved alle sites også præcis, hvilke kits der er 2,4 mg.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; penal(S, 18, 'Sites received list of 2.4 mg kit numbers', true); } },
+        { id: 'c', label: 'Pause randomization until the next planned release (6 weeks)', after: 'Sites venter. Nogle patienter går til et andet studie i mellemtiden.', fx: S => { S.mods.hDrop = S.month; S.queues = {}; S.mods.pause.all = [7, 8]; } }
+      ] }],
+    8: [{ id: 'us', card: 'loft', title: 'Enrollment surge, United States', who: 'Mette',
+      text: 'A competing study has closed. US sites now expect three times as many referrals.',
+      quote: 'Vi kan blive færdige før tid! Hvad venter vi på? (Line ser ikke glad ud.)',
       options: [
-        { id: 'a', label: 'Lad dem randomisere, og bestil en ekstra batch nu', after: 'Produktionen er bestilt og ankommer om to måneder. Den koster 1,5 mio. kr.', fx: S => { S.mods.usBoost = 2.6; S.mods.extra.push({ m: S.month + 2, f: .18 }); S.st.extraKr += 1500000; } },
-        { id: 'b', label: 'Lad dem randomisere, og hæv sikkerhedslageret overalt', after: 'Sites fyldes op. Line sover lidt bedre, depotet lidt dårligere.', fx: S => { S.mods.usBoost = 2.6; S.cfg.buf = Math.min(3, S.cfg.buf + 1); } },
-        { id: 'c', label: 'Sæt et loft: højst 40 % af patienterne fra ét land', after: 'Loftet ligger i konfigurationen og håndhæves automatisk. Mette synes, du er en lyseslukker.', fx: S => { S.mods.usBoost = 2.6; S.mods.usCap = true; } }
-      ] },
-    9: { id: 'kitfejl', card: 'kitfejl', title: 'Forkert pen i Boston', who: 'Line',
-      text: 'En sygeplejerske på site 404 har givet en patient kit 40817 med hjem. Systemet havde tildelt det til en anden patient samme formiddag.',
+        { id: 'a', label: 'Keep enrolling and order an extra batch now', after: 'Produktionen er bestilt og ankommer om to måneder. Den koster 1,5 mio. kr.', fx: S => { S.mods.usBoost = 2.6; S.mods.extra.push({ m: S.month + 2, f: .18 }); S.st.extraKr += 1500000; } },
+        { id: 'b', label: 'Keep enrolling and raise safety stock everywhere', after: 'Sites fyldes op. Line sover lidt bedre, depotet lidt dårligere.', fx: S => { S.mods.usBoost = 2.6; S.cfg.buf = Math.min(3, S.cfg.buf + 1); } },
+        { id: 'c', label: 'Configure a country cap: max 40 % of participants per country', after: 'Loftet ligger i konfigurationen og håndhæves automatisk. Mette synes, du er en lyseslukker.', fx: S => { S.mods.usBoost = 2.6; S.mods.usCap = true; } }
+      ] }],
+    9: [{ id: 'kitfejl', card: 'kitfejl', title: 'Wrong kit dispensed, site 404', who: 'Line',
+      text: 'Site 404 (Boston) dispensed kit 40817 to a participant. The system had assigned that kit to another participant the same morning.',
       quote: 'Begge patienter har nu hinandens penne. Den ene ved det ikke endnu.',
       options: [
-        { id: 'a', label: 'Registrér fejludleveringen, og lad systemet tildele erstatning', after: 'Systemet noterer fejlen og viser kun det ublindede team, om patienten har fået en anden behandling. Der skrives en protokolafvigelse, og patienten får det rigtige kit.', fx: S => d3(S) },
-        { id: 'b', label: 'Byt de to kit-numre i systemet, så registreringen passer', after: 'Nu passer tallene. Men audit trail viser, at historikken er ændret bagefter, og ingen kan se, hvad patienten egentlig fik.', fx: S => penal(S, 10, 'Udlevering ændret bagudrettet for at skjule fejl') },
-        { id: 'c', label: 'Lad det ligge. Det er nok samme slags pen.', after: 'Det var det ikke. Den ene patient tog placebo i fire uger uden at nogen registrerede det.', fx: S => penal(S, 8, 'Fejludlevering ikke registreret') }
-      ] },
-    10: { id: 'import', card: 'import', title: 'Tolden i Japan', who: 'Line',
-      text: 'Den japanske importtilladelse skal fornys, og myndigheden melder otte ugers behandlingstid. I den periode kan der ikke sendes kits til Japan. Patienterne skal stadig have medicin.',
+        { id: 'a', label: 'Record the misallocation and let the system assign a replacement', after: 'Systemet noterer fejlen og viser kun det ublindede team, om patienten har fået en anden behandling. Der skrives en protokolafvigelse, og patienten får det rigtige kit.', fx: S => d3(S) },
+        { id: 'b', label: 'Swap the two kit numbers in the system so records match', after: 'Nu passer tallene. Men audit trail viser, at historikken er ændret bagefter, og ingen kan se, hvad patienten egentlig fik.', fx: S => penal(S, 10, 'Dispensation record altered retrospectively to hide error') },
+        { id: 'c', label: 'No action', after: 'Det var ikke samme slags pen. Den ene patient tog placebo i fire uger, uden at nogen registrerede det.', fx: S => penal(S, 8, 'Misallocation not recorded') }
+      ] }],
+    10: [{ id: 'import', card: 'import', title: 'Import license renewal, Japan', who: 'Line',
+      text: 'The Japanese import license must be renewed. Expected processing time: 8 weeks. No shipments to Japan during that period. Participants in treatment still need drug.',
       quote: 'Vi har én forsendelse tilbage, før døren lukker.',
       options: [
-        { id: 'a', label: 'Send to måneders forbrug til de japanske sites nu', after: 'Hylderne i Osaka og Tokyo er fyldt. Det er dyrt, og noget kommer måske retur. Men ingen går forgæves.', fx: S => { S.mods.jpBlock = [11, 12]; S.mods.jpPre = true; } },
-        { id: 'b', label: 'Stop rekrutteringen i Japan, og vent', after: 'Nye patienter venter. Dem, der er i behandling, skal klare sig med det, der står på hylden.', fx: S => { S.mods.jpBlock = [11, 12]; S.mods.pause.JP = [11, 12]; } },
-        { id: 'c', label: 'Lad systemet køre som normalt', after: 'Systemet bestiller som altid. Forsendelserne står i lufthavnen.', fx: S => { S.mods.jpBlock = [11, 12]; } }
+        { id: 'a', label: 'Ship two months of demand to Japanese sites now', after: 'Hylderne i Osaka og Tokyo er fyldt. Det er dyrt, og noget kommer måske retur. Men ingen går forgæves.', fx: S => { S.mods.jpBlock = [11, 12]; S.mods.jpPre = true; } },
+        { id: 'b', label: 'Stop enrollment in Japan and wait', after: 'Nye patienter venter. Dem, der er i behandling, skal klare sig med det, der står på hylden.', fx: S => { S.mods.jpBlock = [11, 12]; S.mods.pause.JP = [11, 12]; } },
+        { id: 'c', label: 'Let resupply run as normal', after: 'Systemet bestiller som altid. Forsendelserne står i lufthavnen.', fx: S => { S.mods.jpBlock = [11, 12]; } }
       ] },
-    11: { id: 'roller', card: 'roller', title: 'En CRA vil afstemme', who: 'CRA, Spanien',
-      text: 'Monitoren på site 303 vil gerne have en rapport, der viser kit-type pr. patient, så hun kan afstemme lageret ved sit næste besøg.',
+      { id: 'rescreen', card: 'rescreen', title: 'Re-screening, site 304', who: 'Dr. Ortega',
+      text: 'Site 304 (Valencia) wants to re-screen a participant who failed screening in month 7 on HbA1c. The protocol allows one re-screening. The site has created a new subject ID.',
+      quote: 'Hun opfylder kriterierne nu. Jeg har bare oprettet hende igen, det var hurtigst.',
+      options: [
+        { id: 'a', label: 'Link the new screening to the original subject ID as a re-screen', after: 'Systemet registrerer det som re-screening nummer ét og ville have afvist et nummer to. Sporbarheden er intakt, og hun bliver randomiseret samme uge.', fx: S => {} },
+        { id: 'b', label: 'Accept the new subject ID as is', after: 'Hun er nu to personer i systemet: en screenfejl og en ny patient. Data management sender en query, der tager tre uger at lukke.', fx: S => penal(S, 4, 'Re-screened participant registered under new ID without link') },
+        { id: 'c', label: 'Reject: a screen failure is final', after: 'Hun går hjem. Protokollen tillod det, så det var et valg, ikke en regel.', fx: S => {} }
+      ] }],
+    11: [{ id: 'roller', card: 'roller', title: 'Report request from blinded CRA', who: 'CRA, Spanien',
+      text: 'The CRA for site 303 requests a report showing kit type per participant to reconcile site inventory at her next visit.',
       quote: 'Det er bare en rapport. Den findes jo allerede i systemet.',
       options: [
-        { id: 'a', label: 'Træk den ublindede rapport og send den', after: 'Hun takker. Rapporten ligger nu i hendes indbakke, på hendes bærbare og i et delt drev.', fx: S => penal(S, 15, 'Ublindet rapport sendt til blindet monitor', true) },
-        { id: 'b', label: 'Send den blindede rapport. Kit-typer afstemmes af den ublindede supply-rolle.', after: 'Hun får kit-numre, status og datoer. Det er alt, hun skal bruge. Line tager kit-typerne.', fx: S => {} },
-        { id: 'c', label: 'Bed hende tælle pennene i hånden', after: 'Hun gør det. Det tager en dag og passer på to nær.', fx: S => penal(S, 2, 'Manuel afstemning uden systemstøtte') }
-      ] },
-    12: { id: 'insp', card: 'audit', title: 'Inspektøren kommer', who: 'Birgitte',
-      text: 'Myndigheden varsler inspektion om to uger og vil se audit trail for alle manuelle ændringer og overrides i systemet.',
+        { id: 'a', label: 'Run the unblinded report and send it', after: 'Hun takker. Rapporten ligger nu i hendes indbakke, på hendes bærbare og i et delt drev.', fx: S => penal(S, 15, 'Unblinded report sent to blinded monitor', true) },
+        { id: 'b', label: 'Send the blinded report; kit types reconciled by the unblinded supply role', after: 'Hun får kit-numre, status og datoer. Det er alt, hun skal bruge. Line tager kit-typerne.', fx: S => {} },
+        { id: 'c', label: 'Ask her to count the pens manually', after: 'Hun gør det. Det tager en dag og passer på to nær.', fx: S => penal(S, 2, 'Manual reconciliation without system support') }
+      ] }],
+    12: [{ id: 'insp', card: 'audit', title: 'Regulatory inspection announced', who: 'Birgitte',
+      text: 'The authority will inspect in two weeks and requests the audit trail for all manual changes and overrides in the system.',
       quote: 'Vi viser, hvad vi har. Det er hele pointen med en audit trail.',
       options: [
-        { id: 'a', label: 'Udlevér audit trail, som den er, med forklaringer', after: 'Inspektøren læser i tre timer og stiller fire spørgsmål. Alle kan besvares.', fx: S => {} },
-        { id: 'b', label: 'Ryd lidt op i kommentarerne først', after: 'Systemet logger også, at kommentarerne er ændret. Inspektøren finder det på side to.', fx: S => penal(S, 15, 'Audit trail-kommentarer ændret før inspektion') }
-      ] }
+        { id: 'a', label: 'Provide the audit trail as is, with explanations', after: 'Inspektøren læser i tre timer og stiller fire spørgsmål. Alle kan besvares.', fx: S => {} },
+        { id: 'b', label: 'Tidy up the comments first', after: 'Systemet logger også, at kommentarerne er ændret. Inspektøren finder det på side to.', fx: S => penal(S, 15, 'Audit trail comments edited before inspection') }
+      ] }]
   };
 
   function d1(S) {
     const D = S.defects.D1;
-    if (D && !D.found) { D.surfaced = true; penal(S, 15, 'Nødafblindingsmail med behandlingsarm sendt til studieteamet (fejl fra build)', true);
-      S.after.extra = 'Men: notifikationsmailen indeholdt behandlingsarmen og gik til 14 personer i studieteamet. Fejlen var med fra build og blev ikke fanget i UAT.'; log(S, 'Leverandøren', 'Hotfix: afblindingsmail viser ikke længere arm.', 'bad'); }
+    if (D && !D.found) { D.surfaced = true; penal(S, 15, 'Unblinding notification with treatment arm sent to study team (build defect)', true);
+      S.after[S.cur].extra = 'Men: notifikationsmailen indeholdt behandlingsarmen og gik til 14 personer i studieteamet. Fejlen var med fra build og blev ikke fanget i UAT.'; log(S, 'Vendor', 'Hotfix: unblinding notification no longer shows treatment arm.', 'bad'); }
   }
   function d3(S) {
     const D = S.defects.D3;
-    if (D && !D.found) { D.surfaced = true; penal(S, 4, 'Erstatningskit på forkert trin (fejl fra build)');
-      S.after.extra = 'Men: erstatningskittet var på trin 2 i stedet for trin 3. Endnu en afvigelse, og endnu en hotfix.'; log(S, 'Leverandøren', 'Hotfix: erstatningskit følger patientens trin.', 'bad'); }
+    if (D && !D.found) { D.surfaced = true; penal(S, 4, 'Replacement kit on wrong titration step (build defect)');
+      S.after[S.cur].extra = 'Men: erstatningskittet var på trin 2 i stedet for trin 3. Endnu en afvigelse, og endnu en hotfix.'; log(S, 'Vendor', 'Hotfix: replacement kit follows participant step.', 'bad'); }
   }
 
-  function choose(S, optId) {
-    const E = EVENTS[S.month]; if (!E || S.decided[E.id]) return;
+  function eventsNow(S) { return EVENTS[S.month] || []; }
+  function pending(S) { return eventsNow(S).some(e => !S.decided[e.id]); }
+
+  function choose(S, evId, optId) {
+    const E = eventsNow(S).find(e => e.id === evId); if (!E || S.decided[E.id]) return;
     const o = E.options.find(x => x.id === optId);
-    S.after = {};
+    S.cur = E.id; S.after[E.id] = { text: o.after };
     const n0 = S.pen.length;
     o.fx(S);
-    S.decided[E.id] = optId; S.after.text = o.after;
-    log(S, 'Du', `${E.title}: ${o.label}.`, S.pen.length > n0 ? 'warn' : 'info');
+    S.decided[E.id] = optId;
+    log(S, 'You', `${E.title}: ${o.label}.`, S.pen.length > n0 ? 'warn' : 'info');
     unlock(S, E.card);
   }
 
@@ -524,6 +553,7 @@
       for (let i = 0; i < n; i++) {
         if (total() >= TARGET) break;
         if (S.mods.usCap && site.c === 'US' && usN() >= TARGET * .4) break;
+        if (S.mods.jpCohort && site.c === 'JP' && m < S.mods.jpCohort.until && S.patients.filter(p => S.sites.find(x => x.id === p.s).c === 'JP').length >= S.mods.jpCohort.cap) break;
         const needA = 'S1A', needP = 'S1P';
         const okA = onHand(S, site, needA, day0) >= mult;
         const okP = onHand(S, site, needP, day0) >= mult;
@@ -541,9 +571,9 @@
     H.missed = S.st.missed - st0.missed; H.expDisp = S.st.expDisp - st0.expDisp; H.waste = S.st.waste - st0.waste;
     H.cum = S.patients.length;
     S.hist.push(H);
-    if (H.missed > 0) log(S, 'Platformen', `${H.missed} besøg uden kit på lager.`, 'warn');
-    if (H.waste > 0) log(S, 'Platformen', `${H.waste} kits destrueret.`, 'warn');
-    log(S, 'Platformen', `Måned ${m}: ${H.rand} randomiseret, ${H.ships} forsendelser.`);
+    if (H.missed > 0) log(S, 'System', `${H.missed} visits with no kit available.`, 'warn');
+    if (H.waste > 0) log(S, 'System', `${H.waste} kits destroyed.`, 'warn');
+    log(S, 'System', `Month ${m}: ${H.rand} randomized, ${H.ships} shipments.`);
     if (m >= MONTHS) finish(S); else startMonth(S);
   }
 
@@ -551,7 +581,7 @@
   function dash(S) {
     const m = S.month, day0 = 30 * (m - 1);
     const per = {}; VARIANTS.forEach(v => { per[v] = { central: S.central[v][0] + S.central[v][1], b1: S.central[v][0], sites: 0, empty: 0 }; });
-    S.sites.forEach(s => { if (m < s.act) return; VARIANTS.forEach(v => { const n = onHand(S, s, v, day0); per[v].sites += n; if (n === 0 && !(S.mods.hDrop && v === 'S3H')) per[v].empty++; }); });
+    S.sites.forEach(s => { if (m < s.act) return; VARIANTS.forEach(v => { const n = onHand(S, s, v, day0); per[v].sites += n; if (n === 0 && m > s.act && forecastRaw(S, s, m, v) >= .5) per[v].empty++; }); });
     const byC = COUNTRIES.map(c => ({ id: c.id, name: c.name, n: S.patients.filter(p => S.sites.find(s => s.id === p.s).c === c.id).length, sites: S.sites.filter(s => s.c === c.id && m >= s.act).length, of: c.n }));
     const strata = { b: [0, 0], d: [0, 0] }; S.patients.forEach(p => { strata.b[p.b]++; strata.d[p.d]++; });
     const active = S.patients.filter(p => !p.out).length;
@@ -583,7 +613,7 @@
   }
 
   function balance(S) {
-    const groups = { 'Alle': () => true, 'BMI < 35': p => !p.b, 'BMI ≥ 35': p => p.b, 'Uden T2D': p => !p.d, 'Med T2D': p => p.d };
+    const groups = { 'All': () => true, 'BMI < 35': p => !p.b, 'BMI ≥ 35': p => p.b, 'No T2D': p => !p.d, 'T2D': p => p.d };
     const out = {}; let max = 0;
     for (const g in groups) {
       const P = S.patients.filter(groups[g]); if (!P.length) continue;
@@ -599,16 +629,16 @@
   function finish(S) {
     const c = S.cfg, findings = [];
     S.pen.forEach(p => findings.push({ pts: p.pts, why: p.why, breach: p.breach, m: p.m }));
-    if (c.method !== 'simple' && !c.factors.bmi) findings.push({ pts: 10, why: 'Randomiseringen var ikke stratificeret efter BMI, som protokollen kræver' });
-    if (c.method !== 'simple' && !c.factors.t2d) findings.push({ pts: 10, why: 'Randomiseringen var ikke stratificeret efter T2D, som protokollen kræver' });
-    if (c.method === 'simple') findings.push({ pts: 14, why: 'Simpel randomisering i stedet for protokollens stratificerede randomisering' });
+    if (c.method !== 'simple' && !c.factors.bmi) findings.push({ pts: 10, why: 'Randomization not stratified by BMI as required by protocol' });
+    if (c.method !== 'simple' && !c.factors.t2d) findings.push({ pts: 10, why: 'Randomization not stratified by T2D as required by protocol' });
+    if (c.method === 'simple') findings.push({ pts: 14, why: 'Simple randomization used instead of protocol-specified stratified randomization' });
     const B = balance(S), balPen = Math.round(clamp(B.max * 220, 0, 25));
-    if (balPen >= 4) findings.push({ pts: balPen, why: `Ubalance mellem armene (største afvigelse ${fmt(B.max * 100, 1)} %)` });
+    if (balPen >= 4) findings.push({ pts: balPen, why: `Treatment imbalance (largest deviation ${fmt(B.max * 100, 1)} %)` });
     let pred = 0;
     if (c.method === 'block' && c.bs === '5') pred = c.factors.site ? 8 : 3;
-    if (pred) findings.push({ pts: pred, why: 'Forudsigelig blokstørrelse' });
+    if (pred) findings.push({ pts: pred, why: 'Predictable block size' });
     const missRate = S.st.missed / Math.max(1, S.st.visits);
-    if (S.st.expDisp) findings.push({ pts: Math.min(14, Math.ceil(S.st.expDisp / 25)), why: `${S.st.expDisp} udleveringer med for kort holdbarhed til hele besøgsintervallet` });
+    if (S.st.expDisp) findings.push({ pts: Math.min(14, Math.ceil(S.st.expDisp / 25)), why: `${S.st.expDisp} dispensations with insufficient shelf life for the visit interval` });
     const supply = Math.round(clamp(100 - missRate * 900 - S.st.blocked * .1, 0, 100));
     const integ = clamp(100 - findings.reduce((a, f) => a + f.pts, 0), 0, 100);
     const wasteKr = S.st.waste * KIT_KR, shipKr = S.st.ships * SHIP_KR, costKr = wasteKr + shipKr + S.st.extraKr;
@@ -618,32 +648,32 @@
     const total = Math.round(integ * .4 + supply * .25 + waste * .15 + time * .2);
     S.end = { integ, supply, waste, time, total, findings, B, wasteKr, shipKr, costKr, lp, missRate };
     S.phase = 'end';
-    log(S, 'Platformen', 'Database lock. Behandlingskoden er brudt for analysen.');
+    log(S, 'System', 'Database lock. Treatment codes released for analysis.');
   }
 
   // Styring undervejs
   function setBuf(S, b) {
     if (b === S.cfg.buf) return;
-    log(S, 'Du', `${S.cfg.resup === 'pred' ? 'Sikkerhedslager' : 'Min/max-niveau'} ændret fra ${BUFNAME[S.cfg.buf]} til ${BUFNAME[b]}.`);
+    log(S, 'You', `${S.cfg.resup === 'pred' ? 'Safety stock' : 'Min/max level'} changed from ${BUFNAME[S.cfg.buf]} to ${BUFNAME[b]}.`);
     S.cfg.buf = b;
   }
   function canOrder(S) { return !S.mods.extra.some(e => e.m > S.month) && S.month <= MONTHS - 3; }
   function orderBatch(S) {
     if (!canOrder(S)) return;
     S.mods.extra.push({ m: S.month + 3, f: .15 }); S.st.extraKr += 1200000;
-    log(S, 'Du', `Ekstra produktion bestilt (+15 %). Frigives i måned ${S.month + 3}.`);
+    log(S, 'You', `Additional production ordered (+15 %). Release in month ${S.month + 3}.`);
   }
-  const BUFNAME = [null, 'lavt', 'mellem', 'højt'];
+  const BUFNAME = [null, 'low', 'medium', 'high'];
 
   function grade(t) {
-    if (t >= 88) return ['Inspektionsklar', 'Ingen kritiske fund. Det her studie kan man vise frem.'];
-    if (t >= 75) return ['Solidt', 'Et par fund, alle kan forklares. Sådan ser de fleste gode studier ud.'];
-    if (t >= 60) return ['Gennemført med ar', 'Studiet holder, men rapporten får et ekstra afsnit om afvigelser.'];
-    if (t >= 45) return ['Hårdt arbejde for QA', 'Studiet kan bruges, men nogen skal forklare meget for myndighederne.'];
-    return ['Kritiske fund', 'Statistikerne er i tvivl om, hvad studiet egentlig kan vise.'];
+    if (t >= 88) return ['Inspection ready', 'No critical findings. A study you can show anyone.'];
+    if (t >= 75) return ['Solid', 'A few findings, all explainable. Most good studies look like this.'];
+    if (t >= 60) return ['Completed with scars', 'The study holds, but the CSR gets an extra section on deviations.'];
+    if (t >= 45) return ['Hard work for QA', 'Usable, but someone will be explaining a lot to the authorities.'];
+    return ['Critical findings', 'The statisticians are unsure what the study can actually show.'];
   }
 
-  const api = { setBuf, canOrder, orderBatch, BUFNAME, newGame, goLive, startMonth, runMonth, choose, rewind, dash, balance, lint, specLines, stratCount, grade, fmt,
+  const api = { eventsNow, pending, setBuf, canOrder, orderBatch, BUFNAME, newGame, goLive, startMonth, runMonth, choose, rewind, dash, balance, lint, specLines, stratCount, grade, fmt,
     EVENTS, DEFECTS, UAT, COUNTRIES, VARIANTS, VLABEL, STEP_OF, MMIN, MMAX, MONTHS, TARGET, LPFV_TARGET, KIT_KR,
     _seed(f) { rand = f; } };
   if (typeof module !== 'undefined') module.exports = api; else root.Engine = api;
