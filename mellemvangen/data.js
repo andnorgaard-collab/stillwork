@@ -1,8 +1,8 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-21T09:53',
-  updatedNote: 'MUFF Byg bekræfter, at de byder. Dermed tre bydende: CPH Wood, MUFF Byg og Adamson Byg. Besigtigelsen 16/11 er holdt. Estimatet er uændret.',
+  updated: '2026-11-22T09:53',
+  updatedNote: 'Adamson Byg har sendt det første rigtige tilbud (21/11): 2.787.156 kr. inkl. moms for hovedentreprisens poster 1 til 10. Posterne bygger nu på det tilbud, så estimatet er steget med ca. 1,6 mio. kr. CPH Wood og MUFF Byg byder til licitationen 30/11 og kan give et helt andet billede.',
   frame: 1700000,
 
   tasks: [
@@ -31,9 +31,10 @@ window.SAG = {
   ],
 
   actions: [
-    {id:'A20',t:'Adamson Byg: overslag senest fredag 20/11',s:'Cihan lover overslaget i denne uge. Deles med Nordpil, som aftalt med Lyubomir',who:'Adamson Byg',status:'Afventer andre',due:'2026-11-20'},
+    {id:'A21',t:'Adamsons tilbud: del med Nordpil og aftal gennemgang',s:'Tilbud 1828 på 2.787.156 kr. inkl. moms. Cihan foreslår et møde, hvor tilbuddet gennemgås punkt for punkt. Gælder i 20 arbejdsdage',who:'Anders og Melanie',status:'Åben',due:'2026-11-30'},
+    {id:'A20',t:'Adamson Byg: tilbud modtaget 21/11',s:'Tilbuddet kom dagen efter fristen og er videresendt til Melanie',who:'Adamson Byg',status:'Afsluttet',due:'2026-11-20'},
     {id:'A19',t:'Spørgsmål til Lyubomir efter besigtigelsen',s:'Alternativpriser mangler i tilbudslisten (radiatorer, andet gulv, døre, armaturer, facade). Bad 1. sal skal afklares',who:'Anders og Melanie',status:'Åben',due:'2026-11-18'},
-    {id:'A05',t:'Licitation: tilbud modtages 30/11 kl. 12:30',s:'Bydende: CPH Wood og MUFF Byg, plus Adamsons overslag. Nordpil sammenligner tilbud og forbehold med jer',who:'Nordpil',status:'Afventer andre',due:'2026-11-30'},
+    {id:'A05',t:'Licitation: tilbud modtages 30/11 kl. 12:30',s:'Bydende: CPH Wood og MUFF Byg. Adamsons tilbud er modtaget 21/11. Nordpil sammenligner tilbud og forbehold med jer',who:'Nordpil',status:'Afventer andre',due:'2026-11-30'},
     {id:'A08',t:'Gjensidige asbestsag',s:'2 til 3 tilbud fra autoriserede saneringsfirmaer plus et VVS-tilbud før kravet anmeldes. Ingen sanering før samtykke (§3.4)',who:'Anders og Melanie',status:'Åben',due:'2026-12-07'},
     {id:'A09',t:'Finansiering før kontrakt i uge 50',s:'Ingen mail om Danske Bank, Nykredit eller Nordea siden juni',who:'Anders og Melanie',status:'Åben',due:'2026-12-07'},
     {id:'A10',t:'Besparelsesliste til tilbudsgennemgangen',s:'Rammen på 1,7 mio. kr. holdes. Se forslag under Økonomi',who:'Anders og Melanie',status:'Åben',due:'2026-11-30'},
@@ -69,6 +70,7 @@ window.SAG = {
   ],
 
   log: [
+    {d:'2026-11-21',who:'Adamson Byg (Cihan)',txt:'Tilbud 1828 modtaget: 2.787.156 kr. inkl. moms som hovedentreprise. Forventet opstart uge 1 2027 og mindst 5 måneders byggetid. Asbest og sanering er ikke med.',vis:true},
     {d:'2026-11-18',who:'Lyubomir, Nordpil',txt:'MUFF Byg giver tilbud. De byder ud fra 3D-modellen uden besigtigelse.',vis:true},
     {d:'2026-11-17',who:'Lyubomir, Nordpil',txt:'God gennemgang med CPH Wood. Erch Entreprise eller Lund Junget var i spil, hvis MUFF Byg faldt fra.',vis:true},
     {d:'2026-11-16',who:'Anders',txt:'Besigtigelse holdt med CPH Wood. Bad Lyubomir sikre mindst tre reelle tilbud til 30/11.',vis:true},
@@ -90,16 +92,16 @@ window.SAG = {
 
   /* Budget: estimat inkl. moms. src: 'tilbud' når et rigtigt tilbud findes, ellers 'estimat'. */
   budget: [
-    {g:'Hovedentreprise (udbud)',n:'1. Byggeplads og byggeledelse',lo:50000,hi:100000,est:70000,src:'estimat'},
-    {g:'Hovedentreprise (udbud)',n:'2. Nedbrydning inkl. forsigtig optagning og opbevaring af gulv og døre',lo:40000,hi:80000,est:55000,src:'estimat'},
-    {g:'Hovedentreprise (udbud)',n:'3. Kloak og spildevand',lo:25000,hi:55000,est:35000,src:'estimat'},
-    {g:'Hovedentreprise (udbud)',n:'4. Tømrer: vægge, vådrumsdæk, altandøre, døre, Dinesen-gulv, repos, Velux, altanværn',lo:320000,hi:470000,est:390000,src:'estimat',note:'Dinesen 35x150 fyr i ca. 51 m² alene ca. 140.000 kr. Nye indvendige døre fremstillet som de originale'},
-    {g:'Hovedentreprise (udbud)',n:'5. Murer: klinker bad, murpille, huller, overliggere, puds',lo:100000,hi:180000,est:135000,src:'estimat',note:'Pudsreetablering på alle facader vurderes ved besigtigelse: åben post'},
-    {g:'Hovedentreprise (udbud)',n:'6. VVS: brugsvand, gulvvarme stueplan, afløb, VOLA-armaturer, toiletter',lo:170000,hi:270000,est:220000,src:'estimat',note:'Gulvvarme med shunt og Wavin AHC 9000 ca. 75.000 kr.'},
-    {g:'Hovedentreprise (udbud)',n:'7. El efter el-rådgivers plan',lo:60000,hi:120000,est:85000,src:'estimat'},
-    {g:'Hovedentreprise (udbud)',n:'8. Maler: alle indvendige vægge og lofter Q3, døre, udvendigt murværk',lo:90000,hi:170000,est:130000,src:'estimat',note:'Udvendig maling nævner alle fire facader: afklar omfang'},
-    {g:'Hovedentreprise (udbud)',n:'9. Stål: bjælker, søjler, brandbeskyttelse',lo:45000,hi:85000,est:60000,src:'estimat'},
-    {g:'Hovedentreprise (udbud)',n:'10. Slutrengøring',lo:5000,hi:12000,est:8000,src:'estimat'},
+    {g:'Hovedentreprise (udbud)',n:'1. Byggeplads og byggeledelse',lo:149692,hi:149692,est:149692,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'2. Nedbrydning inkl. forsigtig optagning og opbevaring af gulv og døre',lo:190942,hi:190942,est:190942,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'3. Kloak og spildevand',lo:103317,hi:103317,est:103317,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'4. Tømrer: vægge, vådrumsdæk, altandøre, døre, Dinesen-gulv, repos, Velux, altanværn',lo:792770,hi:792770,est:792770,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026. Dinesen 35x150 fyr i stueetagen indgår'},
+    {g:'Hovedentreprise (udbud)',n:'5. Murer: klinker bad, murpille, huller, overliggere, puds',lo:427069,hi:427069,est:427069,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026. Fliser og fuger leveres af bygherre'},
+    {g:'Hovedentreprise (udbud)',n:'6. VVS: brugsvand, gulvvarme stueplan, afløb, VOLA-armaturer, toiletter',lo:306780,hi:306780,est:306780,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'7. El efter el-rådgivers plan',lo:240931,hi:240931,est:240931,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'8. Maler: alle indvendige vægge og lofter Q3, døre, udvendigt murværk',lo:193703,hi:193703,est:193703,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'9. Stål: bjælker, søjler, brandbeskyttelse',lo:364856,hi:364856,est:364856,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026'},
+    {g:'Hovedentreprise (udbud)',n:'10. Slutrengøring',lo:17096,hi:17096,est:17096,src:'tilbud',note:'Adamson Byg, tilbud 1828 af 21/11 2026. Inkl. afleveringsforretning'},
     {g:'Uafklaret i udbuddet',n:'Bad 1. sal: klinker, membran og sanitet',lo:80000,hi:160000,est:120000,src:'estimat',note:'Vist på tegningerne, men beskrivelsen dækker kun badet i stuen. Afklar inden 30/11'},
     {g:'Bygherre, uden for udbuddet',n:'Asbest- og PCB-sanering',lo:45000,hi:110000,est:75000,src:'estimat',note:'Søges dækket af Gjensidige ejerskifteforsikring'},
     {g:'Bygherre, uden for udbuddet',n:'Teknik i kælder: fjernvarmeunit, VVB, tavle',lo:80000,hi:120000,est:100000,src:'estimat',note:'Ikke med i udbuddet, kun føring til teknikskab'},
@@ -129,6 +131,8 @@ window.SAG = {
   ],
 
   feed: [
+    {d:'2026-11-22',who:'Claude',txt:'Hovedentreprisens poster opdateret efter Adamsons tilbud.'},
+    {d:'2026-11-21',who:'Adamson Byg',txt:'Tilbud modtaget: 2.787.156 kr. inkl. moms.'},
     {d:'2026-11-18',who:'Nordpil',txt:'MUFF Byg byder. Tre bydende til licitationen.'},
     {d:'2026-11-16',who:'Anders',txt:'Besigtigelse holdt med CPH Wood.'},
     {d:'2026-11-16',who:'Adamson Byg',txt:'Overslag lovet senest fredag 20/11.'},
