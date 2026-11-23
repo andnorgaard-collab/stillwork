@@ -101,16 +101,18 @@
   .btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
   .btn.in { background: var(--teal); }
   .btn.out { background: var(--red); color: var(--white); }
+  .btn.maybe { background: var(--gold); }
   .btn.small { font-size: 14px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--black); }
   .btn[aria-pressed="true"] { outline: 4px solid var(--purple); outline-offset: 3px; }
-  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
-  .choice .btn { font-size: clamp(20px, 5vw, 28px); padding: 16px 10px; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .choice .btn { font-size: clamp(14px, 3.8vw, 26px); padding: 16px 6px; white-space: nowrap; }
   .hello { font-family: var(--narrow); font-weight: 700; font-size: 16px; }
   .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-weight: 700; color: var(--purple); }
 
   .roster { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
   .chip { font-family: var(--narrow); font-weight: 700; font-size: 15px; padding: 5px 10px; border: 3px solid var(--black); background: var(--white); }
   .chip.in { background: var(--teal); }
+  .chip.maybe { background: var(--gold); }
   .chip.out { background: var(--black); color: var(--silver); text-decoration: line-through; }
   .chip.unknown { background: transparent; border-style: dashed; color: #6c6780; }
 
@@ -306,10 +308,12 @@
     if (ins.length >= FULL) { v.className = 'verdict on'; v.textContent = 'Full 5 on 5! 🔥'; }
     else if (ins.length >= MIN) { v.className = 'verdict close'; v.textContent = `Game on! ${FULL - ins.length} more for 5 on 5`; }
     else { v.className = 'verdict off'; v.textContent = `Need ${MIN - ins.length} more to play`; }
+    const maybes = players.filter(p => statusFor(p.id, GAME) === 'maybe').length;
+    if (maybes) v.textContent += ` · ${maybes} maybe 🥸`;
 
-    const order = { in: 0, undefined: 1, out: 2 };
+    const order = { in: 0, maybe: 1, undefined: 2, out: 3 };
     $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || a.name.localeCompare(b.name))
-      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}">${esc(p.name)}${s === 'in' ? ' ✓' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}">${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
 
     renderMe(); renderBoard(); renderHistory();
   }
@@ -329,9 +333,10 @@
       return;
     }
     const s = statusFor(me.id, GAME);
-    box.innerHTML = `<div class="hello">Yo, ${esc(me.name)}! You're <b>${s === 'in' ? 'IN' : s === 'out' ? 'OUT' : 'not checked in yet'}</b> for ${esc(pretty(GAME))}. <button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
+    box.innerHTML = `<div class="hello">Yo, ${esc(me.name)}! You're <b>${s === 'in' ? 'IN' : s === 'out' ? 'OUT' : s === 'maybe' ? 'MAYBE' : 'not checked in yet'}</b> for ${esc(pretty(GAME))}. <button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
       <div class="choice">
         <button class="btn in" data-act="in" aria-pressed="${s === 'in'}">I'm in 🏀</button>
+        <button class="btn maybe" data-act="maybe" aria-pressed="${s === 'maybe'}">Maybe 🥸</button>
         <button class="btn out" data-act="out" aria-pressed="${s === 'out'}">I'm out</button>
       </div>`;
   }
@@ -388,7 +393,7 @@
     render();
     const { error } = await sb.from('hoops_checkins').upsert({ player_id: meId, game_date: GAME, status, updated_at: new Date().toISOString() }, { onConflict: 'player_id,game_date' });
     if (error) { checkins = prev; render(); toast('Could not save. Try again'); return; }
-    toast(status === 'in' ? 'You’re in! 🏀' : 'Got it. Next time!');
+    toast(status === 'in' ? 'You’re in! 🏀' : status === 'maybe' ? 'Maybe it is 🥸' : 'Got it. Next time!');
   }
 
   async function join() {
@@ -405,7 +410,7 @@
   document.addEventListener('click', (e) => {
     const a = e.target.closest('[data-act]'); if (!a) return;
     const act = a.dataset.act;
-    if (act === 'in' || act === 'out') setStatus(act);
+    if (act === 'in' || act === 'maybe' || act === 'out') setStatus(act);
     if (act === 'join') join();
     if (act === 'pick') { const v = $('#pick').value; if (!v) return; meId = v; try { localStorage.setItem(ME_KEY, v); } catch (e) {} render(); }
     if (act === 'switch') { meId = null; try { localStorage.removeItem(ME_KEY); } catch (e) {} render(); }
