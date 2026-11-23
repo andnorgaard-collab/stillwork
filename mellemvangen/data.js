@@ -1,8 +1,8 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-22T09:53',
-  updatedNote: 'Adamson Byg har sendt det første rigtige tilbud (21/11): 2.787.156 kr. inkl. moms for hovedentreprisens poster 1 til 10. Posterne bygger nu på det tilbud, så estimatet er steget med ca. 1,6 mio. kr. CPH Wood og MUFF Byg byder til licitationen 30/11 og kan give et helt andet billede.',
+  updated: '2026-11-23T09:55',
+  updatedNote: 'Ingen nye mails eller møder siden i går. Økonomien er rettet efter jeres afklaring af rammen: Nordpils honorar ligger uden for de 1,7 mio. kr., mens genhusning nu tælles med. Estimatet er dermed ca. 45.000 kr. lavere. Licitationen 30/11 er næste store milepæl.',
   frame: 1700000,
 
   tasks: [
@@ -109,7 +109,7 @@ window.SAG = {
     {g:'Bygherre, uden for udbuddet',n:'Stålbordplade, hvidevarer og BORA',lo:75000,hi:125000,est:100000,src:'estimat'},
     {g:'Bygherre, uden for udbuddet',n:'Køkkenmontage',lo:20000,hi:40000,est:30000,src:'estimat',note:'Alt køkkeninventar er bygherreleverance i udbuddet'},
     {g:'Bygherre, uden for udbuddet',n:'Badmøbler og spejle, begge bade',lo:15000,hi:40000,est:25000,src:'estimat'},
-    {g:'Rådgivning',n:'Nordpil: projektering, udbud og tilsyn',lo:90000,hi:150000,est:120000,src:'estimat',note:'Afklar om honoraret ligger inden for rammen'},
+    {g:'Bygherre, uden for udbuddet',n:'Genhusning, ca. 4 måneder',lo:50000,hi:100000,est:75000,src:'estimat',note:'Indgår i rammen på 1,7 mio. kr.'},
     {g:'Reserve',n:'Uforudsete udgifter, ca. 8 %',lo:120000,hi:170000,est:150000,src:'estimat',note:'Gamle huse giver typisk overraskelser i bjælkelag og murværk'}
   ],
   options: [
@@ -118,7 +118,7 @@ window.SAG = {
     {n:'11.3 Puds og klinker på udvendig trappe',lo:15000,hi:35000,est:25000}
   ],
   outside: [
-    {n:'Genhusning, ca. 4 måneder',est:75000,note:'Ligger uden for byggebudgettet'}
+    {n:'Nordpil: fagtilsyn og færdigmelding (resthonorar)',est:61875,note:'Rådgivning ligger uden for rammen på 1,7 mio. kr. Projektering og udbud er betalt'}
   ],
   savings: [
     {n:'Radiatorer i stuen i stedet for gulvvarme, gulvvarme bevares i badet',save:55000},
@@ -131,6 +131,7 @@ window.SAG = {
   ],
 
   feed: [
+    {d:'2026-11-23',who:'Claude',txt:'Økonomi rettet: Nordpils honorar uden for rammen, genhusning med i rammen.'},
     {d:'2026-11-22',who:'Claude',txt:'Hovedentreprisens poster opdateret efter Adamsons tilbud.'},
     {d:'2026-11-21',who:'Adamson Byg',txt:'Tilbud modtaget: 2.787.156 kr. inkl. moms.'},
     {d:'2026-11-18',who:'Nordpil',txt:'MUFF Byg byder. Tre bydende til licitationen.'},
