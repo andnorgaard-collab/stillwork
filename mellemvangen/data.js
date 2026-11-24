@@ -1,7 +1,7 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-23T09:55',
+  updated: '2026-11-24T09:53',
   updatedNote: 'Ingen nye mails eller møder siden i går. Økonomien er rettet efter jeres afklaring af rammen: Nordpils honorar ligger uden for de 1,7 mio. kr., mens genhusning nu tælles med. Estimatet er dermed ca. 45.000 kr. lavere. Licitationen 30/11 er næste store milepæl.',
   frame: 1700000,
 
