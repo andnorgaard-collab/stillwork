@@ -101,11 +101,10 @@
   .btn:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
   .btn.in { background: var(--teal); }
   .btn.out { background: var(--red); color: var(--white); }
-  .btn.maybe { background: var(--gold); }
   .btn.small { font-size: 14px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--black); }
   .btn[aria-pressed="true"] { outline: 4px solid var(--purple); outline-offset: 3px; }
-  .choice { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 14px; }
-  .choice .btn { font-size: clamp(14px, 3.8vw, 26px); padding: 16px 6px; white-space: nowrap; }
+  .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+  .choice .btn { font-size: clamp(15px, 4.2vw, 26px); padding: 16px 6px; white-space: nowrap; }
   .hello { font-family: var(--narrow); font-weight: 700; font-size: 16px; }
   .link { background: none; border: 0; text-decoration: underline; cursor: pointer; font-weight: 700; color: var(--purple); }
 
@@ -336,7 +335,6 @@
     box.innerHTML = `<div class="hello">Yo, ${esc(me.name)}! You're <b>${s === 'in' ? 'IN' : s === 'out' ? 'OUT' : s === 'maybe' ? 'MAYBE' : 'not checked in yet'}</b> for ${esc(pretty(GAME))}. <button class="link" data-act="switch">Not ${esc(me.name)}?</button></div>
       <div class="choice">
         <button class="btn in" data-act="in" aria-pressed="${s === 'in'}">I'm in 🏀</button>
-        <button class="btn maybe" data-act="maybe" aria-pressed="${s === 'maybe'}">Maybe 🥸</button>
         <button class="btn out" data-act="out" aria-pressed="${s === 'out'}">I'm out</button>
       </div>`;
   }
@@ -410,7 +408,7 @@
   document.addEventListener('click', (e) => {
     const a = e.target.closest('[data-act]'); if (!a) return;
     const act = a.dataset.act;
-    if (act === 'in' || act === 'maybe' || act === 'out') setStatus(act);
+    if (act === 'in' || act === 'out') setStatus(act);
     if (act === 'join') join();
     if (act === 'pick') { const v = $('#pick').value; if (!v) return; meId = v; try { localStorage.setItem(ME_KEY, v); } catch (e) {} render(); }
     if (act === 'switch') { meId = null; try { localStorage.removeItem(ME_KEY); } catch (e) {} render(); }
