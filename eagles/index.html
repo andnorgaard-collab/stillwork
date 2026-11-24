@@ -150,6 +150,22 @@
   .toast.show { opacity: 1; transform: translateX(-50%) rotate(-2deg) scale(1); }
   @media (prefers-reduced-motion: reduce) { .crest { animation: none; } .toast { transition: none; } }
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .boo { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 20; overflow: hidden; }
+  .boo span { font-family: var(--display); font-size: 17vw; line-height: 1; white-space: nowrap; color: var(--red); -webkit-text-stroke: .06em var(--black); paint-order: stroke fill; text-shadow: .05em .05em 0 var(--black), .1em .1em 0 var(--gold), .13em .13em 0 var(--black); animation: boo 3.6s cubic-bezier(.3,.7,.4,1) forwards; }
+  @keyframes boo {
+    0% { transform: scale(.15) rotate(0); opacity: 0; }
+    8% { opacity: 1; }
+    15% { transform: scale(.5) translate(-2%, 1%) rotate(-4deg); }
+    25% { transform: scale(.75) translate(2%, -1%) rotate(4deg); }
+    35% { transform: scale(.95) translate(-2%, 2%) rotate(-5deg); }
+    45% { transform: scale(1.1) translate(3%, -1%) rotate(5deg); }
+    55% { transform: scale(1.25) translate(-3%, 2%) rotate(-6deg); opacity: 1; }
+    65% { transform: scale(1.4) translate(3%, -2%) rotate(6deg); }
+    75% { transform: scale(1.55) translate(-3%, 1%) rotate(-5deg); opacity: .8; }
+    85% { transform: scale(1.7) translate(2%, -1%) rotate(4deg); opacity: .45; }
+    100% { transform: scale(1.9) rotate(-3deg); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .boo span { animation: booFade 3s ease forwards; } @keyframes booFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } } }
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -384,7 +400,17 @@
     }).join('') || '<li class="empty">No runs on the books yet.</li>';
   }
 
+  function boo() {
+    document.querySelector('.boo')?.remove();
+    const el = document.createElement('div');
+    el.className = 'boo'; el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = '<span>BOOOHHHH…</span>';
+    document.body.appendChild(el);
+    el.firstChild.addEventListener('animationend', () => el.remove());
+  }
+
   async function setStatus(status) {
+    if (status === 'out') boo();
     const prev = checkins.slice();
     const i = checkins.findIndex(c => c.player_id === meId && c.game_date === GAME);
     if (i >= 0) checkins[i] = { ...checkins[i], status }; else checkins.push({ player_id: meId, game_date: GAME, status });
