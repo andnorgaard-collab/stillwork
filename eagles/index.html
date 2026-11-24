@@ -130,6 +130,7 @@
   .badge.ghost { background: var(--purple); color: var(--white); transform: rotate(1.5deg); }
   .badge.hot { background: var(--red); color: var(--white); transform: rotate(1deg); }
   .badge.rec { background: var(--teal); transform: rotate(-1deg); }
+  .badge.early { background: var(--white); transform: rotate(1.5deg); }
   .board td.n, .board th.n { padding-left: 4px; padding-right: 6px; }
   @media (max-width: 420px) { .board td { font-size: 15px; padding: 9px 5px; } .board th { font-size: 11px; padding: 7px 5px; } }
   .badge .k { font-family: var(--display); font-size: 14px; }
@@ -306,13 +307,18 @@
   async function load() {
     const [p, c] = await Promise.all([
       sb.from('hoops_players').select('id,name,created_at').order('name'),
-      sb.from('hoops_checkins').select('player_id,game_date,status')
+      sb.from('hoops_checkins').select('player_id,game_date,status,updated_at')
     ]);
     if (p.error || c.error) throw (p.error || c.error);
     players = p.data; checkins = c.data;
     if (meId && !players.find(x => x.id === meId)) meId = null;
     render();
   }
+
+  // Early bird: whoever checked in first for a run. A shared first timestamp (bulk-entered runs) has no early bird.
+  const inOrder = (date) => checkins.filter(c => c.game_date === date && c.status === 'in' && c.updated_at).sort((a, b) => a.updated_at.localeCompare(b.updated_at));
+  const earlyBird = (date) => { const o = inOrder(date); return o.length && !(o[1] && o[1].updated_at === o[0].updated_at) ? o[0].player_id : null; };
+  const signedAt = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date && c.status === 'in') || {}).updated_at || '9';
 
   const statusFor = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date) || {}).status;
 
@@ -328,8 +334,9 @@
     if (maybes) v.textContent += ` · ${maybes} maybe 🥸`;
 
     const order = { in: 0, maybe: 1, undefined: 2, out: 3 };
-    $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || a.name.localeCompare(b.name))
-      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}">${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+    const bird = earlyBird(GAME);
+    $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || signedAt(a.id, GAME).localeCompare(signedAt(b.id, GAME)) || a.name.localeCompare(b.name))
+      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}"${p.id === bird ? ' title="Early bird: first to check in"' : ''}>${p.id === bird ? '🐓 ' : ''}${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
 
     renderMe(); renderBoard(); renderHistory();
   }
@@ -359,6 +366,8 @@
   function stats() {
     const today = new Date();
     const lastPlayed = (() => { const g = nextGame(today); const d = parse(g); return ymd(new Date(d.getTime() - 7 * 864e5)); })();
+    const birds = {};
+    [...new Set(checkins.map(c => c.game_date))].filter(d => d <= GAME).forEach(d => { const b = earlyBird(d); if (b) birds[b] = (birds[b] || 0) + 1; });
     return players.map(p => {
       const since = ymd(new Date(p.created_at));
       const possible = tuesdaysBetween(since, lastPlayed);
@@ -367,7 +376,7 @@
       const silent = possible.filter(d => !statusFor(p.id, d)).length;
       let streak = 0; for (let i = possible.length - 1; i >= 0 && statusFor(p.id, possible[i]) === 'in'; i--) streak++;
       let best = 0, run = 0; possible.forEach(d => { run = statusFor(p.id, d) === 'in' ? run + 1 : 0; best = Math.max(best, run); });
-      return { ...p, possible: possible.length, played, missed, silent, streak, best, rate: possible.length ? played / possible.length : null };
+      return { ...p, early: birds[p.id] || 0, possible: possible.length, played, missed, silent, streak, best, rate: possible.length ? played / possible.length : null };
     });
   }
 
@@ -375,10 +384,10 @@
     const st = stats().sort((a, b) => b.played - a.played || (b.rate ?? -1) - (a.rate ?? -1) || a.name.localeCompare(b.name));
     if (!st.length) { $('#board').innerHTML = ''; $('#badges').innerHTML = '<p class="empty">The board fills up after the first Tuesday.</p>'; return; }
     const ranked = st.filter(s => s.possible > 0);
-    const leaders = (key) => { const m = Math.max(0, ...ranked.map(s => s[key])); return m ? ranked.filter(s => s[key] === m).sort((a, b) => a.name.localeCompare(b.name)) : []; };
+    const leaders = (key, pool = ranked) => { const m = Math.max(0, ...pool.map(s => s[key])); return m ? pool.filter(s => s[key] === m).sort((a, b) => a.name.localeCompare(b.name)) : []; };
     const names = (arr) => arr.length < 2 ? arr[0].name : arr.slice(0, -1).map(s => s.name).join(', ') + ' & ' + arr[arr.length - 1].name;
     const tie = (arr) => arr.length > 1 ? ` · ${arr.length}-way tie` : '';
-    const mvps = leaders('played'), hots = leaders('streak'), recs = leaders('best');
+    const birdsTop = leaders('early', st), mvps = leaders('played'), hots = leaders('streak'), recs = leaders('best');
     const same = (a, b) => a.length === b.length && a.every((s, i) => s.id === b[i].id);
     const ghosts = ranked.filter(s => s.possible >= 2).sort((a, b) => a.rate - b.rate || b.missed - a.missed);
     const ghost = ghosts[0] && !mvps.includes(ghosts[0]) && ghosts[0].rate < 0.5 ? ghosts[0] : null;
@@ -387,10 +396,11 @@
       (mvps.length ? card('mvp', '🏆 High score · most runs' + tie(mvps), names(mvps), `${mvps[0].played} run${mvps[0].played === 1 ? "" : "s"} ${mvps.length > 1 ? "each" : "all time"}`) : '') +
       (hots.length && hots[0].streak > 1 ? card('hot', '🔥 On fire · current streak' + tie(hots), names(hots), `${hots[0].streak} Tuesdays in a row and counting`) : '') +
       (recs.length && recs[0].best > 1 && !(same(recs, hots) && recs[0].best === hots[0].streak) ? card('rec', '⚡ Record streak' + tie(recs), names(recs), `${recs[0].best} Tuesdays in a row`) : '') +
+      (birdsTop.length ? card('early', '🐓 Early bird · first to check in' + tie(birdsTop), names(birdsTop), `First in ${birdsTop[0].early} time${birdsTop[0].early === 1 ? '' : 's'}${birdsTop.length > 1 ? ' each' : ''}`) : '') +
       (ghost ? card('ghost', '👻 Ghost of the court', ghost.name, `Showed up ${ghost.played} of ${ghost.possible} Tuesdays`) : '');
-    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th></tr></thead><tbody>` +
+    $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th><th class="n" title="Times first to check in">🐓</th></tr></thead><tbody>` +
       st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
-        <td class="n">${s.played}</td><td class="n">${s.streak ? s.streak + (s.streak > 2 ? '🔥' : '') : '·'}</td><td class="n">${s.best || '·'}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td></tr>`).join('') + '</tbody>';
+        <td class="n">${s.played}</td><td class="n">${s.streak ? s.streak + (s.streak > 2 ? '🔥' : '') : '·'}</td><td class="n">${s.best || '·'}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td><td class="n">${s.early || '·'}</td></tr>`).join('') + '</tbody>';
   }
 
   function renderHistory() {
@@ -413,11 +423,13 @@
   async function setStatus(status) {
     if (status === 'out') boo();
     if (status === 'in') boo('YEAH BALLER!', 'yeah');
+    if (status === 'in' && statusFor(meId, GAME) === 'in') { toast('Already in! 🏀'); return; }
     const prev = checkins.slice();
     const i = checkins.findIndex(c => c.player_id === meId && c.game_date === GAME);
-    if (i >= 0) checkins[i] = { ...checkins[i], status }; else checkins.push({ player_id: meId, game_date: GAME, status });
+    const now = new Date().toISOString();
+    if (i >= 0) checkins[i] = { ...checkins[i], status, updated_at: now }; else checkins.push({ player_id: meId, game_date: GAME, status, updated_at: now });
     render();
-    const { error } = await sb.from('hoops_checkins').upsert({ player_id: meId, game_date: GAME, status, updated_at: new Date().toISOString() }, { onConflict: 'player_id,game_date' });
+    const { error } = await sb.from('hoops_checkins').upsert({ player_id: meId, game_date: GAME, status, updated_at: now }, { onConflict: 'player_id,game_date' });
     if (error) { checkins = prev; render(); toast('Could not save. Try again'); return; }
     toast(status === 'in' ? 'You’re in! 🏀' : status === 'maybe' ? 'Maybe it is 🥸' : 'Got it. Next time!');
   }
