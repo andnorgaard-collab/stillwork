@@ -190,6 +190,22 @@
   .confetti i { position: absolute; top: -20px; width: 10px; height: 16px; border: 2px solid var(--black); animation: fall linear forwards; }
   @keyframes fall { to { transform: translate(var(--dx), 110vh) rotate(var(--rot)); } }
   @media (prefers-reduced-motion: reduce) { .countdown, .fire { animation: none !important; } .confetti { display: none; } }
+
+  /* Injury list */
+  .panel.er { background: var(--white); box-shadow: 10px 10px 0 var(--black), 10px 10px 0 4px var(--red); }
+  .ir { list-style: none; margin-top: 12px; display: grid; gap: 12px; }
+  .ir li { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: center; border: 4px solid var(--black); padding: 10px 12px; background: repeating-linear-gradient(-45deg, rgba(255,46,77,.08) 0 10px, transparent 10px 20px); box-shadow: 5px 5px 0 var(--black); }
+  .ir li:nth-child(odd) { transform: rotate(-.8deg); }
+  .ir li:nth-child(even) { transform: rotate(.8deg); }
+  .ir .x { grid-row: span 2; font-size: 34px; line-height: 1; }
+  .ir .n { font-family: var(--display); font-size: 20px; line-height: 1; }
+  .ir .w { font-family: var(--narrow); font-weight: 700; font-size: 15px; }
+  .ir .w b { color: var(--red); }
+  .chip.hurt { background: repeating-linear-gradient(-45deg, var(--white) 0 6px, rgba(255,46,77,.18) 6px 12px); }
+  .hurtbox { margin-top: 16px; }
+  .hurtbox .me-row { margin-top: 10px; }
+  .hurtbox .status { font-family: var(--narrow); font-weight: 700; margin-bottom: 8px; }
+  .hurtbox label.l { font-family: var(--narrow); font-weight: 700; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; width: 100%; }
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -250,6 +266,12 @@
     <h2 id="board-h">The <span class="hot">Board</span></h2>
     <div class="badges" id="badges"></div>
     <table class="board" id="board"></table>
+  </section>
+
+  <section class="panel er" aria-labelledby="ir-h">
+    <div class="kicker" style="color:var(--red)">Out with injury</div>
+    <h2 id="ir-h">Injury <span class="hot">List</span> 🩼</h2>
+    <ul class="ir" id="ir"></ul>
   </section>
 
   <section class="panel teal" aria-labelledby="hist-h">
@@ -321,19 +343,20 @@
     return out;
   }
 
-  let sb = null, players = [], checkins = [], meId = null;
+  let sb = null, players = [], checkins = [], injuries = [], meId = null, hurtForm = false;
   try { meId = localStorage.getItem(ME_KEY); } catch (e) {}
   const GAME = nextGame();
 
   function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 1800); }
 
   async function load() {
-    const [p, c] = await Promise.all([
+    const [p, c, h] = await Promise.all([
       sb.from('hoops_players').select('id,name,created_at').order('name'),
-      sb.from('hoops_checkins').select('player_id,game_date,status,updated_at')
+      sb.from('hoops_checkins').select('player_id,game_date,status,updated_at'),
+      sb.from('hoops_injuries').select('id,player_id,note,back_by,since,healed_on')
     ]);
     if (p.error || c.error) throw (p.error || c.error);
-    players = p.data; checkins = c.data;
+    players = p.data; checkins = c.data; injuries = h.error ? [] : h.data;
     if (meId && !players.find(x => x.id === meId)) meId = null;
     render();
   }
@@ -342,6 +365,10 @@
   const inOrder = (date) => checkins.filter(c => c.game_date === date && c.status === 'in' && c.updated_at).sort((a, b) => a.updated_at.localeCompare(b.updated_at));
   const earlyBird = (date) => { const o = inOrder(date); return o.length && !(o[1] && o[1].updated_at === o[0].updated_at) ? o[0].player_id : null; };
   const signedAt = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date && c.status === 'in') || {}).updated_at || '9';
+
+  // Injured on a Tuesday: that run doesn't count against you, and your streak is paused, not broken.
+  const openInjury = (pid) => injuries.find(x => x.player_id === pid && !x.healed_on);
+  const injuredOn = (pid, date) => injuries.some(x => x.player_id === pid && x.since <= date && (!x.healed_on || x.healed_on > date));
 
   const statusFor = (pid, date) => (checkins.find(c => c.player_id === pid && c.game_date === date) || {}).status;
 
@@ -356,11 +383,12 @@
     const maybes = players.filter(p => statusFor(p.id, GAME) === 'maybe').length;
     if (maybes) v.textContent += ` · ${maybes} maybe 🥸`;
 
-    const order = { in: 0, maybe: 1, undefined: 2, out: 3 };
+    const order = { in: 0, maybe: 1, undefined: 2, hurt: 2.5, out: 3 };
+    const rs = (p) => { const s = statusFor(p.id, GAME); return s || (openInjury(p.id) ? 'hurt' : undefined); };
     const bird = earlyBird(GAME);
     const fire = new Set(stats().filter(x => x.streak >= 5).map(x => x.id));
-    $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || signedAt(a.id, GAME).localeCompare(signedAt(b.id, GAME)) || a.name.localeCompare(b.name))
-      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}${fire.has(p.id) ? ' fire' : ''}"${p.id === bird ? ' title="Early bird: first to check in"' : ''}>${fire.has(p.id) ? '🔥 ' : ''}${p.id === bird ? '🐓 ' : ''}${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+    $('#roster').innerHTML = [...players].sort((a, b) => order[rs(a)] - order[rs(b)] || signedAt(a.id, GAME).localeCompare(signedAt(b.id, GAME)) || a.name.localeCompare(b.name))
+      .map(p => { const s = rs(p); return `<li class="chip ${s || 'unknown'}${fire.has(p.id) ? ' fire' : ''}"${p.id === bird ? ' title="Early bird: first to check in"' : ''}>${fire.has(p.id) ? '🔥 ' : ''}${p.id === bird ? '🐓 ' : ''}${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : s === 'hurt' ? ' 🤕' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
 
     const onKey = 'eagles-gameon-' + GAME;
     try {
@@ -368,7 +396,7 @@
       else if (ins.length < MIN) localStorage.removeItem(onKey);
     } catch (e) {}
 
-    renderMe(); renderBoard(); renderHistory();
+    renderMe(); renderBoard(); renderInjuries(); renderHistory();
   }
 
   function renderMe() {
@@ -390,7 +418,42 @@
       <div class="choice">
         <button class="btn in" data-act="in" aria-pressed="${s === 'in'}">I'm in 🏀</button>
         <button class="btn out" data-act="out" aria-pressed="${s === 'out'}">I'm out</button>
-      </div>`;
+      </div>` + hurtBox(me);
+  }
+
+  function hurtBox(me) {
+    const inj = openInjury(me.id);
+    if (inj) return `<div class="hurtbox"><div class="status">🤕 You're on the injury list${inj.note ? ` (${esc(inj.note)})` : ''}${inj.back_by ? `, back by ${esc(pretty(inj.back_by))}` : ''}. Your Tuesdays don't count against you.</div>
+      <button class="btn small in" data-act="healed">I'm back 💪</button></div>`;
+    if (!hurtForm) return `<div class="hurtbox"><button class="link" data-act="hurt">Hurt? Put yourself on the injury list 🤕</button></div>`;
+    return `<div class="hurtbox">
+      <div class="me-row"><label class="l" for="hurtNote">What happened?</label><input id="hurtNote" maxlength="60" placeholder="Ankle, back, knee…"></div>
+      <div class="me-row"><label class="l" for="hurtBack">Back by (if you know)</label><input id="hurtBack" type="date" min="${ymd(new Date())}"></div>
+      <div class="me-row"><button class="btn small out" data-act="hurtgo">Put me on the list</button><button class="link" data-act="hurtcancel">Cancel</button></div></div>`;
+  }
+
+  function renderInjuries() {
+    const list = injuries.filter(x => !x.healed_on).map(x => ({ ...x, p: players.find(p => p.id === x.player_id) })).filter(x => x.p).sort((a, b) => a.since.localeCompare(b.since));
+    const weeks = (d) => { const n = Math.floor((parse(ymd(new Date())) - parse(d)) / (7 * 864e5)); return n < 1 ? 'this week' : n === 1 ? '1 week' : n + ' weeks'; };
+    $('#ir').innerHTML = list.map(x => `<li><span class="x">🤕</span><span class="n">${esc(x.p.name)}</span>
+      <span class="w">${x.note ? `<b>${esc(x.note)}</b> · ` : ''}Out ${weeks(x.since)}${x.back_by ? ` · back by ${esc(pretty(x.back_by))}` : ' · return unknown'}</span></li>`).join('')
+      || '<li style="transform:none;grid-template-columns:auto 1fr"><span class="x">💪</span><span class="n">Nobody hurt</span><span class="w">Full squad. Stay healthy!</span></li>';
+  }
+
+  async function reportInjury() {
+    const note = ($('#hurtNote').value || '').trim().replace(/\s+/g, ' ').slice(0, 60) || null;
+    const back_by = $('#hurtBack').value || null;
+    const { data, error } = await sb.from('hoops_injuries').insert({ player_id: meId, note, back_by, since: ymd(new Date()) }).select('id,player_id,note,back_by,since,healed_on').single();
+    if (error) { toast('Could not save. Try again'); return; }
+    injuries.push(data); hurtForm = false; render(); toast('Get well soon 🩹');
+  }
+
+  async function healed() {
+    const inj = openInjury(meId); if (!inj) return;
+    const today = ymd(new Date());
+    const { error } = await sb.from('hoops_injuries').update({ healed_on: today }).eq('id', inj.id);
+    if (error) { toast('Could not save. Try again'); return; }
+    inj.healed_on = today; render(); boo('I’M BACK! 💪', 'yeah');
   }
 
   function stats() {
@@ -400,7 +463,7 @@
     [...new Set(checkins.map(c => c.game_date))].filter(d => d <= GAME).forEach(d => { const b = earlyBird(d); if (b) birds[b] = (birds[b] || 0) + 1; });
     return players.map(p => {
       const since = ymd(new Date(p.created_at));
-      const possible = tuesdaysBetween(since, lastPlayed);
+      const possible = tuesdaysBetween(since, lastPlayed).filter(d => statusFor(p.id, d) === 'in' || !injuredOn(p.id, d));
       const played = checkins.filter(c => c.player_id === p.id && c.status === 'in' && c.game_date <= lastPlayed).length;
       const missed = possible.filter(d => statusFor(p.id, d) !== 'in').length;
       const silent = possible.filter(d => !statusFor(p.id, d)).length;
@@ -510,6 +573,10 @@
     const act = a.dataset.act;
     if (act === 'in' || act === 'out') setStatus(act);
     if (act === 'join') join();
+    if (act === 'hurt') { hurtForm = true; renderMe(); $('#hurtNote')?.focus(); }
+    if (act === 'hurtcancel') { hurtForm = false; renderMe(); }
+    if (act === 'hurtgo') reportInjury();
+    if (act === 'healed') healed();
     if (act === 'pick') { const v = $('#pick').value; if (!v) return; meId = v; try { localStorage.setItem(ME_KEY, v); } catch (e) {} render(); }
     if (act === 'switch') { meId = null; try { localStorage.removeItem(ME_KEY); } catch (e) {} render(); }
   });
