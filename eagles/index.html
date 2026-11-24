@@ -168,6 +168,28 @@
   }
   .boo.yeah span { font-size: 12vw; color: var(--gold); text-shadow: .05em .05em 0 var(--black), .1em .1em 0 var(--teal), .13em .13em 0 var(--black); }
   @media (prefers-reduced-motion: reduce) { .boo span { animation: booFade 3s ease forwards; } @keyframes booFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } } }
+
+  /* Countdown to tip-off: calmer far out, frantic near 20:00 */
+  .countdown { margin-top: 12px; font-family: var(--display); font-size: clamp(18px, 5vw, 26px); line-height: 1.1; color: var(--purple); display: inline-block; transform-origin: left center; }
+  .countdown small { display: block; font-family: var(--narrow); font-weight: 700; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--black); }
+  .countdown.soon { animation: cdPulse 1.6s ease-in-out infinite; }
+  .countdown.hot { color: var(--red); animation: cdShake .5s linear infinite; }
+  .countdown.panic { color: var(--white); background: var(--red); border: 3px solid var(--black); padding: 4px 10px; animation: cdShake .18s linear infinite, cdFlash .5s steps(2) infinite; }
+  .countdown.live { color: var(--black); background: var(--gold); border: 3px solid var(--black); padding: 4px 10px; animation: cdPulse .8s ease-in-out infinite; }
+  @keyframes cdPulse { 50% { transform: scale(1.06); } }
+  @keyframes cdShake { 25% { transform: translate(-2px, 1px) rotate(-1deg); } 50% { transform: translate(2px, -1px) rotate(1deg); } 75% { transform: translate(-1px, -1px) rotate(-.5deg); } }
+  @keyframes cdFlash { 50% { background: var(--purple); } }
+
+  /* On fire: 5+ Tuesdays in a row */
+  .fire { position: relative; animation: fireShake .35s linear infinite; box-shadow: 0 0 0 3px var(--gold), 0 0 14px 4px rgba(255, 70, 40, .85); }
+  .board td .fire { display: inline-block; box-shadow: none; text-shadow: 0 0 8px rgba(255, 90, 40, .9); color: var(--red); }
+  @keyframes fireShake { 25% { transform: translate(-1px, 0) rotate(-1.5deg); } 75% { transform: translate(1px, -1px) rotate(1.5deg); } }
+
+  /* Game on: confetti */
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 19; overflow: hidden; }
+  .confetti i { position: absolute; top: -20px; width: 10px; height: 16px; border: 2px solid var(--black); animation: fall linear forwards; }
+  @keyframes fall { to { transform: translate(var(--dx), 110vh) rotate(var(--rot)); } }
+  @media (prefers-reduced-motion: reduce) { .countdown, .fire { animation: none !important; } .confetti { display: none; } }
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -216,7 +238,8 @@
       <div class="date" id="gameDate">…</div>
       <div class="meter"><b id="countIn">0</b><i>ballers in</i></div>
     </div>
-    <div class="verdict" id="verdict">Loading</div>
+    <div class="verdict" id="verdict">Loading</div><br>
+    <div class="countdown" id="countdown" aria-live="off"></div>
     <ul class="roster" id="roster" aria-label="Who's coming"></ul>
 
     <div class="me" id="me"></div>
@@ -335,8 +358,15 @@
 
     const order = { in: 0, maybe: 1, undefined: 2, out: 3 };
     const bird = earlyBird(GAME);
+    const fire = new Set(stats().filter(x => x.streak >= 5).map(x => x.id));
     $('#roster').innerHTML = [...players].sort((a, b) => order[statusFor(a.id, GAME)] - order[statusFor(b.id, GAME)] || signedAt(a.id, GAME).localeCompare(signedAt(b.id, GAME)) || a.name.localeCompare(b.name))
-      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}"${p.id === bird ? ' title="Early bird: first to check in"' : ''}>${p.id === bird ? '🐓 ' : ''}${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+      .map(p => { const s = statusFor(p.id, GAME); return `<li class="chip ${s || 'unknown'}${fire.has(p.id) ? ' fire' : ''}"${p.id === bird ? ' title="Early bird: first to check in"' : ''}>${fire.has(p.id) ? '🔥 ' : ''}${p.id === bird ? '🐓 ' : ''}${esc(p.name)}${s === 'in' ? ' ✓' : s === 'maybe' ? ' 🥸' : ''}</li>`; }).join('') || '<li class="empty">No ballers yet. Be the first.</li>';
+
+    const onKey = 'eagles-gameon-' + GAME;
+    try {
+      if (ins.length >= MIN && !localStorage.getItem(onKey)) { localStorage.setItem(onKey, '1'); gameOn(); }
+      else if (ins.length < MIN) localStorage.removeItem(onKey);
+    } catch (e) {}
 
     renderMe(); renderBoard(); renderHistory();
   }
@@ -399,7 +429,7 @@
       (birdsTop.length ? card('early', '🐓 Early bird · first to check in' + tie(birdsTop), names(birdsTop), `First in ${birdsTop[0].early} time${birdsTop[0].early === 1 ? '' : 's'}${birdsTop.length > 1 ? ' each' : ''}`) : '') +
       (ghost ? card('ghost', '👻 Ghost of the court', ghost.name, `Showed up ${ghost.played} of ${ghost.possible} Tuesdays`) : '');
     $('#board').innerHTML = `<thead><tr><th>#</th><th>Baller</th><th class="n">Runs</th><th class="n">Streak</th><th class="n">Best</th><th class="n">Rate</th><th class="n" title="Times first to check in">🐓</th></tr></thead><tbody>` +
-      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
+      st.map((s, i) => `<tr><td class="rank">${i + 1}</td><td>${s.streak >= 5 ? `<span class="fire" title="On fire: ${s.streak} in a row">🔥 ${esc(s.name)}</span>` : esc(s.name)}<div class="bar"><i style="width:${Math.round((s.rate || 0) * 100)}%"></i></div></td>
         <td class="n">${s.played}</td><td class="n">${s.streak ? s.streak + (s.streak > 2 ? '🔥' : '') : '·'}</td><td class="n">${s.best || '·'}</td><td class="n">${s.rate == null ? 'New' : Math.round(s.rate * 100) + '%'}</td><td class="n">${s.early || '·'}</td></tr>`).join('') + '</tbody>';
   }
 
@@ -409,6 +439,36 @@
       const who = checkins.filter(c => c.game_date === d && c.status === 'in').map(c => (players.find(p => p.id === c.player_id) || {}).name).filter(Boolean).sort();
       return `<li><span class="d">${esc(pretty(d, { day: 'numeric', month: 'short', year: '2-digit' }))}</span><span class="c">${who.length}</span><span>${who.length ? esc(who.join(', ')) : 'Nobody checked in'}</span></li>`;
     }).join('') || '<li class="empty">No runs on the books yet.</li>';
+  }
+
+  function gameOn() {
+    document.querySelector('.confetti')?.remove();
+    const box = document.createElement('div'); box.className = 'confetti'; box.setAttribute('aria-hidden', 'true');
+    const colors = ['var(--teal)', 'var(--gold)', 'var(--red)', 'var(--purple)', 'var(--white)'];
+    for (let i = 0; i < 120; i++) {
+      const c = document.createElement('i');
+      c.style.left = Math.random() * 100 + 'vw';
+      c.style.background = colors[i % colors.length];
+      c.style.setProperty('--dx', (Math.random() * 40 - 20) + 'vw');
+      c.style.setProperty('--rot', (Math.random() * 1440 - 720) + 'deg');
+      c.style.animationDuration = 2.2 + Math.random() * 2 + 's';
+      c.style.animationDelay = Math.random() * .8 + 's';
+      box.appendChild(c);
+    }
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 5200);
+    boo('GAME ON! 🔥', 'yeah');
+  }
+
+  function tick() {
+    const el = $('#countdown'); if (!el) return;
+    const [y, m, d] = GAME.split('-').map(Number);
+    const tip = new Date(y, m - 1, d, 20, 0, 0), ms = tip - new Date();
+    if (ms <= 0) { el.className = 'countdown live'; el.innerHTML = 'Game time! 🏀<small>Get to the court</small>'; return; }
+    const sec = Math.floor(ms / 1000), dd = Math.floor(sec / 86400), hh = Math.floor(sec % 86400 / 3600), mm = Math.floor(sec % 3600 / 60), ss = sec % 60;
+    const pad = n => String(n).padStart(2, '0');
+    el.className = 'countdown ' + (ms < 30 * 6e4 ? 'panic' : ms < 3 * 36e5 ? 'hot' : ms < 24 * 36e5 ? 'soon' : '');
+    el.innerHTML = `${dd ? dd + 'd ' : ''}${pad(hh)}:${pad(mm)}:${pad(ss)}<small>${ms < 30 * 6e4 ? 'Lace up! Tip-off any second' : ms < 3 * 36e5 ? 'Tip-off is close' : 'Until tip-off'}</small>`;
   }
 
   function boo(text = 'BOOOHHHH…', cls = '') {
@@ -467,8 +527,10 @@
 
   try {
     sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    tick(); setInterval(tick, 1000);
     load().catch(fail);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) load().catch(() => {}); });
+    setInterval(() => { if (!document.hidden && meId && !document.activeElement?.matches('input, select')) load().catch(() => {}); }, 30000);
   } catch (err) { fail(err); }
 })();
 </script>
