@@ -165,6 +165,7 @@
     85% { transform: scale(1.7) translate(2%, -1%) rotate(4deg); opacity: .45; }
     100% { transform: scale(1.9) rotate(-3deg); opacity: 0; }
   }
+  .boo.yeah span { font-size: 12vw; color: var(--gold); text-shadow: .05em .05em 0 var(--black), .1em .1em 0 var(--teal), .13em .13em 0 var(--black); }
   @media (prefers-reduced-motion: reduce) { .boo span { animation: booFade 3s ease forwards; } @keyframes booFade { 0%, 60% { opacity: 1; } 100% { opacity: 0; } } }
 </style>
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
@@ -400,17 +401,18 @@
     }).join('') || '<li class="empty">No runs on the books yet.</li>';
   }
 
-  function boo() {
+  function boo(text = 'BOOOHHHH…', cls = '') {
     document.querySelector('.boo')?.remove();
     const el = document.createElement('div');
-    el.className = 'boo'; el.setAttribute('aria-hidden', 'true');
-    el.innerHTML = '<span>BOOOHHHH…</span>';
+    el.className = ('boo ' + cls).trim(); el.setAttribute('aria-hidden', 'true');
+    el.innerHTML = `<span>${text}</span>`;
     document.body.appendChild(el);
     el.firstChild.addEventListener('animationend', () => el.remove());
   }
 
   async function setStatus(status) {
     if (status === 'out') boo();
+    if (status === 'in') boo('YEAH BALLER!', 'yeah');
     const prev = checkins.slice();
     const i = checkins.findIndex(c => c.player_id === meId && c.game_date === GAME);
     if (i >= 0) checkins[i] = { ...checkins[i], status }; else checkins.push({ player_id: meId, game_date: GAME, status });
