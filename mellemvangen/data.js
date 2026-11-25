@@ -1,8 +1,8 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-24T09:53',
-  updatedNote: 'Ingen nye mails eller møder siden i går. Økonomien er rettet efter jeres afklaring af rammen: Nordpils honorar ligger uden for de 1,7 mio. kr., mens genhusning nu tælles med. Estimatet er dermed ca. 45.000 kr. lavere. Licitationen 30/11 er næste store milepæl.',
+  updated: '2026-11-25T09:53',
+  updatedNote: 'Adamsons tilbud er sendt videre til Lyubomir 24/11, så Nordpil gennemgår det og tager dialogen med Adamson. Aktionen ligger nu hos Nordpil. Ingen nye møder i kalenderen. Økonomien er uændret. Licitationen 30/11 er næste store milepæl.',
   frame: 1700000,
 
   tasks: [
@@ -31,7 +31,7 @@ window.SAG = {
   ],
 
   actions: [
-    {id:'A21',t:'Adamsons tilbud: del med Nordpil og aftal gennemgang',s:'Tilbud 1828 på 2.787.156 kr. inkl. moms. Cihan foreslår et møde, hvor tilbuddet gennemgås punkt for punkt. Gælder i 20 arbejdsdage',who:'Anders og Melanie',status:'Åben',due:'2026-11-30'},
+    {id:'A21',t:'Nordpil gennemgår Adamsons tilbud og tager dialogen',s:'Tilbud 1828 på 2.787.156 kr. inkl. moms er sendt til Lyubomir 24/11. Gælder i 20 arbejdsdage',who:'Nordpil',status:'Afventer andre',due:'2026-11-30'},
     {id:'A20',t:'Adamson Byg: tilbud modtaget 21/11',s:'Tilbuddet kom dagen efter fristen og er videresendt til Melanie',who:'Adamson Byg',status:'Afsluttet',due:'2026-11-20'},
     {id:'A19',t:'Spørgsmål til Lyubomir efter besigtigelsen',s:'Alternativpriser mangler i tilbudslisten (radiatorer, andet gulv, døre, armaturer, facade). Bad 1. sal skal afklares',who:'Anders og Melanie',status:'Åben',due:'2026-11-18'},
     {id:'A05',t:'Licitation: tilbud modtages 30/11 kl. 12:30',s:'Bydende: CPH Wood og MUFF Byg. Adamsons tilbud er modtaget 21/11. Nordpil sammenligner tilbud og forbehold med jer',who:'Nordpil',status:'Afventer andre',due:'2026-11-30'},
@@ -70,6 +70,7 @@ window.SAG = {
   ],
 
   log: [
+    {d:'2026-11-24',who:'Anders og Melanie',txt:'Adamsons tilbud sendt til Lyubomir med ønske om, at Nordpil gennemgår det og tager dialogen med Adamson.',vis:true},
     {d:'2026-11-21',who:'Adamson Byg (Cihan)',txt:'Tilbud 1828 modtaget: 2.787.156 kr. inkl. moms som hovedentreprise. Forventet opstart uge 1 2027 og mindst 5 måneders byggetid. Asbest og sanering er ikke med.',vis:true},
     {d:'2026-11-18',who:'Lyubomir, Nordpil',txt:'MUFF Byg giver tilbud. De byder ud fra 3D-modellen uden besigtigelse.',vis:true},
     {d:'2026-11-17',who:'Lyubomir, Nordpil',txt:'God gennemgang med CPH Wood. Erch Entreprise eller Lund Junget var i spil, hvis MUFF Byg faldt fra.',vis:true},
@@ -131,6 +132,7 @@ window.SAG = {
   ],
 
   feed: [
+    {d:'2026-11-24',who:'Anders og Melanie',txt:'Adamsons tilbud sendt til Nordpil til gennemgang.'},
     {d:'2026-11-23',who:'Claude',txt:'Økonomi rettet: Nordpils honorar uden for rammen, genhusning med i rammen.'},
     {d:'2026-11-22',who:'Claude',txt:'Hovedentreprisens poster opdateret efter Adamsons tilbud.'},
     {d:'2026-11-21',who:'Adamson Byg',txt:'Tilbud modtaget: 2.787.156 kr. inkl. moms.'},
