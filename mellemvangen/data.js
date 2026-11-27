@@ -1,7 +1,7 @@
 /* Mellemvangen 59 · sagsdata. Opdateres dagligt kl. 10 af Claude.
    Priser er Claudes bedste estimat af markedspriser i København (inkl. moms), indtil rigtige tilbud erstatter dem. */
 window.SAG = {
-  updated: '2026-11-26T10:05',
+  updated: '2026-11-27T09:53',
   updatedNote: 'Lyubomir svarede 25/11: han gennemgår Adamsons tilbud og tager en snak med Adamson. Han spørger, hvad I selv synes, og bemærker, at prisen ligger over budgettet. Ny aktion til jer: giv Lyubomir jeres syn inden licitationen. Ingen møder i kalenderen. Økonomien er uændret.',
   frame: 1700000,
 
